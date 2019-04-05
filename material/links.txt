@@ -1,0 +1,3 @@
+http://www.di.fc.ul.pt/~jpn/r/optimization/CVXR.html
+http://opt-r.com/1 and https://finance-r.com/
+
