@@ -39,7 +39,7 @@ so that
 $$
   f(x,y) = \inf \left\{t \in \mathbf{R}: \left(\begin{pmatrix} y-t \\ 2x \end{pmatrix}, y+t\right) \in \mathcal{K} \right\},
 $$
-where $\mathcal{K} := \{(u,v) \in \mathbf{R}^{n+1} \times \mathbf{R}: \|u\|_2 \leq v\}$ is a second-order cone. Thus, $f(x,y)$ is the solution of a second-order cone program, which can be evaluated using any cone solver. 
+where $\mathcal{K} := \{(u,v) \in \mathbf{R}^{n+1} \times \mathbf{R}: \|u\|_2 \leq v\}$ is a second-order cone. Thus, $f(x,y)$ is the solution of a second-order cone program (SOCP), which can be evaluated using any conic solver. 
 
 TODO: Discuss CVXR canonicalizer.
 
