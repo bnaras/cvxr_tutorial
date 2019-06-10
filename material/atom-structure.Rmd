@@ -11,10 +11,33 @@ library(CVXR)
 ```
 
 ## Function Properties
+TODO: Introduction.
+
+### Basic Definition
 The quadratic-over-linear atom is defined as
 $$
-  f(x,y) := \frac{\|x\|_2^2}{y} \quad \mbox{with} \quad \mathbf{dom}\;f = \{(x,y) \in \mathbf{R}^n \times \mathbf{R}: y > 0\}.
+  f(x,y) := \frac{\|x\|_2^2}{y} \quad \mbox{with} \quad \mathbf{dom}\;f = \{(x,y) \in \mathbf{R}^n \times \mathbf{R}: y > 0\}
 $$
+with gradient
+$$
+  \nabla_x f(x,y) = \frac{2x}{y}, \quad \nabla_y f(x,y) = -\frac{\|x\|_2^2}{y^2}.
+$$
+TODO: Code for validate_args, to_numeric, .domain, and .grad.
+
+### Dimension, Sign, and Curvature
+For DCP analysis to work, we must explicitly define each atom's dimension, sign, and curvature. It is easy to see that $f$ is scalar-valued, nonnegative, and convex over its domain. These properties are encoded in
+```{r, evals=FALSE}
+setMethod("dim_from_args", "QuadOverLin", function(object) { c() })
+setMethod("sign_from_args",  "QuadOverLin", function(object) { c(TRUE, FALSE) })
+setMethod("is_atom_convex", "QuadOverLin", function(object) { TRUE })
+setMethod("is_atom_concave", "QuadOverLin", function(object) { FALSE })
+```
+Here, the `sign_from_args` function returns a vector of two logical values: the first indicates if the atom's value is positive, and the second if it is negative. 
+
+TODO: Not enough. Need more for DCP composition rules. $f$ is nonincreasing in $y$, nondecreasing in $x$ on $\mathbf{R}_+^n$, and nonincreasing in $x$ on $\mathbf{R}_-^n$. Code incr/decr.
+
+### Quadratic Structure
+TODO: is_quadratic and is_qpwa.
 
 ## Canonicalization
 Once `CVXR` verifies a problem is DCP, it then converts that problem into a solver-compatible form. This *canonicalization* process is carried out through a series of calls to individual atom canonicalizers, defined in the reductions framework. To implement an atom, one must explicitly derive its canonicalizer for a particular class of problems (e.g., conic programs), which is supported by the desired solver. We show an approach below that uses its graph implementation.
