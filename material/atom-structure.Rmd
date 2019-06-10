@@ -26,17 +26,20 @@ TODO: Code for validate_args, to_numeric, .domain, and .grad.
 
 ### Dimension, Sign, and Curvature
 For DCP analysis to work, we must explicitly define each atom's dimension, sign, and curvature. It is easy to see that $f$ is scalar-valued, nonnegative, and convex over its domain. These properties are encoded in
-```{r, evals=FALSE}
+```{r, eval=FALSE}
 setMethod("dim_from_args", "QuadOverLin", function(object) { c() })
 setMethod("sign_from_args",  "QuadOverLin", function(object) { c(TRUE, FALSE) })
 setMethod("is_atom_convex", "QuadOverLin", function(object) { TRUE })
 setMethod("is_atom_concave", "QuadOverLin", function(object) { FALSE })
 ```
-Here, the `sign_from_args` function returns a vector of two logical values: the first indicates if the atom's value is positive, and the second if it is negative. 
+Here, the `sign_from_args` function returns a vector of two logical values - the first indicates if the atom's value is positive, and the second if it is negative. To enable composition under the DCP rules, we must also define whether the atom is weakly increasing or decreasing in each of its arguments. From its gradient, we see that $f$ is weakly decreasing in $y$, weakly increasing in $x$ on $\mathbf{R}_+^n$, and weakly decreasing in $x$ on $\mathbf{R}_-^n$. These properties are spelled out in the following methods.
+```{r, eval=FALSE}
+setMethod("is_incr", "QuadOverLin", function(object, idx) { (idx == 1) && is_nonneg(object@args[[idx]]) })
+setMethod("is_decr", "QuadOverLin", function(object, idx) { ((idx == 1) && is_nonpos(object@args[[idx]])) || (idx == 2) })
+```
+TODO: Describe code for is_incr and is_decr.
 
-TODO: Not enough. Need more for DCP composition rules. $f$ is nonincreasing in $y$, nondecreasing in $x$ on $\mathbf{R}_+^n$, and nonincreasing in $x$ on $\mathbf{R}_-^n$. Code incr/decr.
-
-### Quadratic Structure
+### Additional Characterization
 TODO: is_quadratic and is_qpwa.
 
 ## Canonicalization
@@ -66,7 +69,7 @@ $$
 $$
 where $\mathcal{K} := \{(u,v) \in \mathbf{R}^{n+1} \times \mathbf{R}: \|u\|_2 \leq v\}$ is a second-order cone. Thus, $f(x,y)$ is the solution to an SOCP, which may be evaluated using any conic solver. The canonicalizer for quadratic-over-linear takes as input $(x,y)$ and outputs the above SOCP.
 
-In `CVXR`, this function is defined in dcp2cone.R, since it is used to reduce a DCP problem to a cone program.
+In `CVXR`, this canonicalizer function is defined in dcp2cone.R, since it is used to reduce a DCP problem to a cone program.
 ```{r, eval=FALSE}
 Dcp2Cone.quad_over_lin_canon <- function(expr, args) {
   # quad_over_lin := sum_{ij} X^2_{ij} / y
@@ -82,7 +85,7 @@ Dcp2Cone.quad_over_lin_canon <- function(expr, args) {
   return(list(t, constraints))
 }
 ```
-TODO: Describe what the code is doing.
+It takes as input a `QuadOverLin` expression `expr` and a list of arguments `args`, which specify the input values $(x,y)$. The first two lines of the function extract $x$ and $y$ from `args`, and the third line constructs the `Variable` $t \in \mathbf{R}$. The fourth line forms the constraint $\left(\begin{pmatrix} y-t \\ 2x \end{pmatrix}, y+t\right) \in \mathcal{K}$ with a call to the constructor `SOC`. If $x \in \mathbf{R}^n$, then `SOC(t,x)` enforces $\|x\|_2 \leq t$. Finally, the canonicalizer returns a list containing $t$, the epigraph variable, and a list of constraints from the graph implementation - in this case, the single second-order cone constraint.
 
 ## Putting It All Together
 Suppose we are given $A \in \mathbf{R}^{m \times n}$ and $b \in \mathbf{R}^m$, and would like to solve
