@@ -1,0 +1,68 @@
+---
+title: "The Structure of Atoms"
+author: "Anqi Fu and Balasubramanian Narasimhan"
+date: "6/9/2019"
+slug: cvxr_atom-structure
+categories: Developer Guide
+---
+
+```{r prereqs, message = FALSE, echo = FALSE}
+library(CVXR)
+```
+
+## Function Properties
+The quadratic-over-linear atom is defined as
+$$
+  f(x,y) := \frac{\|x\|_2^2}{y} \quad \mbox{with} \quad \mathbf{dom}\;f = \{(x,y) \in \mathbf{R}^n \times \mathbf{R}: y > 0\}.
+$$
+
+## Canonicalization
+A function $g: \mathbf{R}^n \rightarrow \mathbf{R}$ is convex if and only if its epigraph
+$$
+  \mathbf{epi}\;g = \{(x,t) \in \mathbf{R}^n \times \mathbf{R}: g(x) \leq t\}
+$$
+is a convex set. In this case, it can be written as
+$$
+  g(x) = \inf \{t \in \mathbf{R}: (x,t) \in \mathbf{epi}\;g \}.
+$$
+A similar relationship exists between a concave function and its hypograph. A **graph implementation* of a function is a representation of its epigraph or hypograph as a disciplined convex feasibility problem. It provides an elegant means of defining nondifferentiable functions that enables `CVXR` to convert a DCP problem into a canonical form ingestible by most solvers.
+
+Let us derive the graph implementation of the quadratic-over-linear atom. Since $y > 0$ on $\mathbf{dom}\;f$, the inequality $f(x,y) \leq t$ is equivalent to
+$$
+\begin{align*}
+  4\|x\|_2^2 &\leq 4ty = (y+t)^2 - (y-t)^2 \\
+  (y-t)^2 + \|2x\|_2^2 &\leq (y+t)^2 \\
+  \left\|\begin{pmatrix} y-t \\ 2x \end{pmatrix}\right\|_2 &\leq y+t
+\end{align*}
+$$
+so that
+$$
+  f(x,y) = \inf \left\{t \in \mathbf{R}: \left(\begin{pmatrix} y-t \\ 2x \end{pmatrix}, y+t\right) \in \mathcal{K} \right\},
+$$
+where $\mathcal{K} := \{(u,v) \in \mathbf{R}^{n+1} \times \mathbf{R}: \|u\|_2 \leq v\}$ is a second-order cone. Thus, $f(x,y)$ is the solution of a second-order cone program, which can be evaluated using any cone solver. 
+
+TODO: Discuss CVXR canonicalizer.
+
+Suppose we are given $A \in \mathbf{R}^{m \times n}$ and $b \in \mathbf{R}^m$, and would like to solve
+$$
+  \begin{array}{ll}
+    \mbox{minimize} & f(x,y) \\
+    \mbox{subject to} & Ax = b
+  \end{array}
+$$
+with respect to $x \in \mathbf{R}^n$ and $y \in \mathbf{R}_{++}$. Substituting in the graph implementation of $f$, our problem can be rewritten as
+$$
+  \begin{array}{ll}
+    \mbox{minimize} & t \\
+    \mbox{subject to} & Ax = b,  \quad (x,y) \in \mathbf{dom}\;f, \quad \left(\begin{pmatrix} y-t \\ 2x \end{pmatrix}, y+t\right) \in \mathcal{K},
+  \end{array}
+$$
+where $t \in \mathbf{R}$ is the additional graph variable. If $b \in \mathbf{null}\;A$, the solution is trivially $x^* = \vec{0}$ and any $y^* > 0$. Otherwise, the point $y = 0$ is infeasible, so we can relax the domain constraint to get
+$$
+    \begin{array}{ll}
+    \mbox{minimize} & t \\
+    \mbox{subject to} & Ax = b, \quad y \geq 0, \quad \left(\begin{pmatrix} y-t \\ 2x \end{pmatrix}, y+t\right) \in \mathcal{K}.
+  \end{array}
+$$
+This SOCP canonicalization may then be passed into a cone solver to obtain the optimal $t^* = f(x^*,y^*)$. TODO: A few words on how CVXR does this automatically with the canonicalization of the atom.
+
