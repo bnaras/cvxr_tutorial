@@ -17,17 +17,19 @@ $$
 $$
 
 ## Canonicalization
+Once `CVXR` verifies a problem is DCP, it then converts that problem into a solver-compatible form. This *canonicalization* process is carried out through a series of calls to individual atom canonicalizers, defined in the reductions framework. To implement an atom, one must explicitly derive its canonicalizer for a particular class of problems (e.g., conic programs), which is supported by the desired solver. We show an approach below that uses its graph implementation.
+
 A function $g: \mathbf{R}^n \rightarrow \mathbf{R}$ is convex if and only if its epigraph
 $$
   \mathbf{epi}\;g = \{(x,t) \in \mathbf{R}^n \times \mathbf{R}: g(x) \leq t\}
 $$
-is a convex set. In this case, it can be written as
+is a convex set. Then, it can be written as
 $$
   g(x) = \inf \{t \in \mathbf{R}: (x,t) \in \mathbf{epi}\;g \}.
 $$
-A similar relationship exists between a concave function and its hypograph. A **graph implementation* of a function is a representation of its epigraph or hypograph as a disciplined convex feasibility problem. It provides an elegant means of defining nondifferentiable functions that enables `CVXR` to convert a DCP problem into a canonical form ingestible by most solvers.
+A similar relationship exists between concave functions and their hypographs. The *graph implementation* of a function is a representation of its epigraph or hypograph as a disciplined convex feasibility problem. This provides an elegant means of defining a nondifferentiable function in terms of a canonical optimization problem, which can be directly evaluated by a solver.
 
-Let us derive the graph implementation of the quadratic-over-linear atom. Since $y > 0$ on $\mathbf{dom}\;f$, the inequality $f(x,y) \leq t$ is equivalent to
+For instance, the quadratic-over-linear atom can be written as a second-order cone program (SOCP). Given $(x,y) \in \mathbf{dom}\;f$, the inequality $f(x,y) \leq t$ is equivalent to
 $$
 \begin{align*}
   4\|x\|_2^2 &\leq 4ty = (y+t)^2 - (y-t)^2 \\
@@ -39,10 +41,27 @@ so that
 $$
   f(x,y) = \inf \left\{t \in \mathbf{R}: \left(\begin{pmatrix} y-t \\ 2x \end{pmatrix}, y+t\right) \in \mathcal{K} \right\},
 $$
-where $\mathcal{K} := \{(u,v) \in \mathbf{R}^{n+1} \times \mathbf{R}: \|u\|_2 \leq v\}$ is a second-order cone. Thus, $f(x,y)$ is the solution of a second-order cone program (SOCP), which can be evaluated using any conic solver. 
+where $\mathcal{K} := \{(u,v) \in \mathbf{R}^{n+1} \times \mathbf{R}: \|u\|_2 \leq v\}$ is a second-order cone. Thus, $f(x,y)$ is the solution to an SOCP, which may be evaluated using any conic solver. The canonicalizer for quadratic-over-linear takes as input $(x,y)$ and outputs the above SOCP.
 
-TODO: Discuss CVXR canonicalizer.
+In `CVXR`, this function is defined in dcp2cone.R, since it is used to reduce a DCP problem to a cone program.
+```{r, eval=FALSE}
+Dcp2Cone.quad_over_lin_canon <- function(expr, args) {
+  # quad_over_lin := sum_{ij} X^2_{ij} / y
+  x <- args[[1]]
+  y <- flatten(args[[2]])
+  
+  # Pre-condition: dim = c()
+  t <- Variable(1)
+  
+  # (y+t, y-t, 2*x) must lie in the second-order cone, where y+t is the scalar part
+  # of the second-order cone constraint
+  constraints <- list(SOC(t = y+t, X = VStack(y-t, 2*flatten(x)), axis = 2))
+  return(list(t, constraints))
+}
+```
+TODO: Describe what the code is doing.
 
+## Putting It All Together
 Suppose we are given $A \in \mathbf{R}^{m \times n}$ and $b \in \mathbf{R}^m$, and would like to solve
 $$
   \begin{array}{ll}
