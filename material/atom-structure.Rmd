@@ -12,18 +12,35 @@ library(CVXR)
 
 TODO: Introduction.
 
-## Function Properties
-TODO: Introduction.
-
-### Definition
+## Definition
 For any $x \in \mathbf{R}^n$ and $y \in \mathbf{R}$, the quadratic-over-linear atom is defined as
 $$
   f(x,y) := \frac{\|x\|_2^2}{y} \quad \mbox{with} \quad \mathbf{dom}\;f = \{(x,y) \in \mathbf{R}^n \times \mathbf{R}: y > 0\}.
 $$
-TODO: S4 object constructor and initialize.
+TODO: Describe S4 object constructor and inheritance from Atom superclass.
+```{r, eval=FALSE}
+setClass("QuadOverLin", representation(x = "ConstValORExpr", y = "ConstValORExpr"), contains = "Atom")
+```
+For convenience, we also define a constructor
+```{r, eval=FALSE}
+quad_over_lin <- function(x, y) { new("QuadOverLin", x = x, y = y) }
+```
 
-## Basic Methods
-First, we provide a method for validating the input arguments. This method is called during initialization to check whether the arguments make sense for the atom. In our example, the second argument to $f$ must be a scalar, so our validation method looks like
+We must pass `x` and `y` to the `Atom` superclass so they can be saved in its `args` slot. This gives inherited methods a consistent way of accessing the arguments of any atom. To achieve this, we override the default initialization with
+```{r, eval=FALSE}
+setMethod("initialize", "QuadOverLin", function(.Object, ..., x, y) {
+  .Object@x <- x
+  .Object@y <- y
+  callNextMethod(.Object, ..., atom_args = list(.Object@x, .Object@y))
+})
+```
+TODO: Explain what is happening in each line.
+
+## Atom Properties
+Now that we have created the S4 class, it's time to define methods that characterize the atom's mathematical properties.
+
+### Basic Methods
+First, we provide a method for validating the atom's input arguments. This method is called during initialization to check whether the arguments make sense for the atom. In our example, the second argument to $f$ must be a scalar, so our validation method looks like
 ```{r, eval=FALSE}
 setMethod("validate_args", "QuadOverLin", function(object) {
   if(!is_scalar(object@args[[2]]))
@@ -40,7 +57,7 @@ To facilitate this, for each atom, we define a method that returns a list of `Co
 setMethod(".domain", "QuadOverLin", function(object) { list(object@args[[2]] >= 0) })
 ```
 
-Both validation and domain methods may be dropped if an atom's arguments span the reals. However, the `to_numeric` method is always required. It takes as input an atom and a list `values` containing the numeric values of the arguments (given in the same order as `object@args`), then evaluates the atom at these values. For our `QuadOverLin` atom, this method is simply
+Both validation and domain methods may be dropped if an atom's arguments span the reals. However, the `to_numeric` method is always required. It takes as input an atom and a list `values` containing the numeric value of the arguments (given in the same order as `object@args`), then evaluates the atom at these values. For our `QuadOverLin` atom, this method is simply
 ```{r, eval=FALSE}
 setMethod("to_numeric", "QuadOverLin", function(object, values) { sum(values[[1]]^2) / values[[2]] })
 ```
@@ -62,7 +79,7 @@ setMethod("is_decr", "QuadOverLin", function(object, idx) { ((idx == 1) && is_no
 The input `idx` is the index of the argument of interest. Given our initialization sceheme, `idx = 1` corresponds to $x$ and `idx = 2` to $y$. We call the `Expression` class method `is_nonneg` (resp. `is_nonpos`) to determine if an argument is nonnegative (resp. nonpositive) according to the DCP composition rules. The user might be tempted to type `object@args[[1]] >= 0`, but this is **incorrect** because it returns a `Constraint` rather than a logical value.
 
 ### Additional Characteristics
-The methods we have just described are the bare minimum required to define an atom. Many additional methods may be implemented, which handle complex numbers, support new solver classes, or provide further functional characterization. For instance, we furnish a method that computes the gradient of the quadratic-over-linear atom,
+The methods we have just described are the bare minimum required to define an atom. Many additional methods may be implemented to handle complex numbers, support new solver classes, or provide further functional characterization. For instance, we furnish a method that computes the gradient of the quadratic-over-linear atom,
 $$
   \nabla_x f(x,y) = \frac{2x}{y}, \quad \nabla_y f(x,y) = -\frac{\|x\|_2^2}{y^2},
 $$
@@ -139,7 +156,7 @@ Dcp2Cone.quad_over_lin_canon <- function(expr, args) {
 It takes as input a `QuadOverLin` expression `expr` and a list of arguments `args`, which specify the input values $(x,y)$. The first two lines of the function extract $x$ and $y$ from `args`, and the third line constructs the `Variable` $t \in \mathbf{R}$. The fourth line forms the constraint $\left(\begin{pmatrix} y-t \\ 2x \end{pmatrix}, y+t\right) \in \mathcal{K}$ with a call to the constructor `SOC`. If $x \in \mathbf{R}^n$, then `SOC(t,x)` enforces $\|x\|_2 \leq t$. Finally, the canonicalizer returns a list containing $t$, the epigraph variable, and a list of constraints from the graph implementation - in this case, the single second-order cone constraint.
 
 ## Putting It All Together
-Suppose we are given $A \in \mathbf{R}^{m \times n}$ and $b \in \mathbf{R}^m$, and would like to solve
+TODO: Ready to see how CVXR uses atom to analyze, reduce, and solve problem. Suppose we are given $A \in \mathbf{R}^{m \times n}$ and $b \in \mathbf{R}^m$, and would like to solve
 $$
   \begin{array}{ll}
     \mbox{minimize} & f(x,y) \\
@@ -160,5 +177,6 @@ $$
     \mbox{subject to} & Ax = b, \quad y \geq 0, \quad \left(\begin{pmatrix} y-t \\ 2x \end{pmatrix}, y+t\right) \in \mathcal{K}.
   \end{array}
 $$
-This SOCP canonicalization may then be passed into a cone solver to obtain the optimal $t^* = f(x^*,y^*)$. TODO: A few words on how CVXR does this automatically with the canonicalization of the atom.
+This SOCP canonicalization may then be passed into a cone solver to obtain the optimal $t^* = f(x^*,y^*)$.
 
+TODO: How does CVXR automatically canonicalize an atom?
