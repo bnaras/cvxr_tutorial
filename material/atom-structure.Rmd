@@ -13,20 +13,21 @@ library(CVXR)
 TODO: Introduction.
 
 ## Definition
-For any $x \in \mathbf{R}^n$ and $y \in \mathbf{R}$, the quadratic-over-linear atom is defined as
+For any $x \in \mathbf{R}^n$ and $y \in \mathbf{R}$, the quadratic-over-linear function is
 $$
   f(x,y) := \frac{\|x\|_2^2}{y} \quad \mbox{with} \quad \mathbf{dom}\;f = \{(x,y) \in \mathbf{R}^n \times \mathbf{R}: y > 0\}.
 $$
-TODO: Describe S4 object constructor and inheritance from Atom superclass.
+It is represented in `CVXR` by the S4 class `QuadOverLin`, which is defined as
 ```{r, eval=FALSE}
 setClass("QuadOverLin", representation(x = "ConstValORExpr", y = "ConstValORExpr"), contains = "Atom")
 ```
-For convenience, we also define a constructor
+For convenience, we also provide a constructor
 ```{r, eval=FALSE}
 quad_over_lin <- function(x, y) { new("QuadOverLin", x = x, y = y) }
 ```
+The `QuadOverLin` class takes as input two arguments, `x` and `y`, which must be R numeric constants (`numeric`, `matrix`, etc) or `Expression` objects. These input types are encapsulated in the "ConstaValORExpr" class union. Since `Expression`s themselves may contain constants, variables, and other atoms, this allows us to use the quadratic-over-linear function in nested compositions. TODO: `QuadOverLin` is an atom and thus inherits from the `Atom` superclass... what slots/methods?
 
-We must pass `x` and `y` to the `Atom` superclass so they can be saved in its `args` slot. This gives inherited methods a consistent way of accessing the arguments of any atom. To achieve this, we override the default initialization with
+We must pass our arguments to the `Atom` initializer for processing and validation. To do this, we override the default `QuadOverLin` initialization with
 ```{r, eval=FALSE}
 setMethod("initialize", "QuadOverLin", function(.Object, ..., x, y) {
   .Object@x <- x
@@ -34,10 +35,21 @@ setMethod("initialize", "QuadOverLin", function(.Object, ..., x, y) {
   callNextMethod(.Object, ..., atom_args = list(.Object@x, .Object@y))
 })
 ```
-TODO: Explain what is happening in each line.
+The first two lines save `x` and `y` to their respective slots, while the third calls the superclass initializer with `atom_args` equal to the list of arguments.
+```{r, eval=FALSE}
+setMethod("initialize", "Atom", function(.Object, ..., atom_args = list(), .dim = NULL) {
+  .Object@args <- lapply(atom_args, as.Constant)
+  validate_args(.Object)
+  .Object@.dim <- dim_from_args(.Object)
+  if(length(.Object@.dim) > 2)
+    stop("Atoms must be at most 2D.")
+  .Object
+})
+```
+It is not important to understand the details of this code. Only recognize that the arguments are converted into `CVXR` objects and saved in the `args` slot. We will be using this slot later.
 
 ## Atom Properties
-Now that we have created the S4 class, it's time to define methods that characterize the atom's mathematical properties.
+Now that we have created the S4 class, it is time to define methods that characterize the atom's mathematical properties.
 
 ### Basic Methods
 First, we provide a method for validating the atom's input arguments. This method is called during initialization to check whether the arguments make sense for the atom. In our example, the second argument to $f$ must be a scalar, so our validation method looks like
@@ -48,7 +60,7 @@ setMethod("validate_args", "QuadOverLin", function(object) {
   callNextMethod()
 })
 ```
-The input `object` is a `QuadOverLin` atom. We access its arguments (which are `Expression` objects) via its `args` slot. Given our initialization, `object@args[[1]]` contains the expression for $x$ and `object@args[[2]]` the one for $y$. We invoke `is_scalar`, a method in the `Expression` class, on the latter to check if $y$ is indeed scalar. If this check passes, then a call is made up the stack to `validate_args` in its superclass, `Atom`.
+The input `object` is a `QuadOverLin` atom. We access its arguments via its inherited `args` slot. Given our initialization, `object@args[[1]]` contains the argument for $x$ and `object@args[[2]]` the one for $y$. We invoke `is_scalar`, a method in the `Expression` class, on the latter to check if $y$ is indeed scalar. If this check passes, then a call is made up the stack to `validate_args` in its `Atom` superclass.
 
 Notice that we did not check if $y > 0$ during validation. This is because we generally do not know the value of an argument during the construction of a quadratic-over-linear expression - $y$ may contain a `Variable` that we are solving for in our problem, and we cannot define the problem if validation fails. It is the user's responsibility to include domain constraints when constructing a `Problem`.
 
