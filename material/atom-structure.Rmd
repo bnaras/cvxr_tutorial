@@ -22,8 +22,32 @@ $$
 $$
 TODO: S4 object constructor. Code for validate_args, to_numeric, .domain.
 
+First, we provide a method for validating the input arguments. This method is called during initialization to check whether the arguments make sense for the atom. In our example, the second argument to $f$ must be a scalar, so our validation method looks like
+```{r, eval=FALSE}
+setMethod("validate_args", "QuadOverLin", function(object) {
+  if(!is_scalar(object@args[[2]]))
+    stop("The second argument to QuadOverLin must be a scalar.")
+  callNextMethod()
+})
+```
+The input `object` is a `QuadOverLin` atom. We access its arguments (which are `Expression` objects) via the `args` slot. Given our initialization, `object@args[[1]]` contains the expression for $x$, and `object@args[[2]]` the one for $y$. We call `is_scalar` on the latter to check if $y$ is indeed scalar.
+
+Notice that we did not check if $y > 0$ during validation. This is because we generally do not know the value of an argument during the construction of a quadratic-over-linear expression - $y$ may contain a `Variable` that we are solving for in our problem, and we cannot define the problem if validation fails. 
+
+How then do we ensure $(x,y) \in \mathbf{dom}\;f$? By defining a method that returns a list of `Constraint`s, which delineate our atom's domain.
+```{r, eval=FALSE}
+setMethod(".domain", "QuadOverLin", function(object) { list(object@args[[2]] >= 0) })
+```
+TODO: This method is automatically called to enforce the constraint in a problem? Use of weak inequality.
+
+Both validation and domain methods may be dropped if an atom's arguments span the reals. However, the evaluation method is always required. It takes as input a `QuadOverLin` object and a list `values` containing the numeric values of $x$ and $y$, given in the same order as `atom_args`. TODO: It then computes...
+```{r, eval=FALSE}
+setMethod("to_numeric", "QuadOverLin", function(object, values) { sum(values[[1]]^2) / values[[2]] })
+```
+TODO: Reminder that values are numeric, in contrast to args.
+
 ### Gradient
-If an atom is differentiable, we also define its gradient in an S4 class method. TODO: This is because... The gradient of the quadratic-over-linear function is
+If an atom is differentiable, we also provide a method for computing its gradient. TODO: This is because... The gradient of the quadratic-over-linear function is
 $$
   \nabla_x f(x,y) = \frac{2x}{y}, \quad \nabla_y f(x,y) = -\frac{\|x\|_2^2}{y^2}
 $$
