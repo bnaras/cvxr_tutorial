@@ -15,13 +15,14 @@ TODO: Introduction.
 ## Function Properties
 TODO: Introduction.
 
-### Basic Definition
+### Definition
 For any $x \in \mathbf{R}^n$ and $y \in \mathbf{R}$, the quadratic-over-linear atom is defined as
 $$
   f(x,y) := \frac{\|x\|_2^2}{y} \quad \mbox{with} \quad \mathbf{dom}\;f = \{(x,y) \in \mathbf{R}^n \times \mathbf{R}: y > 0\}.
 $$
-TODO: S4 object constructor. Code for validate_args, to_numeric, .domain.
+TODO: S4 object constructor and initialize.
 
+## Basic Methods
 First, we provide a method for validating the input arguments. This method is called during initialization to check whether the arguments make sense for the atom. In our example, the second argument to $f$ must be a scalar, so our validation method looks like
 ```{r, eval=FALSE}
 setMethod("validate_args", "QuadOverLin", function(object) {
@@ -30,28 +31,42 @@ setMethod("validate_args", "QuadOverLin", function(object) {
   callNextMethod()
 })
 ```
-The input `object` is a `QuadOverLin` atom. We access its arguments (which are `Expression` objects) via the `args` slot. Given our initialization, `object@args[[1]]` contains the expression for $x$, and `object@args[[2]]` the one for $y$. We call `is_scalar` on the latter to check if $y$ is indeed scalar.
+The input `object` is a `QuadOverLin` atom. We access its arguments (which are `Expression` objects) via its `args` slot. Given our initialization, `object@args[[1]]` contains the expression for $x$ and `object@args[[2]]` the one for $y$. We invoke `is_scalar`, a method in the `Expression` class, on the latter to check if $y$ is indeed scalar. If this check passes, then a call is made up the stack to `validate_args` in its superclass, `Atom`.
 
-Notice that we did not check if $y > 0$ during validation. This is because we generally do not know the value of an argument during the construction of a quadratic-over-linear expression - $y$ may contain a `Variable` that we are solving for in our problem, and we cannot define the problem if validation fails. 
+Notice that we did not check if $y > 0$ during validation. This is because we generally do not know the value of an argument during the construction of a quadratic-over-linear expression - $y$ may contain a `Variable` that we are solving for in our problem, and we cannot define the problem if validation fails. It is the user's responsibility to include domain constraints when constructing a `Problem`.
 
-How then do we ensure $(x,y) \in \mathbf{dom}\;f$? By defining a method that returns a list of `Constraint`s, which delineate our atom's domain.
+To facilitate this, for each atom, we define a method that returns a list of `Constraint` objects delineating that atom's domain. For the quadratic-over-linear atom, we need only constrain its second argument $y$ to be positive. Strict inequalities are not supported in `CVXR`, so we impose a weak inequality $y \geq 0$ as seen below.
 ```{r, eval=FALSE}
 setMethod(".domain", "QuadOverLin", function(object) { list(object@args[[2]] >= 0) })
 ```
-TODO: This method is automatically called to enforce the constraint in a problem? Use of weak inequality.
 
-Both validation and domain methods may be dropped if an atom's arguments span the reals. However, the evaluation method is always required. It takes as input a `QuadOverLin` object and a list `values` containing the numeric values of $x$ and $y$, given in the same order as `atom_args`. TODO: It then computes...
+Both validation and domain methods may be dropped if an atom's arguments span the reals. However, the `to_numeric` method is always required. It takes as input an atom and a list `values` containing the numeric values of the arguments (given in the same order as `object@args`), then evaluates the atom at these values. For our `QuadOverLin` atom, this method is simply
 ```{r, eval=FALSE}
 setMethod("to_numeric", "QuadOverLin", function(object, values) { sum(values[[1]]^2) / values[[2]] })
 ```
-TODO: Reminder that values are numeric, in contrast to args.
+Note the difference between `object@args` and `values`. The former is a list of `Expression`s, which represent a composition of constants, variables, and other nested atoms. The latter is a list of R objects such as `numeric` and `matrix`, denoting the values of the corresponding expressions.
 
-### Gradient
-If an atom is differentiable, we also provide a method for computing its gradient. TODO: This is because... The gradient of the quadratic-over-linear function is
+### Dimension, Sign, and Curvature
+For DCP analysis to work, we must explicitly define each atom's dimension, sign, and curvature. It is easy to see that $f$ is scalar-valued, nonnegative, and convex over its domain. These properties are encoded in
+```{r, eval=FALSE}
+setMethod("dim_from_args", "QuadOverLin", function(object) { c() })
+setMethod("sign_from_args",  "QuadOverLin", function(object) { c(TRUE, FALSE) })
+setMethod("is_atom_convex", "QuadOverLin", function(object) { TRUE })
+setMethod("is_atom_concave", "QuadOverLin", function(object) { FALSE })
+```
+Here, the `sign_from_args` function returns a vector of two logical values - the first indicates if the atom's value is positive, and the second if it is negative. To enable composition under the DCP rules, we must also define whether the atom is weakly increasing or decreasing in each of its arguments. By taking derivatives, we see that $f$ is weakly decreasing in $y$, weakly increasing in $x$ on $\mathbf{R}_+^n$, and weakly decreasing in $x$ on $\mathbf{R}_-^n$. These properties are spelled out in the following methods.
+```{r, eval=FALSE}
+setMethod("is_incr", "QuadOverLin", function(object, idx) { (idx == 1) && is_nonneg(object@args[[idx]]) })
+setMethod("is_decr", "QuadOverLin", function(object, idx) { ((idx == 1) && is_nonpos(object@args[[idx]])) || (idx == 2) })
+```
+The input `idx` is the index of the argument of interest. Given our initialization sceheme, `idx = 1` corresponds to $x$ and `idx = 2` to $y$. We call the `Expression` class method `is_nonneg` (resp. `is_nonpos`) to determine if an argument is nonnegative (resp. nonpositive) according to the DCP composition rules. The user might be tempted to type `object@args[[1]] >= 0`, but this is **incorrect** because it returns a `Constraint` rather than a logical value.
+
+### Additional Characteristics
+The methods we have just described are the bare minimum required to define an atom. Many additional methods may be implemented, which handle complex numbers, support new solver classes, or provide further functional characterization. For instance, we furnish a method that computes the gradient of the quadratic-over-linear atom,
 $$
-  \nabla_x f(x,y) = \frac{2x}{y}, \quad \nabla_y f(x,y) = -\frac{\|x\|_2^2}{y^2}
+  \nabla_x f(x,y) = \frac{2x}{y}, \quad \nabla_y f(x,y) = -\frac{\|x\|_2^2}{y^2},
 $$
-for $(x,y) \in \mathbf{dom}\;f$. We encode it in
+at a point $(x,y)$. This method calculates the vectors $\nabla_x f(x,y)$ and $\nabla_y f(x,y))$, wraps each in a sparse `Matrix`, and returns them in a list ordered exactly like in the input values. If $(x,y) \notin \mathbf{dom}\;f$, all gradients are set to `NA`.
 ```{r, eval=FALSE}
 setMethod(".grad", "QuadOverLin", function(object, values) {
   X <- values[[1]]
@@ -68,25 +83,15 @@ setMethod(".grad", "QuadOverLin", function(object, values) {
   }
 })
 ```
-where `values` is a list with the numeric values of our inputs $x$ and $y$. For each argument, we compute the gradient vector using standard R operations, wrapping the result in a sparse `Matrix` for memory efficiency. Then, we return a list of the gradients ordered in the same way as the input, i.e., $(\nabla_x f(x,y), \nabla_y f(x,y))$. Note that the gradient is `NA` outside $\mathbf{dom}\;f$.
 
-### Dimension, Sign, and Curvature
-For DCP analysis to work, we must explicitly define each atom's dimension, sign, and curvature. It is easy to see that $f$ is scalar-valued, nonnegative, and convex over its domain. These properties are encoded in
+`CVXR` supports a range of quadratic programming (QP) solvers. To use them, it must first verify that an expression is quadratic. We can easily see that $f(x,y)$ is quadratic if its first argument is an affine expression and its second argument is constant. Therefore, we define the method
 ```{r, eval=FALSE}
-setMethod("dim_from_args", "QuadOverLin", function(object) { c() })
-setMethod("sign_from_args",  "QuadOverLin", function(object) { c(TRUE, FALSE) })
-setMethod("is_atom_convex", "QuadOverLin", function(object) { TRUE })
-setMethod("is_atom_concave", "QuadOverLin", function(object) { FALSE })
+setMethod("is_quadratic", "QuadOverLin", function(object) { is_affine(object@args[[1]]) && is_constant(object@args[[2]]) })
 ```
-Here, the `sign_from_args` function returns a vector of two logical values - the first indicates if the atom's value is positive, and the second if it is negative. To enable composition under the DCP rules, we must also define whether the atom is weakly increasing or decreasing in each of its arguments. From its gradient, we see that $f$ is weakly decreasing in $y$, weakly increasing in $x$ on $\mathbf{R}_+^n$, and weakly decreasing in $x$ on $\mathbf{R}_-^n$. These properties are spelled out in the following methods.
+where `is_affine` and `is_constant` are given in the `Expression` class. A similar method is implemented for quadratic of piecewise affine functions:
 ```{r, eval=FALSE}
-setMethod("is_incr", "QuadOverLin", function(object, idx) { (idx == 1) && is_nonneg(object@args[[idx]]) })
-setMethod("is_decr", "QuadOverLin", function(object, idx) { ((idx == 1) && is_nonpos(object@args[[idx]])) || (idx == 2) })
+setMethod("is_qpwa", "QuadOverLin", function(object) { is_pwl(object@args[[1]]) && is_constant(object@args[[2]]) })
 ```
-The input `idx` is the index of the argument of interest. Given our `QuadOverLin` initialization, `idx = 1` corresponds to $x$ and `idx = 2` to $y$. Both of these arguments are stored in the list `object@args` as `Expression` objects, which may encapsulate further constants, variables, and atoms. Consequently, we must call `is_nonneg` (resp. `is_nonpos`) to determine if an argument is nonnegative (resp. nonpositive) according to the DCP composition rules. Note that the inequality `object@args[[1]] >= 0` is **incorrect**, because it returns a `Constraint` rather than the desired logical value. 
-
-### Additional Characteristics
-TODO: is_quadratic and is_qpwa.
 
 ## Canonicalization
 Once `CVXR` verifies a problem is DCP, it then converts that problem into a solver-compatible form. This *canonicalization* process is carried out through a series of calls to individual atom canonicalizers, defined in the reductions framework. To implement an atom, one must explicitly derive its canonicalizer for a particular class of problems (e.g., conic programs), which is supported by the desired solver. We show an approach below that uses its graph implementation.
