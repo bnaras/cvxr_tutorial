@@ -25,7 +25,7 @@ For convenience, we also provide a constructor
 ```{r, eval=FALSE}
 quad_over_lin <- function(x, y) { new("QuadOverLin", x = x, y = y) }
 ```
-The `QuadOverLin` class takes as input two arguments, `x` and `y`, which must be R numeric constants (`numeric`, `matrix`, etc) or `Expression` objects. These input types are encapsulated in the "ConstaValORExpr" class union. Since `Expression`s themselves may contain constants, variables, and other atoms, this allows us to use the quadratic-over-linear function in nested compositions. TODO: `QuadOverLin` is an atom and thus inherits from the `Atom` superclass... what slots/methods?
+The `QuadOverLin` class inherits from the `Atom` superclass. It takes as input two arguments, `x` and `y`, which must be R numeric constants (`numeric`, `matrix`, etc) or `Expression` objects. These input types are encapsulated in the "ConstaValORExpr" class union. Since `Expression`s themselves may contain constants, variables, and other atoms, this allows us to use the quadratic-over-linear function in nested compositions.
 
 We must pass our arguments to the `Atom` initializer for processing and validation. To do this, we override the default `QuadOverLin` initialization with
 ```{r, eval=FALSE}
@@ -35,7 +35,7 @@ setMethod("initialize", "QuadOverLin", function(.Object, ..., x, y) {
   callNextMethod(.Object, ..., atom_args = list(.Object@x, .Object@y))
 })
 ```
-The first two lines save `x` and `y` to their respective slots, while the third calls the superclass initializer with `atom_args` equal to the list of arguments.
+The first two lines save `x` and `y` to their respective slots, while the third calls the superclass's `initialize` with `atom_args` equal to the list of arguments.
 ```{r, eval=FALSE}
 setMethod("initialize", "Atom", function(.Object, ..., atom_args = list(), .dim = NULL) {
   .Object@args <- lapply(atom_args, as.Constant)
@@ -60,11 +60,11 @@ setMethod("validate_args", "QuadOverLin", function(object) {
   callNextMethod()
 })
 ```
-The input `object` is a `QuadOverLin` atom. We access its arguments via its inherited `args` slot. Given our initialization, `object@args[[1]]` contains the argument for $x$ and `object@args[[2]]` the one for $y$. We invoke `is_scalar`, a method in the `Expression` class, on the latter to check if $y$ is indeed scalar. If this check passes, then a call is made up the stack to `validate_args` in its `Atom` superclass.
+The input `object` is a `QuadOverLin` atom. We access its arguments via its inherited `args` slot. Given our initialization, `object@args[[1]]` contains the argument for $x$ and `object@args[[2]]` the one for $y$. We invoke `is_scalar`, a method in the `Expression` class, on the latter to check if $y$ is indeed scalar. If this check passes, then a call is made up the stack to `validate_args` in `Atom`.
 
-Notice that we did not check if $y > 0$ during validation. This is because we generally do not know the value of an argument during the construction of a quadratic-over-linear expression - $y$ may contain a `Variable` that we are solving for in our problem, and we cannot define the problem if validation fails. It is the user's responsibility to include domain constraints when constructing a `Problem`.
+Notice that we did not check if $y > 0$ during validation. This is because we generally do not know the value of an argument during the construction of a quadratic-over-linear expression - the $y$ argument may contain a variable that we are solving for in our problem, and we cannot define the problem if validation fails. It is the user's responsibility to include domain constraints when constructing a `Problem`.
 
-To facilitate this, for each atom, we define a method that returns a list of `Constraint` objects delineating that atom's domain. For the quadratic-over-linear atom, we need only constrain its second argument $y$ to be positive. Strict inequalities are not supported in `CVXR`, so we impose a weak inequality $y \geq 0$ as seen below.
+To facilitate this, we define a method for each atom that returns a list of `Constraint` objects delineating the atom's domain. For the quadratic-over-linear atom, we need only constrain its second argument to be positive. Strict inequalities are not supported in `CVXR`, so we impose a weak inequality $y \geq 0$ as seen below.
 ```{r, eval=FALSE}
 setMethod(".domain", "QuadOverLin", function(object) { list(object@args[[2]] >= 0) })
 ```
@@ -73,7 +73,7 @@ Both validation and domain methods may be dropped if an atom's arguments span th
 ```{r, eval=FALSE}
 setMethod("to_numeric", "QuadOverLin", function(object, values) { sum(values[[1]]^2) / values[[2]] })
 ```
-Note the difference between `object@args` and `values`. The former is a list of `Expression`s, which represent a composition of constants, variables, and other nested atoms. The latter is a list of R objects such as `numeric` and `matrix`, denoting the values of the corresponding expressions.
+Note the difference between `object@args` and `values`. The former is a list of `Expression`s, which represent a composition of constants, variables, and atoms. The latter is a list of R numeric constants like `matrix`, denoting the values of the corresponding expressions.
 
 ### Dimension, Sign, and Curvature
 For DCP analysis to work, we must explicitly define each atom's dimension, sign, and curvature. It is easy to see that $f$ is scalar-valued, nonnegative, and convex over its domain. These properties are encoded in
@@ -168,14 +168,25 @@ Dcp2Cone.quad_over_lin_canon <- function(expr, args) {
 It takes as input a `QuadOverLin` expression `expr` and a list of arguments `args`, which specify the input values $(x,y)$. The first two lines of the function extract $x$ and $y$ from `args`, and the third line constructs the `Variable` $t \in \mathbf{R}$. The fourth line forms the constraint $\left(\begin{pmatrix} y-t \\ 2x \end{pmatrix}, y+t\right) \in \mathcal{K}$ with a call to the constructor `SOC`. If $x \in \mathbf{R}^n$, then `SOC(t,x)` enforces $\|x\|_2 \leq t$. Finally, the canonicalizer returns a list containing $t$, the epigraph variable, and a list of constraints from the graph implementation - in this case, the single second-order cone constraint.
 
 ## Putting It All Together
-TODO: Ready to see how CVXR uses atom to analyze, reduce, and solve problem. Suppose we are given $A \in \mathbf{R}^{m \times n}$ and $b \in \mathbf{R}^m$, and would like to solve
+With this machinery in place, we are ready to use the quadratic-over-linear atom in a problem. Suppose we are given $A \in \mathbf{R}^{m \times n}$ and $b \in \mathbf{R}^m$, and would like to solve
 $$
   \begin{array}{ll}
     \mbox{minimize} & f(x,y) \\
     \mbox{subject to} & Ax = b
   \end{array}
 $$
-with respect to $x \in \mathbf{R}^n$ and $y \in \mathbf{R}_{++}$. Substituting in the graph implementation of $f$, our problem can be rewritten as
+with respect to $x \in \mathbf{R}^n$ and $y \in \mathbf{R}_{++}$. In `CVXR, we would write
+```{r, eval=FALSE}
+x <- Variable(n)
+y <- Variable()
+obj <- quad_over_lin(x,y)
+constr <- c(domain(obj), A*x == b)
+prob <- Problem(Minimize(obj), constr)
+solve(prob)
+```
+Once `solve` is invoked, `CVXR` checks if the problem is DCP with calls to `is_atom_convex`, `is_incr`, and `is_decr` for every atom, applying the DCP composition rules down the expression tree. It then constructs a chain of *reductions*, which reduces the problem as modeled to a solver-compatible form. One of these reductions is a transformation into a cone program.
+
+Substituting in the graph implementation of $f$, our original problem can be rewritten as
 $$
   \begin{array}{ll}
     \mbox{minimize} & t \\
@@ -189,6 +200,4 @@ $$
     \mbox{subject to} & Ax = b, \quad y \geq 0, \quad \left(\begin{pmatrix} y-t \\ 2x \end{pmatrix}, y+t\right) \in \mathcal{K}.
   \end{array}
 $$
-This SOCP canonicalization may then be passed into a cone solver to obtain the optimal $t^* = f(x^*,y^*)$.
-
-TODO: How does CVXR automatically canonicalize an atom?
+In `CVXR`, this SOCP canonicalization is performed automatically via a call to `DCP2Cone.quad_over_lin_canon`. Then, with a final reduction, the relevant matrices are formed and passed to the cone solver. Once the solver returns $(x^*,y^*,t^*)$, this chain of reductions is inverted to obtain the optimal $t^* = f(x^*,y^*)$ for the original problem.
