@@ -7,7 +7,7 @@
 - Exercise on extracting fitted values from `CVXR` logistic fit using
   lexically scoped `CVXR` facilities.
 
-## Logistic Regression Model
+## Logistic Regression Problem
 
 In logistic regression [@james2013], the response $y_i$ is
 binary: 0 or 1. (In a classification setting, the values of the

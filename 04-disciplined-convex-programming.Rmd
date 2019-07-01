@@ -18,7 +18,7 @@
 > ---Stephen Boyd, on Gauss' letter to Schumacher, April 8, 2019
 
 
-## Basic Examples of Convex Functions
+## Basic Convex Functions
 
 The following are some basic convex functions.
 

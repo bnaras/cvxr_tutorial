@@ -16,7 +16,7 @@ specific language and verifies the convexity of the problem before
 dispatching it to a solver. Therefore, it is generally slower than
 tailor-made solutions for a given problem.
 
-## Example Problem
+## Global Warming Example
 
 To understand the speed issues, let us consider the global warming
 data from the [Carbon Dioxide Information Analysis Center
@@ -55,7 +55,7 @@ computation time can quickly become limiting.
 Below, we show how one can get at the problem data and directly call a
 solver to get faster results.
 
-## Profile the code 
+## Profiling the Code 
 
 Profiling a single fit to the model is useful to figure out where most
 of the time is spent.
@@ -123,7 +123,7 @@ solver results for us. (See `?unpack_results` for further examples.)
 direct_soln <- unpack_results(prob, "ECOS", solver_output)
 ```
 
-## Profile the Direct Call
+## Profiling the Direct Call
 
 We can profile this direct call now.
 

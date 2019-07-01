@@ -37,7 +37,7 @@ required_packages  <- c("tidyr",
 install.packages(required_packages)
 ```
 
-## Solver Prerequisties 
+## Solver Prerequisites 
 
 `CVXR` comes with open source solvers, and most of the tutorial will
 use these _built-in_ open source solvers. However, we will discuss use

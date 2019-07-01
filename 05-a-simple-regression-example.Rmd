@@ -65,7 +65,7 @@ print_matrix(m, row_names = paste0("$\\beta_{", 1:p, "}$"))
 These are the least-squares estimates and can be seen to be reasonably
 close to the original $\beta$ values -4 through 5.
 
-## The `CVXR` formulation
+## The `CVXR` Formulation
 
 The `CVXR` formulation states the above as an optimization problem:
 $$

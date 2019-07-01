@@ -45,7 +45,7 @@ authors. Nevertheless, the pliable lasso is an excellent example to
 highlight the prototyping capabilities of `CVXR` for research. Along
 the way, we also introduce some new atoms that are needed in this example. 
 
-## The pliable lasso in `CVXR`
+## Example
 
 We will use a simulated example from Section 3 of @tibsjhf:2017 with
 $n=100$, $p=50$ and $K=4$. The response is generated as
@@ -104,7 +104,7 @@ plasso_fit <- function(y, X, Z, lambda, alpha = 0.5, intercept = TRUE,
 # pliable <- pliable_lasso(y, X, Z, alpha = 0.5, lambda = lambda)
 ```
 
-### Defining the parameters
+### Parameters
 
 The parameters are easy: we just have $\beta$, $\theta_0$ and
 $\Theta$. 
@@ -116,7 +116,7 @@ theta <- Variable(p, K); theta_transpose <- t(theta)
 ```
 Note that we also define the transpose of $\Theta$ for use later.
 
-### The penalty terms
+### Penalty Terms
 
 There are three of them. The first term in the parentheses,
 $\sum_{j=1}^p\biggl(||(\beta_j,\theta_j)||_2\biggr)$, involves components of
@@ -138,7 +138,7 @@ penalty_term2 <- sum(cvxr_norm(theta, 2, axis = 1))
 penalty_term3 <- sum(cvxr_norm(theta, 1))
 ```
 
-### The fitted value
+### Fitted Value
 
 Equation 1 above for $\hat{y}$ contains a sum:
 $\sum_{j=1}^p(X_j\beta_j + W_j\theta_j)$. This requires multiplication
@@ -153,7 +153,7 @@ XZ_term <- Reduce(f = '+', x = xz_theta)
 y_hat <- beta0 + X %*% beta + Z %*% theta0 + XZ_term
 ```
 
-### The objective
+### Objective Function
 
 Building the objective is now straightforward.
 
@@ -163,7 +163,7 @@ objective <- sum_squares(y - y_hat) / (2 * N) +
     alpha * lambda * penalty_term3
 ```
 
-### The problem and its solution
+### Solving the Problem
 
 ```{r Define_and_Solve_Problem, eval = FALSE}
 prob <- Problem(Minimize(objective))
@@ -171,7 +171,7 @@ result <- solve(prob, verbose = verbose)
 beta_hat <- result$getValue(beta)
 ```
 
-### The return values
+### Return Values
 
 We create a list with values of interest to us. However, since
 sparsity is desired, we set values below `ZERO_THRESHOLD` to
@@ -192,7 +192,7 @@ list(beta0_hat = if (intercept) result$getValue(beta0)[1] else 0.0,
      criterion = result$value)
 ```
 
-## The full function
+## Full Function
 
 We now put it all together.
 
@@ -216,7 +216,7 @@ plasso_fit <- function(y, X, Z, lambda, alpha = 0.5, intercept = TRUE,
 }
 ```
 
-## The Results
+## Results
 
 Using $\lambda = 0.6$, we fit the pliable lasso without an intercept.
 
@@ -261,7 +261,7 @@ knitr::kable(est.table, format = "html", digits = 3) %>%
     kable_styling("striped")
 ```
                 
-## Final comments
+## Final Comments
 
 Typically, one would run the fits for various values of $\lambda$, 
 choose one based on cross-validation, and assess the prediction against

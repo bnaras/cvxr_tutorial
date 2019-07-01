@@ -107,7 +107,7 @@ your license as necessary.
 After activation, you can check that `CVXR::installed_solvers()` lists
 `GUROBI`. Otherwise, rinse and repeat until success.
 
-### Example session
+### Example Session
 
 ```{r}
 installed_solvers()

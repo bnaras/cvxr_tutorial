@@ -1,4 +1,4 @@
-# Convex Optimization Problem Types
+# Types of Convex Optimization Problems
 
 Recall that a convex optimization problem is of the form
 \[

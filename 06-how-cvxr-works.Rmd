@@ -1,4 +1,4 @@
-# How `CVXR` works
+# How `CVXR` Works
 
 Let us consider the nonnegative least squares regression example once
 again.
@@ -26,7 +26,7 @@ argument of an optimization problem.
 There are also S4 classes representing certain special constructs such
 as semidefinite matrices as we shall see later.
 
-## Objectives, Constraints and Problems
+## Objectives, Constraints, and Problems
 
 The objective function should yield a scalar value. `CVXR` provides
 the `Minimize` and `Maximize` functions that take an `Expression`
@@ -61,7 +61,7 @@ A problem takes an objective and an optional constraint. It serves as
 the complete representation of the problem along with associated
 data, like the `Y` and `X` in the code snippet above.
 
-## Solving the problem
+## Solving the Problem
 
 Calling the `solve` function on a problem sets several things in motion.
 

@@ -1,9 +1,9 @@
 # The Structure of Atoms
 
-CVXR comes with a rich library of atoms that represent common
+`CVXR` comes with a rich library of atoms that represent common
 functions in convex analysis. When combined using the DCP rules, these
 atoms are sufficient to model and solve most convex optimization
-problems, and we encourage most users to work with the CVXR
+problems, and we encourage most users to work with the `CVXR`
 library. However, it is possible for a sophisticated user to add a new
 atom. To do this requires an understanding of mathematical programming
 and the S4 class system. In this guide, we go over the basics of
@@ -19,9 +19,9 @@ $$
   f(x,y) := \frac{\|x\|_2^2}{y} \quad \mbox{with} \quad \mathbf{dom}\;f = \{(x,y) \in \mathbf{R}^n \times \mathbf{R}: y > 0\}.
 $$
 
-In CVXR, atoms like this (along with variables, constraints, etc) are
+In `CVXR`, atoms like this (along with variables, constraints, etc) are
 represented by S4 class objects. S4 allows us to overload standard
-mathematical operations so CVXR combines seamlessly with native R
+mathematical operations so `CVXR` combines seamlessly with native R
 script and other packages. The class for the QoL function is
 `QuadOverLin`, defined as
 
@@ -35,7 +35,7 @@ quad_over_lin <- function(x, y) { new("QuadOverLin", x = x, y = y) }
 
 The `QuadOverLin` class inherits from the `Atom` superclass. It takes
 as input two arguments, `x` and `y`, which must be R numeric constants
-or CVXR `Expression` objects. These input types are encapsulated in
+or `CVXR` `Expression` objects. These input types are encapsulated in
 the "ConstaValORExpr" class union. Since `Expression`s themselves may
 contain other atoms, this allows us to use the QoL function in nested
 compositions.

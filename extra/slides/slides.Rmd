@@ -5,7 +5,10 @@ date: "`r Sys.Date()`"
 bibliography: ["packages.bib", "cvxr.bib"]
 biblio-style: "apalike"
 link-citations: true
-output: slidy_presentation
+output: 
+  bookdown::html_book:
+    includes:
+      in_header: header.html
 ---
 
 # Introduction
@@ -60,6 +63,8 @@ Convex optimization problems have many nice properties:
 
 - Since the objective is also convex, if we find a local optimal
   solution, it is automatically the global optimal solution.
+
+
 
 There are a host of applications of this problem in many fields,
 including machine learning and statistics.
@@ -132,7 +137,7 @@ required_packages  <- c("tidyr",
 install.packages(required_packages)
 ```
 
-## Solver Prerequisties 
+## Solver Prerequisites 
 
 `CVXR` comes with open source solvers, and most of the tutorial will
 use these _built-in_ open source solvers. However, we will discuss use
@@ -180,7 +185,7 @@ examples](http://www.gurobi.com/documentation/8.1/examples/r_examples.html).
 
 <!--chapter:end:01-getting-started.Rmd-->
 
-# Convex Optimization Problem Types
+# Types of Convex Optimization Problems
 
 Recall that a convex optimization problem is of the form
 \[
@@ -312,7 +317,7 @@ Software](https://www.jstatsoft.org) any day now.
 > ---Stephen Boyd, on Gauss' letter to Schumacher, April 8, 2019
 
 
-## Basic Examples of Convex Functions
+## Basic Convex Functions
 
 The following are some basic convex functions.
 
@@ -419,7 +424,7 @@ print_matrix(m, row_names = paste0("$\\beta_{", 1:p, "}$"))
 These are the least-squares estimates and can be seen to be reasonably
 close to the original $\beta$ values -4 through 5.
 
-## The `CVXR` formulation
+## The `CVXR` Formulation
 
 The `CVXR` formulation states the above as an optimization problem:
 $$
@@ -711,7 +716,7 @@ variability.
 
 <!--chapter:end:05-a-simple-regression-example.Rmd-->
 
-# How `CVXR` works
+# How `CVXR` Works
 
 Let us consider the nonnegative least squares regression example once
 again.
@@ -739,7 +744,7 @@ argument of an optimization problem.
 There are also S4 classes representing certain special constructs such
 as semidefinite matrices as we shall see later.
 
-## Objectives, Constraints and Problems
+## Objectives, Constraints, and Problems
 
 The objective function should yield a scalar value. `CVXR` provides
 the `Minimize` and `Maximize` functions that take an `Expression`
@@ -774,7 +779,7 @@ A problem takes an objective and an optional constraint. It serves as
 the complete representation of the problem along with associated
 data, like the `Y` and `X` in the code snippet above.
 
-## Solving the problem
+## Solving the Problem
 
 Calling the `solve` function on a problem sets several things in motion.
 
@@ -832,7 +837,7 @@ consulted to set these options.
 - Exercise on extracting fitted values from `CVXR` logistic fit using
   lexically scoped `CVXR` facilities.
 
-## Logistic Regression Model
+## Logistic Regression Problem
 
 In logistic regression [@james2013], the response $y_i$ is
 binary: 0 or 1. (In a classification setting, the values of the
@@ -1556,7 +1561,7 @@ specific language and verifies the convexity of the problem before
 dispatching it to a solver. Therefore, it is generally slower than
 tailor-made solutions for a given problem.
 
-## Example Problem
+## Global Warming Example
 
 To understand the speed issues, let us consider the global warming
 data from the [Carbon Dioxide Information Analysis Center
@@ -1595,7 +1600,7 @@ computation time can quickly become limiting.
 Below, we show how one can get at the problem data and directly call a
 solver to get faster results.
 
-## Profile the code 
+## Profiling the Code 
 
 Profiling a single fit to the model is useful to figure out where most
 of the time is spent.
@@ -1663,7 +1668,7 @@ solver results for us. (See `?unpack_results` for further examples.)
 direct_soln <- unpack_results(prob, "ECOS", solver_output)
 ```
 
-## Profile the Direct Call
+## Profiling the Direct Call
 
 We can profile this direct call now.
 
@@ -1747,7 +1752,7 @@ authors. Nevertheless, the pliable lasso is an excellent example to
 highlight the prototyping capabilities of `CVXR` for research. Along
 the way, we also introduce some new atoms that are needed in this example. 
 
-## The pliable lasso in `CVXR`
+## Example
 
 We will use a simulated example from Section 3 of @tibsjhf:2017 with
 $n=100$, $p=50$ and $K=4$. The response is generated as
@@ -1806,7 +1811,7 @@ plasso_fit <- function(y, X, Z, lambda, alpha = 0.5, intercept = TRUE,
 # pliable <- pliable_lasso(y, X, Z, alpha = 0.5, lambda = lambda)
 ```
 
-### Defining the parameters
+### Parameters
 
 The parameters are easy: we just have $\beta$, $\theta_0$ and
 $\Theta$. 
@@ -1818,7 +1823,7 @@ theta <- Variable(p, K); theta_transpose <- t(theta)
 ```
 Note that we also define the transpose of $\Theta$ for use later.
 
-### The penalty terms
+### Penalty Terms
 
 There are three of them. The first term in the parentheses,
 $\sum_{j=1}^p\biggl(||(\beta_j,\theta_j)||_2\biggr)$, involves components of
@@ -1840,7 +1845,7 @@ penalty_term2 <- sum(cvxr_norm(theta, 2, axis = 1))
 penalty_term3 <- sum(cvxr_norm(theta, 1))
 ```
 
-### The fitted value
+### Fitted Value
 
 Equation 1 above for $\hat{y}$ contains a sum:
 $\sum_{j=1}^p(X_j\beta_j + W_j\theta_j)$. This requires multiplication
@@ -1855,7 +1860,7 @@ XZ_term <- Reduce(f = '+', x = xz_theta)
 y_hat <- beta0 + X %*% beta + Z %*% theta0 + XZ_term
 ```
 
-### The objective
+### Objective Function
 
 Building the objective is now straightforward.
 
@@ -1865,7 +1870,7 @@ objective <- sum_squares(y - y_hat) / (2 * N) +
     alpha * lambda * penalty_term3
 ```
 
-### The problem and its solution
+### Solving the Problem
 
 ```{r Define_and_Solve_Problem, eval = FALSE}
 prob <- Problem(Minimize(objective))
@@ -1873,7 +1878,7 @@ result <- solve(prob, verbose = verbose)
 beta_hat <- result$getValue(beta)
 ```
 
-### The return values
+### Return Values
 
 We create a list with values of interest to us. However, since
 sparsity is desired, we set values below `ZERO_THRESHOLD` to
@@ -1894,7 +1899,7 @@ list(beta0_hat = if (intercept) result$getValue(beta0)[1] else 0.0,
      criterion = result$value)
 ```
 
-## The full function
+## Full Function
 
 We now put it all together.
 
@@ -1918,7 +1923,7 @@ plasso_fit <- function(y, X, Z, lambda, alpha = 0.5, intercept = TRUE,
 }
 ```
 
-## The Results
+## Results
 
 Using $\lambda = 0.6$, we fit the pliable lasso without an intercept.
 
@@ -1963,7 +1968,7 @@ knitr::kable(est.table, format = "html", digits = 3) %>%
     kable_styling("striped")
 ```
                 
-## Final comments
+## Final Comments
 
 Typically, one would run the fits for various values of $\lambda$, 
 choose one based on cross-validation, and assess the prediction against
@@ -2677,7 +2682,7 @@ your license as necessary.
 After activation, you can check that `CVXR::installed_solvers()` lists
 `GUROBI`. Otherwise, rinse and repeat until success.
 
-### Example session
+### Example Session
 
 ```{r}
 installed_solvers()
@@ -2743,10 +2748,10 @@ does not completely solve the problem and in fact throws an error.
 
 # The Structure of Atoms
 
-CVXR comes with a rich library of atoms that represent common
+`CVXR` comes with a rich library of atoms that represent common
 functions in convex analysis. When combined using the DCP rules, these
 atoms are sufficient to model and solve most convex optimization
-problems, and we encourage most users to work with the CVXR
+problems, and we encourage most users to work with the `CVXR`
 library. However, it is possible for a sophisticated user to add a new
 atom. To do this requires an understanding of mathematical programming
 and the S4 class system. In this guide, we go over the basics of
@@ -2762,9 +2767,9 @@ $$
   f(x,y) := \frac{\|x\|_2^2}{y} \quad \mbox{with} \quad \mathbf{dom}\;f = \{(x,y) \in \mathbf{R}^n \times \mathbf{R}: y > 0\}.
 $$
 
-In CVXR, atoms like this (along with variables, constraints, etc) are
+In `CVXR`, atoms like this (along with variables, constraints, etc) are
 represented by S4 class objects. S4 allows us to overload standard
-mathematical operations so CVXR combines seamlessly with native R
+mathematical operations so `CVXR` combines seamlessly with native R
 script and other packages. The class for the QoL function is
 `QuadOverLin`, defined as
 
@@ -2778,7 +2783,7 @@ quad_over_lin <- function(x, y) { new("QuadOverLin", x = x, y = y) }
 
 The `QuadOverLin` class inherits from the `Atom` superclass. It takes
 as input two arguments, `x` and `y`, which must be R numeric constants
-or CVXR `Expression` objects. These input types are encapsulated in
+or `CVXR` `Expression` objects. These input types are encapsulated in
 the "ConstaValORExpr" class union. Since `Expression`s themselves may
 contain other atoms, this allows us to use the QoL function in nested
 compositions.
@@ -3107,14 +3112,20 @@ objective value $f(x^*,y^*)$ for the original problem.
 
 # Future Enhancements
 
-- Version 1.0
-  * Reduction solvers
-  * Disciplined geometric programming
-  * Possibility of using ROI plugin infrastructure?
+## Version 1.0
+- Modular system of reductions [@reductions:2018]
+  * New standard forms and solvers
+  * Advanced user inputs, e.g. complex variables
+- Disciplined geometric programming [@DGP]
+- Variable and parameter attributes
+- Transformations: linearize, indicator, partial optimization
 
-- Uniform interface for settings
-  * Setting infrastructure??
-  
+## Internal Changes
+- Uniform interface for solver settings
+- Speed improvements by moving operations to C++
+- Possibly connect to `ROI` library
+
+# References
 
 <!--chapter:end:98-future.Rmd-->
 
