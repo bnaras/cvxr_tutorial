@@ -1,0 +1,165 @@
+# Isotonic Regression
+
+```{r, echo = FALSE, message = FALSE}
+library(isotone)
+```
+
+## Goals
+
+- Formulate the isotonic regression objective using some new `CVXR`
+  atoms
+- Compare with results from `isotone` package
+- Exercise on handling ties, the secondary method of `isotone`, using
+  `CVXR` atoms
+- Exercise on handling ties, the tertiary method of `isotone`, using
+  `CVXR` atoms
+
+
+[Isotonic regression](https://en.wikipedia.org/wiki/Isotonic_regression) is
+regression with monotonicity constraints. There are several packages in R
+to fit isotonic regression models. In this example, we
+consider [`isotone`](https://cran.r-project.org/package=isotone), which
+uses a pooled-adjacent-violators algorithm (PAVA) and active set
+methods to perform the fit.
+
+## Pituitary Data Example
+
+We will use data from the `isotone` package [@isotone] on the size of
+pituitary fissures for 11 subjects between 8 and 14 years of age.
+
+```{r}
+data("pituitary")
+str(pituitary)
+```
+
+Since the size is expected to increase with age, an isotonic fit is
+suggested, so we fit using the `isotone` package.
+
+```{r}
+res_p <- with(pituitary, gpava(age, size))
+```
+
+The `CVXR` formulation expresses this pretty much in the mathematical
+form. We define a variable `x` of size `n`, the number of
+observations. The objective to be minimized is the least-squares error
+(`cvxr_norm`), yet another way of specifying least-squares loss. The
+monotonicity is specified using the `diff` function.
+
+### Exercise
+
+Can you explain why `CVXR` provide functions such as `cvxr_norm` and `p_norm`
+rather than just plain `pnorm`?
+
+#### Solution
+
+In R, `pnorm` is already defined and refers to the density of the normal
+distribution. So we use a new generic `cvxr_norm` or `p_norm` (see
+[`CVXR` functions](https://cvxr.rbind.io/cvxr_functions/) to avoid
+confusion. The function `cvxr_norm` provides some specialized norms for matrices,
+whereas `p_norm` allows one to specify $p$.
+
+```{r}
+x_p <- with(pituitary, {
+      n <- length(size)
+      x <- Variable(n)
+      objective <- Minimize(cvxr_norm(size - x, 2))
+      constraint <- list(diff(x) >= 0)
+      problem <- Problem(objective, constraint)
+      result <- solve(problem)
+      result$getValue(x)
+})
+```
+As the output below shows, the results are very close.
+
+```{r}
+print_matrix(cbind(res_p$x, x_p), col_names = c("isotone", "CVXR"))
+```
+
+## Handling Ties
+
+Package `isotone` provides additional methods for handling tied data
+besides the default `ties = "primary"` method; `ties = "secondary"`
+enforces equality within ties, and `ties = "tertiary"` enforces
+monotonicity on the means. (The latter may cause individual fits to be
+non-monotonic.)
+
+```{r}
+res_s <- with(pituitary, gpava(age, size, ties = "secondary"))
+res_t <- with(pituitary, gpava(age, size, ties = "tertiary"))
+```
+
+### Exercise
+
+Implement the secondary method of ties using `CVXR` and compare the
+results with the `isotone` package.
+
+#### Solution
+
+The secondary method for ties just requires an additional constraint
+to enforce equality within tied values; no other modification is
+necessary. We do this below by figuring out the tied observation
+indices using `base::split` and forcing those `x` values to be equal
+(i.e. `diff` == 0).
+
+```{r}
+x_s <- with(pituitary, {
+    n <- length(size)
+    x <- Variable(n)
+    objective <- Minimize(p_norm(size - x, 2))
+    secondary_constraints <- lapply(base::split(x = seq_len(n),
+                                                f = age),
+                                    function(i) diff(x[i]) == 0)
+    constraint <- c(diff(x) >= 0,
+                    secondary_constraints)
+    problem <- Problem(objective, constraint)
+    solve(problem)$getValue(x)
+})
+```
+
+Here's the comparison table.
+
+```{r, echo = FALSE}
+m <- cbind(res_s$x, x_s)
+print_matrix(m, col_names = c("Isotone (S)", "CVXR (S)"))
+```
+
+### Exercise
+
+Implement the tertiary method for ties using `CVXR` and compare with
+the `isotone` package.
+
+#### Solution
+
+The tertiary method requires computing the block means 
+for use in enforcing monotonicity. We call the
+[`CVXR::vstack`](https://cvxr.rbind.io/cvxr_functions/) function to
+create a single vector of the block means.
+
+Basically, `CVXR::hstack` is the equivalent of `base::cbind` and
+`CVXR::vstack` is the equivalent of `base::rbind`.
+
+```{r}
+x_t <- with(pituitary, {
+    n <- length(size)
+    x <- Variable(n)
+    objective <- Minimize(p_norm(size - x, 2))
+    blocks <- base::split(x = seq_len(n),
+                          f = pituitary$age)
+    block_means <- lapply(blocks, function(i) {
+        v <- numeric(n)
+        v[i] <- 1.0 / length(i)
+        matrix(v, nrow = 1) %*% x
+    })
+    block_mean_vector <- do.call(vstack, block_means)
+    constraint <- list(diff(block_mean_vector) >= 0)
+    problem <- Problem(objective, constraint)
+    solve(problem)$getValue(x)
+})
+```
+
+Here's the comparison table.
+
+```{r, echo = FALSE}
+m <- cbind(res_t$x, x_t)
+print_matrix(m, col_names = c("Isotone (T)", "CVXR (T)"))
+```

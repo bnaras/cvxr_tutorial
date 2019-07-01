@@ -1,0 +1,267 @@
+# Lasso and Elastic Net
+
+```{r, echo = FALSE, message = FALSE}
+library(glmnet)
+```
+
+## Goals
+
+- Formulate lasso and elastic net regression models 
+- Compare with results from `glmnet` package
+- Use loss functions besides squared loss with elastic net penalty
+
+## Regularized Regression
+
+Often in applications, we encounter problems that require
+regularization to prevent overfitting, introduce sparsity, facilitate
+variable selection, or impose prior distributions on parameters. Two
+of the most common regularization functions are the $l_1$-norm and
+squared $l_2$-norm, combined in the elastic net regression model
+(@elasticnet and @glmnet).
+
+\[
+\begin{array}{ll} 
+\underset{\beta}{\mbox{minimize}} & \frac{1}{2m}\|y - X\beta\|_2^2 +
+\lambda(\frac{1-\alpha}{2}\|\beta\|_2^2 + \alpha\|\beta\|_1). 
+\end{array}
+\]
+
+Here $\lambda \geq 0$ is the overall regularization weight and
+$\alpha \in [0,1]$ controls the relative $l_1$ versus squared $l_2$
+penalty. Thus, this model encompasses both ridge ($\alpha = 0$) and
+lasso ($\alpha = 1$) regression.
+
+It is convenient to define a function that calculates just the
+regularization term given the variable and penalty parameters. This
+modular approach will allow us to easily incorporate elastic net
+regularization into other regression models as we will see below.
+
+```{r}
+#' Define the elastic penalty
+#' @param beta the arg min variable
+#' @param lambda the penalization parameter
+#' @param alpha the elastic net parameter, 0 = ridge, 1 = lasso
+elastic_penalty <- function(beta, lambda = 0, alpha = 0) {
+    ridge <- (1 - alpha) / 2 * sum_squares(beta)
+    lasso <- alpha * cvxr_norm(beta, 1)
+    lambda * (lasso + ridge)
+}
+```
+
+We generate some synthetic sparse data for this example.
+
+```{r}
+## Problem data
+set.seed(4321)
+p <- 10
+n <- 500
+DENSITY <- 0.25    # Fraction of non-zero beta
+beta_true <- matrix(rnorm(p), ncol = 1)
+idxs <- sample.int(p, size = floor((1 - DENSITY) * p), replace = FALSE)
+beta_true[idxs] <- 0
+sigma <- 45
+X <- matrix(rnorm(n * p, sd = 5), nrow = n, ncol = p)
+eps <- matrix(rnorm(n, sd = sigma), ncol = 1)
+Y <- X %*% beta_true + eps
+```
+
+We fit the elastic net model for several values of $\lambda$.
+
+```{r}
+TRIALS <- 10
+beta_vals <- matrix(0, nrow = p, ncol = TRIALS)
+lambda_vals <- 10^seq(-2, log10(50), length.out = TRIALS)
+```
+
+```{r}
+beta <- Variable(p)  
+loss <- sum_squares(Y - X %*% beta) / (2 * n)
+## Elastic-net regression LASSO
+alpha <- 1
+beta_vals <- sapply(lambda_vals,
+                    function (lambda) {
+                        obj <- loss + elastic_penalty(beta, lambda, alpha)
+                        prob <- Problem(Minimize(obj))
+                        result <- solve(prob)
+                        result$getValue(beta)
+                    })
+```
+
+We can now get a table of the coefficients.
+
+```{r, echo = FALSE}
+print_matrix(round(beta_vals, 3),
+             row_names = sprintf("$\\beta_{%d}$", seq_len(p)),
+             col_names = sprintf("$\\lambda = %.3f$", lambda_vals))
+```
+
+We plot the coefficients against the regularization. 
+
+```{r}
+plot(0, 0, type = "n", main = "CVXR Regularization Path for Lasso Regression",
+     xlab = "Log Lambda", ylab = "Coefficients",
+     ylim = c(-1, 2), xlim = c(-4, 4))
+matlines(log(lambda_vals), t(beta_vals))
+```
+  
+We then compare with the `glmnet` results.
+
+```{r}
+model_net <- glmnet(X, Y, family = "gaussian", alpha = alpha,
+                    lambda = lambda_vals,
+                    standardize = FALSE,
+                    intercept = FALSE,
+                    thresh = 1e-8)
+## Reverse order to match beta_vals
+coef_net <- as.data.frame(as.matrix(coef(model_net)[-1, seq(TRIALS, 1, by = -1)]))
+```
+
+```{r, echo = FALSE}
+print_matrix(round(coef_net, 3),
+             row_names = sprintf("$\\beta_{%d}$", seq_len(p)),
+             col_names = sprintf("$\\lambda = %.3f$", lambda_vals))
+```
+
+### Exercise
+
+[A Stack Overflow
+Question](https://stats.stackexchange.com/questions/334007/elastic-net-in-glmnet-vs-cvxr)!
+_I'm attempting to match some simple results in R using `glmnet` and
+`CVXR`. I have the following code._
+
+```{r}
+library(glmnet)
+data(QuickStartExample)
+catn <- function(...) cat(..., "\n")
+objective_value <- function(y, x, coefs, lambda, alpha) {
+    n <- nrow(x)
+    ridge <- sum(coefs^2) ; l1 <- sum(abs(coefs))
+    sum((y - (x %*% coefs))^2) / (2 * n) + lambda * ((1 - alpha) / 2 * ridge + alpha * l1)
+}
+alpha  <- 0; lambda  <- 1;
+fit <- glmnet(x, y, intercept=F, standardize=F, lambda=1, alpha=0)
+```
+_which gives me one set of coefficients and the objective function
+value `2.559086` via_
+
+```{r}
+objective_value(y, x, coef(fit)[-1, ], lambda, alpha)
+```
+_but this `CVXR` code _
+```{r}
+beta <- Variable(20)
+elastic_reg <- function(beta, lambda = 0, alpha = 0) {
+   ridge <- (1 - alpha) * sum(beta^2) * .5
+   lasso <- alpha * p_norm(beta, 1)
+   lambda * (lasso + ridge)
+}
+loss <- sum((y - x %*% beta)^2)/(2*length(y))
+obj <- loss + elastic_reg(beta, lambda = 1, 0)
+prob <- Problem(Minimize(obj))
+result <- solve(prob)
+print(result$value)
+```
+_gives a different objective value `2.859259` and a somewhat different set of
+coefficients. Can you help?_
+
+#### Solution
+
+To compare glmnet results to `CVXR` for the Gaussian case, it is
+advisable to standardize the response per the `glmnet` documentation.
+Note also that `glmnet` uses $n$ rather than $n-1$ in the denominator
+for $y$. This will ensure that the $\lambda$ is on the same scale as
+shown below.
+
+```{r}
+catn <- function(...) cat(..., "\n")
+## Standardize the y
+y_s <- local({
+    n <- length(y)
+    m <- mean(y); s <- as.numeric(sqrt(var(y) * (n - 1) / n));
+    result <- (y - m) / s ## scale using 1/n
+    attr(result, "scaled:center") <- m
+    attr(result, "scaled:scale") <- s
+    result
+})
+```
+We can do a comparison on the standardized $y$. First, the `glmnet` answer:
+
+```{r}
+## STANDARDIZED COMPARISON
+fit_s <- glmnet(x, y_s, intercept=F, standardize=F, lambda = lambda, alpha=alpha)
+catn("Glmnet objective (scaled y)",
+     objective_value(y_s, x, coef(fit_s)[-1], lambda, alpha))
+```
+
+Next, the `CVXR` answer:
+
+```{r}
+elastic_reg <- function(beta, lambda = 0, alpha = 0) {
+    ridge <- (1 - alpha) / 2 * sum_squares(beta)
+    lasso <- alpha * p_norm(beta, 1)
+    lambda * (lasso + ridge)
+}
+loss <- sum_squares(y_s - x %*% beta) / ( 2 * nrow(x))
+obj <- loss + elastic_reg(beta, lambda = lambda, alpha)
+prob <- Problem(Minimize(obj))
+beta_est <- solve(prob)$getValue(beta)
+catn("CVXR objective (scaled y):", objective_value(y_s, x, beta_est, lambda, alpha))
+```
+
+To work on the non-standardized scale, we need to match the `lamba`
+values as noted by the `glmnet` authors in Appendix 2 of the package
+vignette [@glmnet].
+
+```{r}
+## NONSTANDARDIZED COMPARISON
+fit <- glmnet(x, y, intercept=F, standardize=F, lambda = lambda, alpha=alpha)
+catn("Glmnet objective (unscaled y)", objective_value(y, x, coef(fit)[-1], lambda, alpha))
+```
+
+```{r}
+obj <- loss + elastic_reg(beta, lambda = lambda / attr(y_s, "scaled:scale"), alpha)
+prob <- Problem(Minimize(obj))
+beta_est <- solve(prob)$getValue(beta)
+catn("CVXR objective (unscaled y)", objective_value(y, x, beta_est, lambda, alpha))
+```
+
+Finally, we can check that the coefficients are close enough.
+
+```{r}
+print_matrix(round(cbind(beta_est, coef(fit)[-1]), 3), 
+             row_names = sprintf("$\\beta_{%d}$", seq_len(20)),
+             col_names = c("CVXR", "GLMNET")) 
+```
+
+### Exercise
+
+Using the data (`X`, `Y`) above, solve an elastic net problem with
+[Huber loss](https://cvxr.rbind.io/cvxr_functions/) using the Huber
+threshold $M = 0.5$.
+
+#### Solution 
+
+Just set the loss as follows.
+
+```{r}
+beta <- Variable(p)  
+loss  <- huber(Y - X %*% beta, M = 1)
+loss <- sum_squares(Y - X %*% beta) / (2 * n)
+## Elastic-net regression LASSO
+alpha <- 1
+beta_vals <- sapply(lambda_vals,
+                    function (lambda) {
+                        obj <- loss + elastic_penalty(beta, lambda, alpha)
+                        prob <- Problem(Minimize(obj))
+                        result <- solve(prob)
+                        result$getValue(beta)
+                    })
+```
+
+The estimates are below and don't change in this example.
+
+```{r, echo = FALSE}
+print_matrix(round(beta_vals, 3),
+             row_names = sprintf("$\\beta_{%d}$", seq_len(p)),
+             col_names = sprintf("$\\lambda = %.3f$", lambda_vals))
+```

@@ -1,0 +1,10 @@
+# Future Enhancements
+
+- Version 1.0
+  * Reduction solvers
+  * Disciplined geometric programming
+  * Possibility of using ROI plugin infrastructure?
+
+- Uniform interface for settings
+  * Setting infrastructure??
+  

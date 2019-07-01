@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 18 The Structure of Atoms | Disciplined Convex Optimization in R</title>
+  <meta name="description" content="Chapter 18 The Structure of Atoms | Disciplined Convex Optimization in R" />
+  <meta name="generator" content="bookdown 0.11 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 18 The Structure of Atoms | Disciplined Convex Optimization in R" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 18 The Structure of Atoms | Disciplined Convex Optimization in R" />
+  
+  
+  
+
+<meta name="author" content="Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd" />
+
+
+<meta name="date" content="2019-06-30" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="using-other-solvers.html">
+<link rel="next" href="future-enhancements.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<script src="libs/htmlwidgets-1.3/htmlwidgets.js"></script>
+<script src="libs/d3-3.5.6/d3.min.js"></script>
+<link href="libs/profvis-0.3.6/profvis.css" rel="stylesheet" />
+<script src="libs/profvis-0.3.6/profvis.js"></script>
+<link href="libs/highlight-6.2.0/textmate.css" rel="stylesheet" />
+<script src="libs/highlight-6.2.0/highlight.js"></script>
+<script src="libs/profvis-binding-0.3.6/profvis.js"></script>
+<script>
+  // Added visibility option for solution (naras@stat)
+  $(document).ready(function () {
+      process_solutions();
+  });
+  function process_solutions() {
+      $("div.section[id^='solution']").each(function(i) {
+	  var soln_wrapper_id = "cvxr_ex_" + i;
+	  var solution_id = $(this).attr('id');
+	  var button = $("<button onclick=\"toggle_solution('" + soln_wrapper_id + "')\">Show/Hide</button>");
+	  var new_div = $("<div id='" + soln_wrapper_id + "' class='solution' style='display: none;'></div>");
+	  var h = $(this).first();
+	  var others = $(this).children().slice(1);
+	  $(others).each(function() {
+	      $(this).appendTo($(new_div));
+	  });
+	  $(button).insertAfter($(h));
+	  $(new_div).insertAfter($(button));
+      })
+  }
+  function toggle_solution(el_id) {
+      $("#" + el_id).toggle();
+  } 
+</script>
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Disciplined Convex Optimization in R</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#convex-problems-in-statistics-machine-learning"><i class="fa fa-check"></i><b>1.1</b> Convex Problems in Statistics, Machine Learning</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#non-convex-problems"><i class="fa fa-check"></i><b>1.2</b> Non-convex Problems</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="getting-started.html"><a href="getting-started.html"><i class="fa fa-check"></i><b>2</b> Getting Started</a><ul>
+<li class="chapter" data-level="2.1" data-path="getting-started.html"><a href="getting-started.html#solver-prerequisties"><i class="fa fa-check"></i><b>2.1</b> Solver Prerequisties</a><ul>
+<li class="chapter" data-level="2.1.1" data-path="getting-started.html"><a href="getting-started.html#mosek"><i class="fa fa-check"></i><b>2.1.1</b> MOSEK</a></li>
+<li class="chapter" data-level="2.1.2" data-path="getting-started.html"><a href="getting-started.html#gurobi"><i class="fa fa-check"></i><b>2.1.2</b> GUROBI</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="convex-optimization-problem-types.html"><a href="convex-optimization-problem-types.html"><i class="fa fa-check"></i><b>3</b> Convex Optimization Problem Types</a><ul>
+<li class="chapter" data-level="3.1" data-path="convex-optimization-problem-types.html"><a href="convex-optimization-problem-types.html#linear-programs"><i class="fa fa-check"></i><b>3.1</b> Linear Programs</a></li>
+<li class="chapter" data-level="3.2" data-path="convex-optimization-problem-types.html"><a href="convex-optimization-problem-types.html#quadratic-programs"><i class="fa fa-check"></i><b>3.2</b> Quadratic Programs</a></li>
+<li class="chapter" data-level="3.3" data-path="convex-optimization-problem-types.html"><a href="convex-optimization-problem-types.html#cone-programs"><i class="fa fa-check"></i><b>3.3</b> Cone Programs</a></li>
+<li class="chapter" data-level="3.4" data-path="convex-optimization-problem-types.html"><a href="convex-optimization-problem-types.html#integer-and-mixed-integer-programs"><i class="fa fa-check"></i><b>3.4</b> Integer and Mixed Integer Programs</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="solving-convex-problems.html"><a href="solving-convex-problems.html"><i class="fa fa-check"></i><b>4</b> Solving Convex Problems</a><ul>
+<li class="chapter" data-level="4.1" data-path="solving-convex-problems.html"><a href="solving-convex-problems.html#verifying-convexity"><i class="fa fa-check"></i><b>4.1</b> Verifying Convexity</a></li>
+<li class="chapter" data-level="4.2" data-path="solving-convex-problems.html"><a href="solving-convex-problems.html#domain-specific-languages-for-convex-optimization"><i class="fa fa-check"></i><b>4.2</b> Domain Specific Languages for Convex Optimization</a></li>
+<li class="chapter" data-level="4.3" data-path="solving-convex-problems.html"><a href="solving-convex-problems.html#references"><i class="fa fa-check"></i><b>4.3</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="disciplined-convex-programming.html"><a href="disciplined-convex-programming.html"><i class="fa fa-check"></i><b>5</b> Disciplined Convex Programming</a><ul>
+<li class="chapter" data-level="5.1" data-path="disciplined-convex-programming.html"><a href="disciplined-convex-programming.html#basic-examples-of-convex-functions"><i class="fa fa-check"></i><b>5.1</b> Basic Examples of Convex Functions</a></li>
+<li class="chapter" data-level="5.2" data-path="disciplined-convex-programming.html"><a href="disciplined-convex-programming.html#calculus-rules"><i class="fa fa-check"></i><b>5.2</b> Calculus Rules</a></li>
+<li class="chapter" data-level="5.3" data-path="disciplined-convex-programming.html"><a href="disciplined-convex-programming.html#examples"><i class="fa fa-check"></i><b>5.3</b> Examples</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html"><i class="fa fa-check"></i><b>6</b> A Simple Regression Example</a><ul>
+<li class="chapter" data-level="6.1" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#goals"><i class="fa fa-check"></i><b>6.1</b> Goals</a></li>
+<li class="chapter" data-level="6.2" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#ordinary-least-squares-regression"><i class="fa fa-check"></i><b>6.2</b> Ordinary Least-Squares Regression</a></li>
+<li class="chapter" data-level="6.3" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#the-cvxr-formulation"><i class="fa fa-check"></i><b>6.3</b> The <code>CVXR</code> formulation</a><ul>
+<li class="chapter" data-level="6.3.1" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#exercise"><i class="fa fa-check"></i><b>6.3.1</b> Exercise</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#adding-constraints"><i class="fa fa-check"></i><b>6.4</b> Adding Constraints</a><ul>
+<li class="chapter" data-level="6.4.1" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#exercise-1"><i class="fa fa-check"></i><b>6.4.1</b> Exercise</a></li>
+<li class="chapter" data-level="6.4.2" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#exercise-2"><i class="fa fa-check"></i><b>6.4.2</b> Exercise</a></li>
+<li class="chapter" data-level="6.4.3" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#exercise-3"><i class="fa fa-check"></i><b>6.4.3</b> Exercise</a></li>
+<li class="chapter" data-level="6.4.4" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#exercise-4"><i class="fa fa-check"></i><b>6.4.4</b> Exercise</a></li>
+</ul></li>
+<li class="chapter" data-level="6.5" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#summary"><i class="fa fa-check"></i><b>6.5</b> Summary</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html"><i class="fa fa-check"></i><b>7</b> How <code>CVXR</code> works</a><ul>
+<li class="chapter" data-level="7.1" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html#variables"><i class="fa fa-check"></i><b>7.1</b> Variables</a></li>
+<li class="chapter" data-level="7.2" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html#objectives-constraints-and-problems"><i class="fa fa-check"></i><b>7.2</b> Objectives, Constraints and Problems</a></li>
+<li class="chapter" data-level="7.3" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html#solving-the-problem"><i class="fa fa-check"></i><b>7.3</b> Solving the problem</a></li>
+<li class="chapter" data-level="7.4" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html#solver-options"><i class="fa fa-check"></i><b>7.4</b> Solver Options</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>8</b> Logistic Regression</a><ul>
+<li class="chapter" data-level="8.1" data-path="logistic-regression.html"><a href="logistic-regression.html#goals-1"><i class="fa fa-check"></i><b>8.1</b> Goals</a></li>
+<li class="chapter" data-level="8.2" data-path="logistic-regression.html"><a href="logistic-regression.html#logistic-regression-model"><i class="fa fa-check"></i><b>8.2</b> Logistic Regression Model</a></li>
+<li class="chapter" data-level="8.3" data-path="logistic-regression.html"><a href="logistic-regression.html#example"><i class="fa fa-check"></i><b>8.3</b> Example</a></li>
+<li class="chapter" data-level="8.4" data-path="logistic-regression.html"><a href="logistic-regression.html#exercise-5"><i class="fa fa-check"></i><b>8.4</b> Exercise</a><ul>
+<li class="chapter" data-level="8.4.1" data-path="logistic-regression.html"><a href="logistic-regression.html#solution-5"><i class="fa fa-check"></i><b>8.4.1</b> Solution</a></li>
+</ul></li>
+<li class="chapter" data-level="8.5" data-path="logistic-regression.html"><a href="logistic-regression.html#references-1"><i class="fa fa-check"></i><b>8.5</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="isotonic-regression.html"><a href="isotonic-regression.html"><i class="fa fa-check"></i><b>9</b> Isotonic Regression</a><ul>
+<li class="chapter" data-level="9.1" data-path="isotonic-regression.html"><a href="isotonic-regression.html#goals-2"><i class="fa fa-check"></i><b>9.1</b> Goals</a></li>
+<li class="chapter" data-level="9.2" data-path="isotonic-regression.html"><a href="isotonic-regression.html#pituitary-data-example"><i class="fa fa-check"></i><b>9.2</b> Pituitary Data Example</a><ul>
+<li class="chapter" data-level="9.2.1" data-path="isotonic-regression.html"><a href="isotonic-regression.html#exercise-6"><i class="fa fa-check"></i><b>9.2.1</b> Exercise</a></li>
+</ul></li>
+<li class="chapter" data-level="9.3" data-path="isotonic-regression.html"><a href="isotonic-regression.html#handling-ties"><i class="fa fa-check"></i><b>9.3</b> Handling Ties</a><ul>
+<li class="chapter" data-level="9.3.1" data-path="isotonic-regression.html"><a href="isotonic-regression.html#exercise-7"><i class="fa fa-check"></i><b>9.3.1</b> Exercise</a></li>
+<li class="chapter" data-level="9.3.2" data-path="isotonic-regression.html"><a href="isotonic-regression.html#exercise-8"><i class="fa fa-check"></i><b>9.3.2</b> Exercise</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html"><i class="fa fa-check"></i><b>10</b> Lasso and Elastic Net</a><ul>
+<li class="chapter" data-level="10.1" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html#goals-3"><i class="fa fa-check"></i><b>10.1</b> Goals</a></li>
+<li class="chapter" data-level="10.2" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html#regularized-regression"><i class="fa fa-check"></i><b>10.2</b> Regularized Regression</a><ul>
+<li class="chapter" data-level="10.2.1" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html#exercise-9"><i class="fa fa-check"></i><b>10.2.1</b> Exercise</a></li>
+<li class="chapter" data-level="10.2.2" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html#exercise-10"><i class="fa fa-check"></i><b>10.2.2</b> Exercise</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html"><i class="fa fa-check"></i><b>11</b> Nearly Isotonic Fits</a><ul>
+<li class="chapter" data-level="11.1" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html#goals-4"><i class="fa fa-check"></i><b>11.1</b> Goals</a><ul>
+<li class="chapter" data-level="11.1.1" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html#exercise-11"><i class="fa fa-check"></i><b>11.1.1</b> Exercise</a></li>
+</ul></li>
+<li class="chapter" data-level="11.2" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html#references-2"><i class="fa fa-check"></i><b>11.2</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="speed-considerations.html"><a href="speed-considerations.html"><i class="fa fa-check"></i><b>12</b> Speed Considerations</a><ul>
+<li class="chapter" data-level="12.1" data-path="speed-considerations.html"><a href="speed-considerations.html#goals-5"><i class="fa fa-check"></i><b>12.1</b> Goals</a></li>
+<li class="chapter" data-level="12.2" data-path="speed-considerations.html"><a href="speed-considerations.html#example-problem"><i class="fa fa-check"></i><b>12.2</b> Example Problem</a></li>
+<li class="chapter" data-level="12.3" data-path="speed-considerations.html"><a href="speed-considerations.html#profile-the-code"><i class="fa fa-check"></i><b>12.3</b> Profile the code</a></li>
+<li class="chapter" data-level="12.4" data-path="speed-considerations.html"><a href="speed-considerations.html#directly-calling-the-solver"><i class="fa fa-check"></i><b>12.4</b> Directly Calling the Solver</a></li>
+<li class="chapter" data-level="12.5" data-path="speed-considerations.html"><a href="speed-considerations.html#profile-the-direct-call"><i class="fa fa-check"></i><b>12.5</b> Profile the Direct Call</a></li>
+<li class="chapter" data-level="12.6" data-path="speed-considerations.html"><a href="speed-considerations.html#same-answer"><i class="fa fa-check"></i><b>12.6</b> Same Answer?</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="pliable-lasso.html"><a href="pliable-lasso.html"><i class="fa fa-check"></i><b>13</b> Pliable Lasso</a><ul>
+<li class="chapter" data-level="13.1" data-path="pliable-lasso.html"><a href="pliable-lasso.html#goals-6"><i class="fa fa-check"></i><b>13.1</b> Goals</a></li>
+<li class="chapter" data-level="13.2" data-path="pliable-lasso.html"><a href="pliable-lasso.html#pliable-lasso-problem"><i class="fa fa-check"></i><b>13.2</b> Pliable Lasso Problem</a></li>
+<li class="chapter" data-level="13.3" data-path="pliable-lasso.html"><a href="pliable-lasso.html#the-pliable-lasso-in-cvxr"><i class="fa fa-check"></i><b>13.3</b> The pliable lasso in <code>CVXR</code></a><ul>
+<li class="chapter" data-level="13.3.1" data-path="pliable-lasso.html"><a href="pliable-lasso.html#defining-the-parameters"><i class="fa fa-check"></i><b>13.3.1</b> Defining the parameters</a></li>
+<li class="chapter" data-level="13.3.2" data-path="pliable-lasso.html"><a href="pliable-lasso.html#the-penalty-terms"><i class="fa fa-check"></i><b>13.3.2</b> The penalty terms</a></li>
+<li class="chapter" data-level="13.3.3" data-path="pliable-lasso.html"><a href="pliable-lasso.html#the-fitted-value"><i class="fa fa-check"></i><b>13.3.3</b> The fitted value</a></li>
+<li class="chapter" data-level="13.3.4" data-path="pliable-lasso.html"><a href="pliable-lasso.html#the-objective"><i class="fa fa-check"></i><b>13.3.4</b> The objective</a></li>
+<li class="chapter" data-level="13.3.5" data-path="pliable-lasso.html"><a href="pliable-lasso.html#the-problem-and-its-solution"><i class="fa fa-check"></i><b>13.3.5</b> The problem and its solution</a></li>
+<li class="chapter" data-level="13.3.6" data-path="pliable-lasso.html"><a href="pliable-lasso.html#the-return-values"><i class="fa fa-check"></i><b>13.3.6</b> The return values</a></li>
+</ul></li>
+<li class="chapter" data-level="13.4" data-path="pliable-lasso.html"><a href="pliable-lasso.html#the-full-function"><i class="fa fa-check"></i><b>13.4</b> The full function</a></li>
+<li class="chapter" data-level="13.5" data-path="pliable-lasso.html"><a href="pliable-lasso.html#the-results"><i class="fa fa-check"></i><b>13.5</b> The Results</a></li>
+<li class="chapter" data-level="13.6" data-path="pliable-lasso.html"><a href="pliable-lasso.html#final-comments"><i class="fa fa-check"></i><b>13.6</b> Final comments</a></li>
+<li class="chapter" data-level="13.7" data-path="pliable-lasso.html"><a href="pliable-lasso.html#references-3"><i class="fa fa-check"></i><b>13.7</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="survey-calibration.html"><a href="survey-calibration.html"><i class="fa fa-check"></i><b>14</b> Survey Calibration</a><ul>
+<li class="chapter" data-level="14.1" data-path="survey-calibration.html"><a href="survey-calibration.html#goals-7"><i class="fa fa-check"></i><b>14.1</b> Goals</a></li>
+<li class="chapter" data-level="14.2" data-path="survey-calibration.html"><a href="survey-calibration.html#survey-calibration-problem"><i class="fa fa-check"></i><b>14.2</b> Survey Calibration Problem</a></li>
+<li class="chapter" data-level="14.3" data-path="survey-calibration.html"><a href="survey-calibration.html#raking"><i class="fa fa-check"></i><b>14.3</b> Raking</a><ul>
+<li class="chapter" data-level="14.3.1" data-path="survey-calibration.html"><a href="survey-calibration.html#exercise-12"><i class="fa fa-check"></i><b>14.3.1</b> Exercise</a></li>
+<li class="chapter" data-level="14.3.2" data-path="survey-calibration.html"><a href="survey-calibration.html#exercise-13"><i class="fa fa-check"></i><b>14.3.2</b> Exercise</a></li>
+<li class="chapter" data-level="14.3.3" data-path="survey-calibration.html"><a href="survey-calibration.html#solution-13"><i class="fa fa-check"></i><b>14.3.3</b> Solution</a></li>
+<li class="chapter" data-level="14.3.4" data-path="survey-calibration.html"><a href="survey-calibration.html#exercise-14"><i class="fa fa-check"></i><b>14.3.4</b> Exercise</a></li>
+<li class="chapter" data-level="14.3.5" data-path="survey-calibration.html"><a href="survey-calibration.html#exercise-15"><i class="fa fa-check"></i><b>14.3.5</b> Exercise</a></li>
+</ul></li>
+<li class="chapter" data-level="14.4" data-path="survey-calibration.html"><a href="survey-calibration.html#references-4"><i class="fa fa-check"></i><b>14.4</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html"><i class="fa fa-check"></i><b>15</b> Sparse Inverse Covariance Estimation</a><ul>
+<li class="chapter" data-level="15.1" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#goals-8"><i class="fa fa-check"></i><b>15.1</b> Goals</a></li>
+<li class="chapter" data-level="15.2" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#sparse-inverse-covariance-problem"><i class="fa fa-check"></i><b>15.2</b> Sparse Inverse Covariance Problem</a></li>
+<li class="chapter" data-level="15.3" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#example-1"><i class="fa fa-check"></i><b>15.3</b> Example</a></li>
+<li class="chapter" data-level="15.4" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#results"><i class="fa fa-check"></i><b>15.4</b> Results</a></li>
+<li class="chapter" data-level="15.5" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#references-5"><i class="fa fa-check"></i><b>15.5</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="16" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html"><i class="fa fa-check"></i><b>16</b> Portfolio Estimation</a><ul>
+<li class="chapter" data-level="16.1" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#goals-9"><i class="fa fa-check"></i><b>16.1</b> Goals</a></li>
+<li class="chapter" data-level="16.2" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#markovwitz-portfolio-problem"><i class="fa fa-check"></i><b>16.2</b> Markovwitz Portfolio Problem</a></li>
+<li class="chapter" data-level="16.3" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#example-2"><i class="fa fa-check"></i><b>16.3</b> Example</a></li>
+<li class="chapter" data-level="16.4" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#discussion"><i class="fa fa-check"></i><b>16.4</b> Discussion</a></li>
+<li class="chapter" data-level="16.5" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#references-6"><i class="fa fa-check"></i><b>16.5</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="17" data-path="using-other-solvers.html"><a href="using-other-solvers.html"><i class="fa fa-check"></i><b>17</b> Using Other Solvers</a><ul>
+<li class="chapter" data-level="17.1" data-path="using-other-solvers.html"><a href="using-other-solvers.html#goals-10"><i class="fa fa-check"></i><b>17.1</b> Goals</a></li>
+<li class="chapter" data-level="17.2" data-path="using-other-solvers.html"><a href="using-other-solvers.html#default-solvers"><i class="fa fa-check"></i><b>17.2</b> Default Solvers</a></li>
+<li class="chapter" data-level="17.3" data-path="using-other-solvers.html"><a href="using-other-solvers.html#commercial-solvers"><i class="fa fa-check"></i><b>17.3</b> Commercial Solvers</a><ul>
+<li class="chapter" data-level="17.3.1" data-path="using-other-solvers.html"><a href="using-other-solvers.html#gotchas"><i class="fa fa-check"></i><b>17.3.1</b> Gotchas</a></li>
+<li class="chapter" data-level="17.3.2" data-path="using-other-solvers.html"><a href="using-other-solvers.html#installing-mosek"><i class="fa fa-check"></i><b>17.3.2</b> Installing <code>MOSEK</code></a></li>
+<li class="chapter" data-level="17.3.3" data-path="using-other-solvers.html"><a href="using-other-solvers.html#installing-gurobi"><i class="fa fa-check"></i><b>17.3.3</b> Installing <code>GUROBI</code></a></li>
+<li class="chapter" data-level="17.3.4" data-path="using-other-solvers.html"><a href="using-other-solvers.html#example-session"><i class="fa fa-check"></i><b>17.3.4</b> Example session</a></li>
+</ul></li>
+<li class="chapter" data-level="17.4" data-path="using-other-solvers.html"><a href="using-other-solvers.html#solver-peculiarities"><i class="fa fa-check"></i><b>17.4</b> Solver Peculiarities</a></li>
+<li class="chapter" data-level="17.5" data-path="using-other-solvers.html"><a href="using-other-solvers.html#references-7"><i class="fa fa-check"></i><b>17.5</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="18" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html"><i class="fa fa-check"></i><b>18</b> The Structure of Atoms</a><ul>
+<li class="chapter" data-level="18.1" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#definition"><i class="fa fa-check"></i><b>18.1</b> Definition</a></li>
+<li class="chapter" data-level="18.2" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#atom-properties"><i class="fa fa-check"></i><b>18.2</b> Atom Properties</a><ul>
+<li class="chapter" data-level="18.2.1" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#mathematical-basics"><i class="fa fa-check"></i><b>18.2.1</b> Mathematical Basics</a></li>
+<li class="chapter" data-level="18.2.2" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#dimension-sign-and-curvature"><i class="fa fa-check"></i><b>18.2.2</b> Dimension, Sign, and Curvature</a></li>
+<li class="chapter" data-level="18.2.3" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#additional-characteristics"><i class="fa fa-check"></i><b>18.2.3</b> Additional Characteristics</a></li>
+</ul></li>
+<li class="chapter" data-level="18.3" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#canonicalization"><i class="fa fa-check"></i><b>18.3</b> Canonicalization</a></li>
+<li class="chapter" data-level="18.4" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#putting-it-all-together"><i class="fa fa-check"></i><b>18.4</b> Putting It All Together</a></li>
+</ul></li>
+<li class="chapter" data-level="19" data-path="future-enhancements.html"><a href="future-enhancements.html"><i class="fa fa-check"></i><b>19</b> Future Enhancements</a></li>
+<li class="chapter" data-level="" data-path="references-8.html"><a href="references-8.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Disciplined Convex Optimization in R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="the-structure-of-atoms" class="section level1">
+<h1><span class="header-section-number">Chapter 18</span> The Structure of Atoms</h1>
+<p>CVXR comes with a rich library of atoms that represent common
+functions in convex analysis. When combined using the DCP rules, these
+atoms are sufficient to model and solve most convex optimization
+problems, and we encourage most users to work with the CVXR
+library. However, it is possible for a sophisticated user to add a new
+atom. To do this requires an understanding of mathematical programming
+and the S4 class system. In this guide, we go over the basics of
+implementing an atom, the quadratic-over-linear function, which should
+provide a starting point for potential developers.</p>
+<div id="definition" class="section level2">
+<h2><span class="header-section-number">18.1</span> Definition</h2>
+<p>For any <span class="math inline">\(x \in \mathbf{R}^n\)</span> and <span class="math inline">\(y \in \mathbf{R}\)</span>, the
+quadratic-over-linear (QoL) function is</p>
+<p><span class="math display">\[
+  f(x,y) := \frac{\|x\|_2^2}{y} \quad \mbox{with} \quad \mathbf{dom}\;f = \{(x,y) \in \mathbf{R}^n \times \mathbf{R}: y &gt; 0\}.
+\]</span></p>
+<p>In CVXR, atoms like this (along with variables, constraints, etc) are
+represented by S4 class objects. S4 allows us to overload standard
+mathematical operations so CVXR combines seamlessly with native R
+script and other packages. The class for the QoL function is
+<code>QuadOverLin</code>, defined as</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setClass</span>(<span class="st">&quot;QuadOverLin&quot;</span>, <span class="kw">representation</span>(<span class="dt">x =</span> <span class="st">&quot;ConstValORExpr&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;ConstValORExpr&quot;</span>), <span class="dt">contains =</span> <span class="st">&quot;Atom&quot;</span>)</code></pre>
+<p>We also provide a constructor</p>
+<pre class="sourceCode r"><code class="sourceCode r">quad_over_lin &lt;-<span class="st"> </span><span class="cf">function</span>(x, y) { <span class="kw">new</span>(<span class="st">&quot;QuadOverLin&quot;</span>, <span class="dt">x =</span> x, <span class="dt">y =</span> y) }</code></pre>
+<p>The <code>QuadOverLin</code> class inherits from the <code>Atom</code> superclass. It takes
+as input two arguments, <code>x</code> and <code>y</code>, which must be R numeric constants
+or CVXR <code>Expression</code> objects. These input types are encapsulated in
+the “ConstaValORExpr” class union. Since <code>Expression</code>s themselves may
+contain other atoms, this allows us to use the QoL function in nested
+compositions.</p>
+<p>During initialization, <code>x</code> and <code>y</code> must be passed to the <code>Atom</code>
+superclass for processing and validation. Consequently, we override
+the default <code>QuadOverLin</code> initialization method with</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setMethod</span>(<span class="st">&quot;initialize&quot;</span>, <span class="st">&quot;QuadOverLin&quot;</span>, <span class="cf">function</span>(.Object, ..., x, y) {
+  .Object<span class="op">@</span>x &lt;-<span class="st"> </span>x
+  .Object<span class="op">@</span>y &lt;-<span class="st"> </span>y
+  <span class="kw">callNextMethod</span>(.Object, ..., <span class="dt">atom_args =</span> <span class="kw">list</span>(.Object<span class="op">@</span>x, .Object<span class="op">@</span>y))
+})</code></pre>
+<p>The first two lines save <code>x</code> and <code>y</code> to their respective slots in
+<code>QuadOverLin</code>, while the third calls <code>Atom</code>’s <code>initialize</code> with
+<code>atom_args</code> equal to the list of arguments. For explanatory purposes,
+we reproduce this method below.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setMethod</span>(<span class="st">&quot;initialize&quot;</span>, <span class="st">&quot;Atom&quot;</span>, <span class="cf">function</span>(.Object, ..., <span class="dt">atom_args =</span> <span class="kw">list</span>(), <span class="dt">.dim =</span> <span class="ot">NULL</span>) {
+  .Object<span class="op">@</span>args &lt;-<span class="st"> </span><span class="kw">lapply</span>(atom_args, as.Constant)
+  <span class="kw">validate_args</span>(.Object)
+  .Object<span class="op">@</span>.dim &lt;-<span class="st"> </span><span class="kw">dim_from_args</span>(.Object)
+  <span class="cf">if</span>(<span class="kw">length</span>(.Object<span class="op">@</span>.dim) <span class="op">&gt;</span><span class="st"> </span><span class="dv">2</span>)
+    <span class="kw">stop</span>(<span class="st">&quot;Atoms must be at most 2D.&quot;</span>)
+  .Object
+})</code></pre>
+<p>It is not important to understand the details of the above code. Only
+recognize that the atom arguments are converted into <code>CVXR</code> objects
+and saved in a list in the <code>args</code> slot. We will be accessing this slot
+later.</p>
+</div>
+<div id="atom-properties" class="section level2">
+<h2><span class="header-section-number">18.2</span> Atom Properties</h2>
+<p>Now that we have created the atom’s S4 class, it is time to define
+methods that characterize its mathematical properties.</p>
+<div id="mathematical-basics" class="section level3">
+<h3><span class="header-section-number">18.2.1</span> Mathematical Basics</h3>
+<p>First, we provide a method for validating the atom’s inputs. This
+method is called in <code>initialize</code> to check whether the arguments make
+sense for the atom. For our function <span class="math inline">\(f\)</span>, the second argument must be
+a scalar, so our validation method looks like</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setMethod</span>(<span class="st">&quot;validate_args&quot;</span>, <span class="st">&quot;QuadOverLin&quot;</span>, <span class="cf">function</span>(object) {
+  <span class="cf">if</span>(<span class="op">!</span><span class="kw">is_scalar</span>(object<span class="op">@</span>args[[<span class="dv">2</span>]]))
+    <span class="kw">stop</span>(<span class="st">&quot;The second argument to QuadOverLin must be a scalar.&quot;</span>)
+  <span class="kw">callNextMethod</span>()
+})</code></pre>
+<p>The input <code>object</code> is a <code>QuadOverLin</code> atom. We access its arguments
+via its <code>args</code> slot inherited from <code>Atom</code>. Given our ordering in
+<code>atom_args</code>, we know <code>object@args[[1]]</code> contains the argument for <span class="math inline">\(x\)</span>
+and <code>object@args[[2]]</code> the one for <span class="math inline">\(y\)</span>. Hence, we invoke <code>is_scalar</code>,
+an <code>Expression</code> class method, on the latter to check if <span class="math inline">\(y\)</span> is indeed
+scalar. If this check passes, then a call is made up the stack to
+<code>validate_args</code> in <code>Atom</code>.</p>
+<p>Notice that we did not check whether <span class="math inline">\(y &gt; 0\)</span>. This is because we
+generally do not know the value of an argument at the time of
+construction. For instance, <code>y</code> may contain a <code>Variable</code> that we are
+solving for in a problem, and we cannot define the problem if
+validation fails. It is the user’s responsibility to include domain
+constraints during problem construction.</p>
+<p>To facilitate this, we define a method for that returns a list of
+<code>Constraint</code> objects delineating an atom’s domain. For the QoL
+function, we need only constrain its second argument to be
+positive. Strict inequalities are not supported in <code>CVXR</code>, so we
+impose a weak inequality <span class="math inline">\(y \geq 0\)</span> as shown below.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setMethod</span>(<span class="st">&quot;.domain&quot;</span>, <span class="st">&quot;QuadOverLin&quot;</span>, <span class="cf">function</span>(object) { <span class="kw">list</span>(object<span class="op">@</span>args[[<span class="dv">2</span>]] <span class="op">&gt;=</span><span class="st"> </span><span class="dv">0</span>) })</code></pre>
+<p>Both validation and domain methods may be dropped if an atom’s
+arguments span the reals.</p>
+<p>The <code>to_numeric</code> method is always required. It takes as input an atom and a list <code>values</code> containing the numeric values of the its arguments (given in the same order as in <code>atom_args</code>), then evaluates the atom at these values. For the QoL function, this method is simply</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setMethod</span>(<span class="st">&quot;to_numeric&quot;</span>, <span class="st">&quot;QuadOverLin&quot;</span>, <span class="cf">function</span>(object, values) { <span class="kw">sum</span>(values[[<span class="dv">1</span>]]<span class="op">^</span><span class="dv">2</span>) <span class="op">/</span><span class="st"> </span>values[[<span class="dv">2</span>]] })</code></pre>
+<p>Note the difference between <code>object@args</code> and <code>values</code>. The former is
+a list of <code>Expression</code>s, which represent a composition of constants,
+variables, and atoms. The latter is a list of R numeric constants like
+<code>numeric</code> and <code>matrix</code>, denoting the values of the corresponding
+expressions.</p>
+</div>
+<div id="dimension-sign-and-curvature" class="section level3">
+<h3><span class="header-section-number">18.2.2</span> Dimension, Sign, and Curvature</h3>
+<p>For DCP analysis to work, we must explicitly define each atom’s dimension, sign, and curvature. CVXR uses this information when applying the composition rules to an expression. It is easy to see that <span class="math inline">\(f\)</span> is scalar-valued, nonnegative, and convex over its domain. These properties are encoded in</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setMethod</span>(<span class="st">&quot;dim_from_args&quot;</span>, <span class="st">&quot;QuadOverLin&quot;</span>, <span class="cf">function</span>(object) { <span class="kw">c</span>() })
+<span class="kw">setMethod</span>(<span class="st">&quot;sign_from_args&quot;</span>,  <span class="st">&quot;QuadOverLin&quot;</span>, <span class="cf">function</span>(object) { <span class="kw">c</span>(<span class="ot">TRUE</span>, <span class="ot">FALSE</span>) })
+<span class="kw">setMethod</span>(<span class="st">&quot;is_atom_convex&quot;</span>, <span class="st">&quot;QuadOverLin&quot;</span>, <span class="cf">function</span>(object) { <span class="ot">TRUE</span> })
+<span class="kw">setMethod</span>(<span class="st">&quot;is_atom_concave&quot;</span>, <span class="st">&quot;QuadOverLin&quot;</span>, <span class="cf">function</span>(object) { <span class="ot">FALSE</span> })</code></pre>
+<p>Here, the <code>sign_from_args</code> function returns a vector of two logical
+values - the first indicates if the atom’s value is positive, and the
+second if it is negative. We also define whether the atom is weakly
+increasing or decreasing in each of its arguments. By taking
+derivatives, we find that <span class="math inline">\(f\)</span> is weakly decreasing in <span class="math inline">\(y\)</span>, weakly
+increasing in <span class="math inline">\(x\)</span> on <span class="math inline">\(\mathbf{R}_+^n\)</span>, and weakly decreasing in <span class="math inline">\(x\)</span> on
+<span class="math inline">\(\mathbf{R}_-^n\)</span>. These properties are spelled out in</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setMethod</span>(<span class="st">&quot;is_incr&quot;</span>, <span class="st">&quot;QuadOverLin&quot;</span>, <span class="cf">function</span>(object, idx) { (idx <span class="op">==</span><span class="st"> </span><span class="dv">1</span>) <span class="op">&amp;&amp;</span><span class="st"> </span><span class="kw">is_nonneg</span>(object<span class="op">@</span>args[[idx]]) })
+<span class="kw">setMethod</span>(<span class="st">&quot;is_decr&quot;</span>, <span class="st">&quot;QuadOverLin&quot;</span>, <span class="cf">function</span>(object, idx) { ((idx <span class="op">==</span><span class="st"> </span><span class="dv">1</span>) <span class="op">&amp;&amp;</span><span class="st"> </span><span class="kw">is_nonpos</span>(object<span class="op">@</span>args[[idx]])) <span class="op">||</span><span class="st"> </span>(idx <span class="op">==</span><span class="st"> </span><span class="dv">2</span>) })</code></pre>
+<p>where <code>idx</code> is the index of the argument of interest. We call the
+<code>Expression</code> class method <code>is_nonneg</code> (resp. <code>is_nonpos</code>) to determine
+if an argument is nonnegative (resp. nonpositive). The user may be
+tempted to write <code>object@args[[1]] &gt;= 0</code>, but this is <strong>incorrect</strong>
+because it returns a <code>Constraint</code> rather than a logical value.</p>
+</div>
+<div id="additional-characteristics" class="section level3">
+<h3><span class="header-section-number">18.2.3</span> Additional Characteristics</h3>
+<p>The methods we have just described are the bare minimum required to
+define an atom. Additional methods may be implemented that handle
+complex numbers, support new solver classes, or provide further
+functional characterization. For instance, we furnish a method for
+computing the gradient of the QoL function,</p>
+<p><span class="math display">\[
+  \nabla_x f(x,y) = \frac{2x}{y}, \quad \nabla_y f(x,y) = -\frac{\|x\|_2^2}{y^2},
+\]</span></p>
+<p>at a point <span class="math inline">\((x,y)\)</span>.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setMethod</span>(<span class="st">&quot;.grad&quot;</span>, <span class="st">&quot;QuadOverLin&quot;</span>, <span class="cf">function</span>(object, values) {
+  X &lt;-<span class="st"> </span>values[[<span class="dv">1</span>]]
+  y &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(values[[<span class="dv">2</span>]])
+  <span class="cf">if</span>(y <span class="op">&lt;=</span><span class="st"> </span><span class="dv">0</span>)
+    <span class="kw">return</span>(<span class="kw">list</span>(<span class="ot">NA_real_</span>, <span class="ot">NA_real_</span>))
+  <span class="cf">else</span> {
+    <span class="co"># DX = 2X/y, Dy = -||X||^2_2/y^2</span>
+    Dy &lt;-<span class="st"> </span><span class="op">-</span><span class="kw">sum</span>(X<span class="op">^</span><span class="dv">2</span>)<span class="op">/</span>y<span class="op">^</span><span class="dv">2</span>
+    Dy &lt;-<span class="st"> </span><span class="kw">Matrix</span>(Dy, <span class="dt">sparse =</span> <span class="ot">TRUE</span>)
+    DX &lt;-<span class="st"> </span><span class="fl">2.0</span><span class="op">*</span>X<span class="op">/</span>y
+    DX &lt;-<span class="st"> </span><span class="kw">Matrix</span>(<span class="kw">as.numeric</span>(<span class="kw">t</span>(DX)), <span class="dt">sparse =</span> <span class="ot">TRUE</span>)
+    <span class="kw">return</span>(<span class="kw">list</span>(DX, Dy))
+  }
+})</code></pre>
+<p>This method calculates the vectors <span class="math inline">\(\nabla_x f(x,y)\)</span> and <span class="math inline">\(\nabla_y f(x,y))\)</span>, wraps each in a sparse <code>Matrix</code>, and returns them in a list
+ordered exactly like in the input values. If <span class="math inline">\((x,y) \notin \mathbf{dom}\;f\)</span>, all gradients are set to <code>NA</code>.</p>
+<p>Furthermore, we allow CVXR to solve certain problems involving QoL
+functions as a quadratic program (QP). Before calling a QP solver,
+CVXR must verify that an objective function is quadratic. It is easy
+to see that <span class="math inline">\(f(x,y)\)</span> is quadratic if its first argument is an affine
+expression and its second argument is constant. Therefore, we define
+the method</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setMethod</span>(<span class="st">&quot;is_quadratic&quot;</span>, <span class="st">&quot;QuadOverLin&quot;</span>, <span class="cf">function</span>(object) { <span class="kw">is_affine</span>(object<span class="op">@</span>args[[<span class="dv">1</span>]]) <span class="op">&amp;&amp;</span><span class="st"> </span><span class="kw">is_constant</span>(object<span class="op">@</span>args[[<span class="dv">2</span>]]) })</code></pre>
+<p>where <code>is_affine</code> and <code>is_constant</code> are given in the <code>Expression</code>
+class. A similar method exists for checking if <span class="math inline">\(f(x,y)\)</span> is the
+quadratic of a piecewise affine function.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setMethod</span>(<span class="st">&quot;is_qpwa&quot;</span>, <span class="st">&quot;QuadOverLin&quot;</span>, <span class="cf">function</span>(object) { <span class="kw">is_pwl</span>(object<span class="op">@</span>args[[<span class="dv">1</span>]]) <span class="op">&amp;&amp;</span><span class="st"> </span><span class="kw">is_constant</span>(object<span class="op">@</span>args[[<span class="dv">2</span>]]) })</code></pre>
+</div>
+</div>
+<div id="canonicalization" class="section level2">
+<h2><span class="header-section-number">18.3</span> Canonicalization</h2>
+<p>Once CVXR verifies a problem is DCP, it converts that problem into a
+solver-compatible form. This <em>canonicalization</em> process is carried out
+through a series of calls to individual atom canonicalizers, defined
+in the reductions framework. To implement an atom, we must explicitly
+derive its canonicalizer for a particular class of problems (e.g.,
+conic programs) supported by the desired solver. Below we provide a
+derivation based on the graph implementation.</p>
+<p>A function <span class="math inline">\(g: \mathbf{R}^n \rightarrow \mathbf{R}\)</span> is convex if and
+only if its epigraph</p>
+<p><span class="math display">\[
+  \mathbf{epi}\;g = \{(x,t) \in \mathbf{R}^n \times \mathbf{R}: g(x) \leq t\}
+\]</span>
+is a convex set. Then, it can be written as
+<span class="math display">\[
+  g(x) = \inf \{t \in \mathbf{R}: (x,t) \in \mathbf{epi}\;g \}.
+\]</span></p>
+<p>A similar relationship holds between concave functions and their
+hypographs. The <em>graph implementation</em> of a function is a
+representation of its epigraph or hypograph as a disciplined convex
+feasibility problem. This offers an elegant means of defining a
+nondifferentiable function in terms of a canonical optimization
+problem, which can be directly evaluated by a solver.</p>
+<p>For instance, the QoL function can be written as a second-order cone
+program (SOCP). Given <span class="math inline">\((x,y) \in \mathbf{dom}\;f\)</span>, the inequality
+<span class="math inline">\(f(x,y) \leq t\)</span> is equivalent to</p>
+<p><span class="math display">\[
+\begin{align*}
+  4\|x\|_2^2 &amp;\leq 4ty = (y+t)^2 - (y-t)^2 \\
+  (y-t)^2 + \|2x\|_2^2 &amp;\leq (y+t)^2 \\
+  \left\|\begin{pmatrix} y-t \\ 2x \end{pmatrix}\right\|_2 &amp;\leq y+t
+\end{align*}
+\]</span>
+so that
+<span class="math display">\[
+  f(x,y) = \inf \left\{t \in \mathbf{R}: \left(\begin{pmatrix} y-t \\ 2x \end{pmatrix}, y+t\right) \in \mathcal{K} \right\},
+\]</span>
+where <span class="math inline">\(\mathcal{K} := \{(u,v) \in \mathbf{R}^{n+1} \times \mathbf{R}: \|u\|_2 \leq v\}\)</span> is a second-order cone. Thus, <span class="math inline">\(f(x,y)\)</span> is the
+solution to an SOCP, which may be evaluated using any conic
+solver. The canonicalizer for the QoL function takes as input <span class="math inline">\((x,y)\)</span>
+and outputs the above SOCP.</p>
+<p>In <code>CVXR</code>, this canonicalizer function is defined in dcp2cone.R, since
+it is used to reduce a DCP problem to a cone program.</p>
+<pre class="sourceCode r"><code class="sourceCode r">Dcp2Cone.quad_over_lin_canon &lt;-<span class="st"> </span><span class="cf">function</span>(expr, args) {
+  <span class="co"># quad_over_lin := sum_{ij} X^2_{ij} / y</span>
+  x &lt;-<span class="st"> </span>args[[<span class="dv">1</span>]]
+  y &lt;-<span class="st"> </span><span class="kw">flatten</span>(args[[<span class="dv">2</span>]])
+  
+  <span class="co"># Pre-condition: dim = c()</span>
+  t &lt;-<span class="st"> </span><span class="kw">Variable</span>(<span class="dv">1</span>)
+  
+  <span class="co"># (y+t, y-t, 2*x) must lie in the second-order cone, where y+t is the scalar part</span>
+  <span class="co"># of the second-order cone constraint</span>
+  constraints &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">SOC</span>(<span class="dt">t =</span> y<span class="op">+</span>t, <span class="dt">X =</span> <span class="kw">VStack</span>(y<span class="op">-</span>t, <span class="dv">2</span><span class="op">*</span><span class="kw">flatten</span>(x)), <span class="dt">axis =</span> <span class="dv">2</span>))
+  <span class="kw">return</span>(<span class="kw">list</span>(t, constraints))
+}</code></pre>
+<p>It takes as input a <code>QuadOverLin</code> expression <code>expr</code> and a list of
+arguments <code>args</code>, which specify the input values <span class="math inline">\((x,y)\)</span>. The first
+two lines of the function extract <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> from <code>args</code>, and the
+third line constructs the <code>Variable</code> <span class="math inline">\(t \in \mathbf{R}\)</span>. The fourth
+line forms the constraint <span class="math inline">\(\left(\begin{pmatrix} y-t \\ 2x \end{pmatrix}, y+t\right) \in \mathcal{K}\)</span> with a call to the
+constructor <code>SOC</code>. If <span class="math inline">\(u \in \mathbf{R}^n\)</span>, then <code>SOC(t,u)</code> enforces
+<span class="math inline">\(\|u\|_2 \leq t\)</span>. Finally, the canonicalizer returns a list containing
+<span class="math inline">\(t\)</span>, the epigraph variable, and a list of <code>Constraint</code>s from the graph
+implementation - in this case, the single second-order cone
+constraint.</p>
+</div>
+<div id="putting-it-all-together" class="section level2">
+<h2><span class="header-section-number">18.4</span> Putting It All Together</h2>
+<p>With this machinery in place, we are ready to use the <code>QuadOverLin</code>
+atom in a problem. Suppose we are given <span class="math inline">\(A \in \mathbf{R}^{m \times n}\)</span> and <span class="math inline">\(b \in \mathbf{R}^m\)</span>, and we would like to solve</p>
+<p><span class="math display">\[
+  \begin{array}{ll}
+    \mbox{minimize} &amp; f(x,y) \\
+    \mbox{subject to} &amp; Ax = b
+  \end{array}
+\]</span></p>
+<p>with respect to <span class="math inline">\(x \in \mathbf{R}^n\)</span> and <span class="math inline">\(y \in \mathbf{R}_{++}\)</span>. In
+CVXR, we write</p>
+<pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw">Variable</span>(n)
+y &lt;-<span class="st"> </span><span class="kw">Variable</span>()
+obj &lt;-<span class="st"> </span><span class="kw">quad_over_lin</span>(x,y)
+constr &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">domain</span>(obj), A<span class="op">*</span>x <span class="op">==</span><span class="st"> </span>b)
+prob &lt;-<span class="st"> </span><span class="kw">Problem</span>(<span class="kw">Minimize</span>(obj), constr)
+<span class="kw">solve</span>(prob)</code></pre>
+<p>Once <code>solve</code> is invoked, CVXR checks if the problem is DCP with calls
+to <code>is_atom_convex</code>, <code>is_incr</code>, and <code>is_decr</code> for each atom in the
+expression tree. It then constructs a chain of <em>reductions</em>, which
+reduces the problem as modeled to a form compatible with the desired
+solver.</p>
+<p>In our example, one of these reductions is a transformation into a
+cone program. Substituting in the graph implementation of <span class="math inline">\(f\)</span>, our
+original problem can be written as</p>
+<p><span class="math display">\[
+  \begin{array}{ll}
+    \mbox{minimize} &amp; t \\
+    \mbox{subject to} &amp; Ax = b,  \quad (x,y) \in \mathbf{dom}\;f, \quad \left(\begin{pmatrix} y-t \\ 2x \end{pmatrix}, y+t\right) \in \mathcal{K},
+  \end{array}
+\]</span></p>
+<p>where <span class="math inline">\(t \in \mathbf{R}\)</span> is the additional epigraph variable. If <span class="math inline">\(b \in \mathbf{null}\;A\)</span>, a solution is trivially <span class="math inline">\(x^* = \vec{0}\)</span> with
+any <span class="math inline">\(y^* &gt; 0\)</span>. Otherwise, the point <span class="math inline">\(y = 0\)</span> is infeasible, so we can
+relax the domain constraint to get</p>
+<p><span class="math display">\[
+    \begin{array}{ll}
+    \mbox{minimize} &amp; t \\
+    \mbox{subject to} &amp; Ax = b, \quad y \geq 0, \quad \left(\begin{pmatrix} y-t \\ 2x \end{pmatrix}, y+t\right) \in \mathcal{K}.
+  \end{array}
+\]</span></p>
+<p>In <code>CVXR</code>, this SOCP canonicalization is performed automatically via a
+call to <code>DCP2Cone.quad_over_lin_canon</code>. Then, in a final reduction,
+the relevant matrices are formed and passed to the selected conic
+solver. After the solver returns <span class="math inline">\((x^*,y^*,t^*)\)</span>, this chain of
+reductions is inverted to obtain the optimal point <span class="math inline">\((x^*,y^*)\)</span> and
+objective value <span class="math inline">\(f(x^*,y^*)\)</span> for the original problem.</p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="using-other-solvers.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="future-enhancements.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"download": ["cvxr_tutorial.pdf", "cvxr_tutorial.epub"],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:" && /^https?:/.test(src))
+      src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

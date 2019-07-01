@@ -1,0 +1,273 @@
+# Pliable Lasso
+
+## Goals
+
+- Demonstrate how to fit a complex model
+- Show how to apply an atom along a row/column axis
+
+## Pliable Lasso Problem
+
+@tibsjhf:2017 propose a generalization of the lasso that allows the
+model coefficients to vary as a function of a general set of modifying
+variables, such as gender, age, and time. The pliable lasso model has
+the form
+
+\[
+\begin{equation}
+\hat{y} = \beta_0{\mathbf 1} + Z\theta_0 + \sum_{j=1}^p(X_j\beta_j +
+W_j\theta_j),
+\end{equation}
+\]
+
+where $\hat{y}$ is the predicted $N\times1$ vector, $\beta_0$ is a
+scalar, $\theta_0$ is a $K$-vector, $X$ and $Z$ are $N\times p$ and
+$N\times K$ matrices containing values of the predictor and modifying
+variables, respectively, and $W_j=X_j \circ Z$ denotes the elementwise
+multiplication of $Z$ by column $X_j$ of $X$.
+
+The objective function used for pliable lasso is
+
+\[
+J(\beta_0, \theta_0, \beta, \Theta) = 
+\frac{1}{2N}\sum_{i=1}^N (y_i-\hat{y}_i)^2 +
+(1-\alpha)\lambda\sum_{j=1}^p\biggl(||(\beta_j,\theta_j)||_2 +
+||\theta_j||_2\biggr) + \alpha\lambda\sum_{j,k}|\theta_{j,k}|_1.
+\]
+
+In the above, $\Theta$ is a $p\times K$ matrix of parameters with
+$j$-th row $\theta_j$ and individual entries $\theta_{j,k}$, and $\alpha$ and $\lambda$
+are tuning parameters. As $\alpha \rightarrow 1$ (but $<1$), the
+solution approaches the lasso solution. The default value used in the paper is
+$\alpha = 0.5.$
+
+An R package for the pliable lasso is forthcoming from the
+authors. Nevertheless, the pliable lasso is an excellent example to
+highlight the prototyping capabilities of `CVXR` for research. Along
+the way, we also introduce some new atoms that are needed in this example. 
+
+## The pliable lasso in `CVXR`
+
+We will use a simulated example from Section 3 of @tibsjhf:2017 with
+$n=100$, $p=50$ and $K=4$. The response is generated as
+
+\[
+\begin{eqnarray*}
+y &=& \mu(x) + 0.5\epsilon;\ \ \epsilon \sim N(0, 1)\\
+\mu(x) &=& x_1\beta_1 + x_2\beta_2 + x_3(\beta_3 e + 2z_1) +
+x_4\beta_4(e - 2z_2);\ \ \beta = (2, -2, 2, 2, 0, 0, \ldots),
+\end{eqnarray*}
+\]
+where $e=(1,1,\ldots ,1)^T).$
+
+```{r}
+## Simulation data.
+set.seed(123)
+N <- 100
+K <- 4
+p <- 50
+X <- matrix(rnorm(n = N * p, mean = 0, sd = 1), nrow = N, ncol = p)
+Z <- matrix(rbinom(n = N * K, size = 1, prob = 0.5), nrow = N, ncol = K)
+
+## Response model.
+beta <- rep(x = 0, times = p)
+beta[1:4] <- c(2, -2, 2, 2)
+coeffs <- cbind(beta[1], beta[2], beta[3] + 2 * Z[, 1], beta[4] * (1 - 2 * Z[, 2]))
+mu <- diag(X[, 1:4] %*% t(coeffs))
+y <- mu + 0.5 * rnorm(N, mean = 0, sd = 1)
+```
+
+It seems worthwhile to write a function that will fit the model for us
+so that we can customize a few things such as the intercept term,
+verbosity, etc. The function has the following structure with
+comments as placeholders for code we shall construct later.
+
+```{r, eval = FALSE}
+plasso_fit <- function(y, X, Z, lambda, alpha = 0.5, intercept = TRUE,
+                       ZERO_THRESHOLD= 1e-6, verbose = FALSE) {
+    N <- length(y)
+    p <- ncol(X)
+    K <- ncol(Z)
+
+    beta0 <- 0
+    if (intercept) {
+        beta0 <- Variable(1) * matrix(1, nrow = N, ncol = 1)
+    }
+    ## Define_Parameters
+    ## Build_Penalty_Terms
+    ## Compute_Fitted_Value
+    ## Build_Objective
+    ## Define_and_Solve_Problem
+    ## Return_Values
+}
+
+## Fit pliable lasso using CVXR.
+# pliable <- pliable_lasso(y, X, Z, alpha = 0.5, lambda = lambda)
+```
+
+### Defining the parameters
+
+The parameters are easy: we just have $\beta$, $\theta_0$ and
+$\Theta$. 
+
+```{r Define_Parameters, eval = FALSE}
+beta <- Variable(p)
+theta0 <- Variable(K)
+theta <- Variable(p, K); theta_transpose <- t(theta)
+```
+Note that we also define the transpose of $\Theta$ for use later.
+
+### The penalty terms
+
+There are three of them. The first term in the parentheses,
+$\sum_{j=1}^p\biggl(||(\beta_j,\theta_j)||_2\biggr)$, involves components of
+$\beta$ and rows of $\Theta$. `CVXR` provides two functions to express
+this norm: 
+
+- `hstack` to bind columns of $\beta$ and the matrix $\Theta$, the
+  equivalent of `rbind` in R,
+- `cvxr_norm`, which accepts a matrix variable and an `axis` denoting the axis along which
+  the norm is to be taken. The penalty requires us to use the row axis, 
+  so `axis = 1` per the usual R convention. 
+  
+The second term in the parentheses, $\sum_{j}||\theta_j||_2$, is also a norm
+along rows as the $\theta_j$ are rows of $\Theta$. The last term is simply a $l_1$-norm.
+
+```{r Build_Penalty_Terms, eval = FALSE}
+penalty_term1 <- sum(cvxr_norm(hstack(beta, theta), 2, axis = 1))
+penalty_term2 <- sum(cvxr_norm(theta, 2, axis = 1))
+penalty_term3 <- sum(cvxr_norm(theta, 1))
+```
+
+### The fitted value
+
+Equation 1 above for $\hat{y}$ contains a sum:
+$\sum_{j=1}^p(X_j\beta_j + W_j\theta_j)$. This requires multiplication
+of $Z$ by the columns of $X$ component-wise and is thus a natural candidate
+for a map-reduce combination: map the column multiplication function
+appropriately and reduce using `+` to obtain the `XZ_term` below.
+
+```{r Compute_Fitted_Value, eval = FALSE}
+xz_theta <- lapply(seq_len(p),
+                   function(j) (matrix(X[, j], nrow = N, ncol = K) * Z) %*% theta_transpose[, j])
+XZ_term <- Reduce(f = '+', x = xz_theta)
+y_hat <- beta0 + X %*% beta + Z %*% theta0 + XZ_term
+```
+
+### The objective
+
+Building the objective is now straightforward.
+
+```{r Build_Objective, eval = FALSE}
+objective <- sum_squares(y - y_hat) / (2 * N) +
+    (1 - alpha) * lambda * (penalty_term1 + penalty_term2) +
+    alpha * lambda * penalty_term3
+```
+
+### The problem and its solution
+
+```{r Define_and_Solve_Problem, eval = FALSE}
+prob <- Problem(Minimize(objective))
+result <- solve(prob, verbose = verbose)
+beta_hat <- result$getValue(beta)
+```
+
+### The return values
+
+We create a list with values of interest to us. However, since
+sparsity is desired, we set values below `ZERO_THRESHOLD` to
+zero. 
+
+```{r Return_Results, eval = FALSE}
+theta0_hat <- result$getValue(theta0)
+theta_hat <- result$getValue(theta)
+
+## Zero out stuff before returning
+beta_hat[abs(beta_hat) < ZERO_THRESHOLD] <- 0.0
+theta0_hat[abs(theta0_hat) < ZERO_THRESHOLD] <- 0.0
+theta_hat[abs(theta_hat) < ZERO_THRESHOLD] <- 0.0
+list(beta0_hat = if (intercept) result$getValue(beta0)[1] else 0.0,
+     beta_hat = beta_hat,
+     theta0_hat = theta0_hat,
+     theta_hat = theta_hat,
+     criterion = result$value)
+```
+
+## The full function
+
+We now put it all together.
+
+```{r}
+plasso_fit <- function(y, X, Z, lambda, alpha = 0.5, intercept = TRUE,
+                          ZERO_THRESHOLD= 1e-6, verbose = FALSE) {
+    N <- length(y)
+    p <- ncol(X)
+    K <- ncol(Z)
+
+    beta0 <- 0
+    if (intercept) {
+        beta0 <- Variable(1) * matrix(1, nrow = N, ncol = 1)
+    }
+    <<Define_Parameters>>
+    <<Build_Penalty_Terms>>
+    <<Compute_Fitted_Value>>
+    <<Build_Objective>>
+    <<Define_and_Solve_Problem>>
+    <<Return_Results>>
+}
+```
+
+## The Results
+
+Using $\lambda = 0.6$, we fit the pliable lasso without an intercept.
+
+```{r}
+result <- plasso_fit(y, X, Z, lambda = 0.6, alpha = 0.5, intercept = FALSE)
+```
+
+We can print the various estimates.
+
+```{r}
+cat(sprintf("Objective value: %f\n", result$criterion))
+```
+
+We only print the nonzero $\beta$ values. 
+
+```{r}
+index <- which(result$beta_hat != 0)
+est.table <- data.frame(matrix(result$beta_hat[index], nrow = 1))
+names(est.table) <- paste0("$\\beta_{", index, "}$")
+knitr::kable(est.table, format = "html", digits = 3) %>%
+    kable_styling("striped")
+```
+
+For this value of $\lambda$, the nonzero $(\beta_1, \beta_2, \beta_3,\beta4)$ are picked up along
+with a few others like $(\beta_{20}, \beta_{34},\beta_{39})$. 
+
+The values for $\theta_0$ are given below.
+
+```{r}
+est.table <- data.frame(matrix(result$theta0_hat, nrow = 1))
+names(est.table) <- paste0("$\\theta_{0,", 1:K, "}$")
+knitr::kable(est.table, format = "html", digits = 3) %>%
+    kable_styling("striped")
+```
+
+Finally, we display just the first five rows of $\Theta$, which happen to contain all
+the nonzero values for this result. 
+```{r}
+est.table <- data.frame(result$theta_hat[1:5, ])
+names(est.table) <- paste0("$\\theta_{,", 1:K, "}$")
+knitr::kable(est.table, format = "html", digits = 3) %>%
+    kable_styling("striped")
+```
+                
+## Final comments
+
+Typically, one would run the fits for various values of $\lambda$, 
+choose one based on cross-validation, and assess the prediction against
+a test set. Here, even a single fit takes a while, but techniques
+discussed previously can be used to speed up the
+computations. However, the potential of `CVXR` in prototyping novel
+methods is clear.
+
+## References

@@ -1,0 +1,109 @@
+# How `CVXR` works
+
+Let us consider the nonnegative least squares regression example once
+again.
+
+```{r, eval = FALSE}
+beta <- Variable(p)
+objective <- Minimize(sum((Y - X %*% beta)^2))
+constraints <- list(beta >= 0) 
+problem <- Problem(objective, constraints)
+result <- solve(problem)
+solution_status <- result$status
+objective_value <- result$value
+beta_hat <- result$getValue(beta)
+```
+
+## Variables
+
+The `CVXR::Variable` function constructs an S4 class describing the
+argument of an optimization problem.
+
+- `Variable()` specifies a 1-vector, essentially a scalar
+- `Variable(m)` specifies an $m$-vector
+- `Variable(m, n)` specifies an $m\times n$ matrix
+
+There are also S4 classes representing certain special constructs such
+as semidefinite matrices as we shall see later.
+
+## Objectives, Constraints and Problems
+
+The objective function should yield a scalar value. `CVXR` provides
+the `Minimize` and `Maximize` functions that take an `Expression`
+(another S4 class) as an argument.  Standard arithmetic and generics
+are overloaded so that one may use any R function in the construction.
+
+Constraints are specified as a list. One may construct this list
+directly or via some iterative computation, once again using various R
+and `CVXR` functions in the process.
+
+In the above problem, the objective is
+
+```{r, eval = FALSE}
+objective <- Minimize(sum((Y - X %*% beta)^2))
+```
+
+which uses the `CVXR::Minimize` function along with standard R
+functions such as `sum` and squaring. This allows one to seamlessly
+work with all standard R constructs. However, the same objective may
+also be specified as
+
+```{r, eval = FALSE}
+objective <- Minimize(sum_squares(Y - X %*% beta))
+```
+
+using the `CVXR::sum_squares` function. As you use `CVXR`
+more and more, you will need to refer to the [`CVXR` functions
+list](https://cvxr.rbind.io/cvxr_functions/) to learn about these
+built-in functions.
+
+A problem takes an objective and an optional constraint. It serves as
+the complete representation of the problem along with associated
+data, like the `Y` and `X` in the code snippet above.
+
+## Solving the problem
+
+Calling the `solve` function on a problem sets several things in motion.
+
+1. The problem along with the data is converted into a canonical form.
+
+2. The problem is verified for convexity. If it is not convex, the
+   solve attempt fails with an error message and a non-optimal status.
+
+3. The problem is analyzed and classified according to its type: LP,
+   QP, SDP, etc.
+
+4. Among the available solvers, a suitable one is chosen that can
+   handle the problem. Two open source solvers are built-in: Embedded
+   Conic Solver (ECOS) and Splitting Conic Solver (SCS), but there is
+   also support for commercial solvers.
+
+5. The canonicalized data structures (matrices, cone dimensions) along
+   with solver options, if any, are dispatched to the solver in
+   appropriate form.
+
+6. Finally, the results from the solver along with some accessor
+   functions for retrieving the solution and other quantities in the
+   context of the solved problem are prepared and returned to the
+   caller.
+
+There are several modes of failure that can occur. The problem may not
+be convex, and that is indicated via an error message. However, even
+when the problem is convex, the solver may not converge to a
+solution. The latter could be due to a number of reasons: tight
+tolerances, too few iterations, numerical issues, etc. Therefore,
+the solution status should always be examined.
+
+One option that can be very useful is verbosity, and this is specified
+by simply passing another parameter to `CVXR::solve`.
+
+```{r}
+result <- solve(problem, verbose = TRUE)
+```
+
+## Solver Options
+
+Solver options are unique to the chosen solver, so any arguments to
+`CVXR::solve` besides the three documented above are simply passed
+along to the solver. he reference for the specific solver must be 
+consulted to set these options.

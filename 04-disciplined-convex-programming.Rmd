@@ -1,0 +1,57 @@
+# Disciplined Convex Programming
+
+> "All... new systems of notation are such that one can accomplish
+  nothing by means of them which would not also be accomplished
+  without them; but the advantage is that when such a system of
+  notation corresponds to the innermost essence of frequently occuring
+  needs, one can solve the problems belonging in that category, indeed
+  can mechanically solve them in cases so complicated that without
+  such an aid even the genius becomes powerless. Thus it is with the
+  invention of calculating by letters in general; thus it was with the
+  differential calculus..."
+> 
+> ---C. F. Gauss to Schumacher, May 15, 1843
+
+> "That’s awesome!  I was disappointed to not see a direct
+  reference to DCP, but still, it’s pretty clear!"
+>
+> ---Stephen Boyd, on Gauss' letter to Schumacher, April 8, 2019
+
+
+## Basic Examples of Convex Functions
+
+The following are some basic convex functions.
+
+- $x^p$ for $p \geq 1$ or $p \leq 0$; $-x^p$ for $0 \leq p \leq 1$
+- $\exp(x)$, $-\log(x)$, $x\log(x)$
+- $a^Tx + b$
+- $x^Tx$; $x^Tx/y$ for $y>0$; $(x^Tx)^{1/2}$ 
+- $||x||$ (any norm)
+- $\max(x_1, x_2, \ldots, x_n)$, $\log(e^x_{1}+ \ldots + e^x_{n})$
+- $\log(\Phi(x))$, where $\Phi$ is Gaussian CDF
+- $\log(\text{det}X^{-1})$ for $X \succ 0$
+
+
+## Calculus Rules
+
+- _Nonnegative Scaling_: if $f$ is convex and $\alpha \geq 0$, then $\alpha f$ is convex
+- _Sum_: if $f$ and $g$ are convex, so is $f+g$
+- _Affine Composition_: if $f$ is convex, so is $f(Ax+b)$
+- _Pointwise Maximum_: if $f_1,f_2, \ldots, f_m$ are convex, so is $f(x) = \underset{i}{\text{max}}f_i(x)$
+- _Partial Minimization_: if $f(x, y)$ is convex and $C$ is a convex set, then $g(x) = \underset{y\in C}{\text{inf}}f(x,y)$ is convex 
+- _Composition_: if $h$ is convex and increasing and $f$ is convex, then $g(x) = h(f(x))$ is convex. (There are several other composition rules)
+
+And there are many other rules, but the above will get you far.
+
+
+## Examples
+
+- Piecewise-linear function: $f(x) = \underset{i}{\text{max}}(a_i^Tx + b_i)$
+- $l_1$-regularized least-squares cost: $||Ax-b||_2^2 + \lambda ||x||_1$ with $\lambda \geq 0$
+- Sum of $k$ largest elements of $x$: $f(x) = \sum_{i=1}^mx_i - \sum_{i=1}^{m-k}x_{(i)}$
+- Log-barrier: $-\sum_{i=1}^m\log(−f_i(x))$ (on $\{x | f_i(x) < 0\}$, $f_i$ convex)
+- Distance to convex set $C$: $f(x) = \text{dist}(x,C) =\underset{y\in C}{\text{inf}}||x-y||_2$
+
+Except for log-barrier, these functions are nondifferentiable.
+
+

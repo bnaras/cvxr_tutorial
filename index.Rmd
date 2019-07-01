@@ -1,0 +1,97 @@
+---
+title: 'Disciplined Convex Optimization in R'
+author: "Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd"
+date: "`r Sys.Date()`"
+bibliography: ["packages.bib", "cvxr.bib"]
+biblio-style: "apalike"
+link-citations: true
+output: 
+  bookdown::html_book:
+    includes:
+      in_header: header.html
+---
+
+# Introduction
+
+Optimization problems are at the heart of statistical inference and
+machine learning, where a scalar
+criterion is either maximized (likelihood, for instance) or minimized
+(loss) to estimate a parameter of interest. Constraints might be
+added to narrow the search space or to ensure the solution has certain
+properties. 
+
+The kinds of optimization problems we address in this tutorial have
+the following form:
+\[
+\begin{array}{lll} \text{minimize} & f_0(x) & \\
+  \text{subject to} & f_i(x) \leq 0, & i=1, \ldots, M\\
+             & Ax=b &
+\end{array}
+\]
+with variable $x \in {\mathbf R}^n$. 
+  
+Further, we ask that
+
+- the objective and inequality constraints $f_0, \ldots, f_M$ are
+  convex: for all $x$, $y$, $\theta \in [0,1]$,
+\[
+\begin{equation}
+  f_i(\theta x + (1-\theta) y) \leq \theta f_i(x) + (1-\theta) f_i(y)
+  (\#eq:convex-function)
+\end{equation}
+\]
+i.e., graphs of $f_i$ curve upward,
+
+- the equality constraints are linear, i.e., they can be expressed as a
+  simple matrix equation $Ax = b$.
+
+Geometrically, a function is convex if the chord or line segment drawn
+from any point $(x, f(x))$ to another point $(y, f(y))$ lies above the
+graph of $f$, as shown below.
+
+```{r, echo = FALSE, fig = TRUE, fig.align = "center", fig.cap="Source: https://www.solver.com"}
+knitr::include_graphics("figures/02/convexchord.gif")
+```
+
+A function is concave if $-f$ is convex. Every linear function is both
+convex and concave.
+
+Convex optimization problems have many nice properties:
+
+- The region containing solutions, if any, is convex as it is the
+  intersection of convex constraint functions.
+
+- Since the objective is also convex, if we find a local optimal
+  solution, it is automatically the global optimal solution.
+
+
+
+There are a host of applications of this problem in many fields,
+including machine learning and statistics.
+
+## Convex Problems in Statistics, Machine Learning
+ 
+- Maximum likelihood estimation with constraints
+- OLS regression, nonnegative least squares, logistic regression
+- Ridge, lasso, elastic-net regression
+- Isotonic regression
+- Huber (robust) regression
+- Support vector machine
+- Sparse inverse covariance estimation
+- Maximum entropy and related problems
+
+New methods are being invented every year!
+
+## Non-convex Problems
+
+A non-convex optimization problem is any problem where the objective
+or any of the constraints are non-convex. Not every problem is convex,
+and in fact, the non-convex set is much larger. Non-convex problems are
+harder to solve in general.
+
+However, even when a problem is non-convex, one may be able to find a
+convex _relaxation_, an approximation to the original problem, that
+can yield useful results. Thus, developing tools to solve convex problems
+can go a long way.
+
+
