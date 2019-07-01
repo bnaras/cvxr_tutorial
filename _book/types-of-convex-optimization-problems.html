@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 20 References | Disciplined Convex Optimization in R</title>
-  <meta name="description" content="Chapter 20 References | Disciplined Convex Optimization in R" />
+  <title>Chapter 3 Types of Convex Optimization Problems | Disciplined Convex Optimization in R</title>
+  <meta name="description" content="Chapter 3 Types of Convex Optimization Problems | Disciplined Convex Optimization in R" />
   <meta name="generator" content="bookdown 0.11 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 20 References | Disciplined Convex Optimization in R" />
+  <meta property="og:title" content="Chapter 3 Types of Convex Optimization Problems | Disciplined Convex Optimization in R" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 20 References | Disciplined Convex Optimization in R" />
+  <meta name="twitter:title" content="Chapter 3 Types of Convex Optimization Problems | Disciplined Convex Optimization in R" />
   
   
   
@@ -31,8 +31,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="future-enhancements.html">
-<link rel="next" href="references-9.html">
+<link rel="prev" href="getting-started.html">
+<link rel="next" href="solving-convex-problems.html">
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -337,17 +337,48 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="references-8" class="section level1">
-<h1><span class="header-section-number">Chapter 20</span> References</h1>
+<div id="types-of-convex-optimization-problems" class="section level1">
+<h1><span class="header-section-number">Chapter 3</span> Types of Convex Optimization Problems</h1>
+<p>Recall that a convex optimization problem is of the form
+<span class="math display" id="eq:cvx-problem">\[
+\begin{array}{lll} \text{minimize} &amp; f_0(x) &amp; \\
+  \text{subject to} &amp; f_i(x) \leq 0, &amp; i=1, \ldots, M \\
+             &amp; Ax=b &amp;
+         \tag{3.1}
+\end{array}
+\]</span>
+for <span class="math inline">\(x \in {\mathbf R}^n\)</span>.</p>
+<div id="linear-programs" class="section level2">
+<h2><span class="header-section-number">3.1</span> Linear Programs</h2>
+<p>When the functions <span class="math inline">\(f_i\)</span> for all <span class="math inline">\(i\)</span> are linear in <span class="math inline">\(x\)</span>, the
+problem is called a linear program. These are much easier to solve,
+and the celebrated work of <a href="https://en.wikipedia.org/wiki/George_Dantzig">George
+Dantzig</a> resulted in the
+<a href="https://en.wikipedia.org/wiki/Simplex_algorithm"><em>Simplex Algorithm</em></a>
+for linear programs.</p>
+</div>
+<div id="quadratic-programs" class="section level2">
+<h2><span class="header-section-number">3.2</span> Quadratic Programs</h2>
+<p>When the objective <span class="math inline">\(f_0\)</span> is quadratic in <span class="math inline">\(x\)</span>, the problem is called a
+quadratic program.</p>
+</div>
+<div id="cone-programs" class="section level2">
+<h2><span class="header-section-number">3.3</span> Cone Programs</h2>
+<p>Second order cone programs</p>
+</div>
+<div id="integer-and-mixed-integer-programs" class="section level2">
+<h2><span class="header-section-number">3.4</span> Integer and Mixed Integer Programs</h2>
+<p>When all of <span class="math inline">\(x\)</span> is constrained to be integers, or even binary (<span class="math inline">\(\{0,1\}\)</span>) values, the problem is called an integer program. If only a few <span class="math inline">\(x\)</span> are constrained to be integers, then the problem is a mixed integer program.</p>
 
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="future-enhancements.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="references-9.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="getting-started.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="solving-convex-problems.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
