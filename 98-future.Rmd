@@ -1,0 +1,16 @@
+# Future Enhancements
+
+## Version 1.0
+- Modular system of reductions [@reductions:2018]
+  * New standard forms and solvers
+  * Advanced user inputs, e.g. complex variables
+- Disciplined geometric programming [@DGP]
+- Variable and parameter attributes
+- Transformations: linearize, indicator, partial optimization
+
+## Internal Changes
+- Uniform interface for solver settings
+- Speed improvements by moving operations to C++
+- Possibly connect to `ROI` library
+
+# References

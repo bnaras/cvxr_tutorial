@@ -1,0 +1,71 @@
+# Solving Convex Problems
+
+Although convex problems can look very difficult (nonlinear, even
+nondifferentiable), they can be solved very efficiently like a linear
+program. So, how does one solve such problems in R?
+
+One possibility is to match the form of the problem to an existing
+solver routine. For example, the well-known
+[`optimx`](https://cran.r-project.org/package=optimx) package provides
+the following omnibus function:
+
+```{r, eval = FALSE}
+optimx(par, fn, gr=NULL, hess=NULL, lower=-Inf, upper=Inf, 
+            method=c("Nelder-Mead","BFGS"), itnmax=NULL, hessian=FALSE,
+            control=list(),
+             ...)
+```
+
+Here one has to specify a vector of initial parameters (`par`), the
+objective function (`fn`), optional gradient (`gr`) and Hessian
+functions (`hess`) depending on the method used, and upper and lower
+bounds for the solution. Obviously, the objective and the constraints
+must be supported by the `optimx` routines.
+
+Another possibility is to use a package such as
+[`ROI`](https://cran.r-project.org/package=ROI), which provides 
+interfaces to a number of solvers, including solvers for convex
+problems. It offers an object-oriented framework for defining
+optimization problems, but one still has to explicitly identify the
+type of every objective and constraint. If you can transform your
+problem into a cone program and use a standard cone program solver,
+then you can use `ROI` in a straightforward way.
+
+## Verifying Convexity
+
+Even before attempting a solution, one has to verify a problem is
+convex. One can start with the basic definition
+\@ref{eq:convex-function} or use first or second order conditions
+$\nabla^2{f}\succeq 0.$ These often turn out to be tedious and hard
+to derive.
+
+Another possibility is to construct $f_i$ out of a library of basic
+examples or atoms that are convex. These could be combined using
+calculus rules and transformations that preserve convexity, yielding
+a problem that is automatically verified to be convex.
+
+## Domain Specific Languages for Convex Optimization
+
+Domain Specific Languages (DSLs) are specialized languages for a
+particular application, implemented in a general purpose programming
+language. They have become useful for expressing, manipulating, and
+solving problems in specific contexts: circuit design (VHDL), graph
+layout (DOT), data (XML), etc.
+
+Over the last few years, specialized languages have become available for
+general convex optimization using the constructive approach discussed
+above.
+
+- [CVX](https://cvxr.com/cvx/) and [YALMIP](https://yalmip.github.io), both implemented in Matlab
+- [CVXPY](https//www.cvxpy.org) implemented in Python
+- [Convex.jl](https://github.com/JuliaOpt/Convex.jl) implemented in Julia
+- [CVXR](https://cvxr.rbind.io) implemented in R
+
+Such DSLs may result in code that is slightly slower, but they are
+extremely flexible and enable fast prototyping of novel methods.
+
+The last one, `CVXR`, is our focus and is described in a paper
+[@fu:naras:boyd:2019] that due to appear in the [Journal of Statistical
+Software](https://www.jstatsoft.org) any day now.
+
+## References

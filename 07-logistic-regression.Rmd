@@ -1,0 +1,109 @@
+# Logistic Regression
+
+## Goals
+
+- Formulating the logistic regression likelihood using `CVXR` atoms
+- Example comparing `CVXR` results with R results from `glm`
+- Exercise on extracting fitted values from `CVXR` logistic fit using
+  lexically scoped `CVXR` facilities.
+
+## Logistic Regression Problem
+
+In logistic regression [@james2013], the response $y_i$ is
+binary: 0 or 1. (In a classification setting, the values of the
+response would represent class membership in one of two classes.) The
+conditional response given covariates $x$ is modeled as
+
+\[
+y|x \sim \mbox{Bernoulli}(g_{\beta}(x)),
+\]
+
+where $g_{\beta}(x) = \frac{1}{1 +
+e^{-x^T\beta}}$ is the logistic function. We want to maximize the
+log-likelihood function, yielding the optimization problem
+
+\[
+\begin{array}{ll} 
+\underset{\beta}{\mbox{maximize}} & \sum_{i=1}^m \{
+y_i\log(g_{\beta}(x_i)) + (1-y_i)\log(1 - g_{\beta}(x_i)) \}.
+\end{array} 
+\]
+
+One may be tempted to use `log(1 + exp(X %*% beta))` as in
+conventional `R` syntax. However, this representation of $f(z)$
+violates the DCP composition rule, so the `CVXR` parser will reject
+the problem even though the objective is convex. Users who wish to
+employ a function that is convex, but not DCP compliant should check
+the documentation for a custom atom or consider a different
+formulation.
+
+`CVXR` provides the [`logistic`
+atom](https://cvxr.rbind.io/cvxr_functions/) as a shortcut for $f(z) =
+\log(1 + e^z)$.
+
+## Example
+
+We use example 4.6.2 of [@james2013] with the `Smarket` data where a
+`glm` is fit as follows.
+
+```{r}
+library(ISLR)
+data(Smarket)
+glmfit <- stats::glm(formula = Direction ~ Lag1 + Lag2 + Lag3 + Lag4 + Lag5 + Volume,
+                     data = Smarket, family = binomial)	       
+```
+
+The `CVXR` formulation merely has to specify the objective after
+setting up the data matrices appropriately.
+
+```{r}
+y <- as.integer(Smarket$Direction) - 1L
+X <- cbind(1, as.matrix(Smarket[, c("Lag1", "Lag2", "Lag3", "Lag4", "Lag5", "Volume")]))
+p <- ncol(X)
+beta <- Variable(p)
+objective <- -sum(X[y <= 0, ] %*% beta) - sum(logistic(-X %*% beta))
+problem <- Problem(Maximize(objective))
+result <- solve(problem)
+beta_hat <- result$getValue(beta)
+```
+
+We can compare with the standard `stats::glm` estimate.
+
+```{r, echo = FALSE}
+print_matrix(cbind(beta_hat, coef(glmfit)), row_names = paste0("$\\beta_{", seq.int(0, p-1L), "}$"), col_names = c("CVXR", "GLM"))
+```
+
+## Exercise
+
+Standard `stats::glm` returns an object that has fitted values:
+`glmfit$fitted.values`. How would you compute the fitted values from
+`CVXR`?  _Hint:_ The `result$getValue()` evalutes expressions in the
+problem context.
+
+### Solution
+
+A key feature of `CVXR` is that it exploits lexical scoping built into
+R. So one can evaluate various functions of the variables that are
+solutions to the optimization problem.
+
+The fitted values can be computed using
+
+```{r}
+fitted_values <- 1 / (1 + exp(result$getValue(-X %*% beta)))
+```
+
+We can also satisfy ourselves that the fitted values match the `glm`
+estimate, by computing the sum of squared differences.
+
+```{r}
+sum((fitted_values - glmfit$fitted.values))^2
+```
+
+Similarly, the log-odds, $X\hat{\beta}$ , where $\hat{\beta}$ is the
+logistic regression estimate, can be computed as follows.
+
+```{r}
+log_odds <- result$getValue(X %*% beta)
+```
+
+## References

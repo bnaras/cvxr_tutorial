@@ -1,0 +1,162 @@
+# Nearly Isotonic Fits
+
+## Goals
+
+- Formulate nearly-isotonic and nearly-convex fits using `CVXR` atoms
+- Use the bootstrap to estimate variance of estimates
+
+```{r, message = FALSE, echo = FALSE}
+library(ggplot2)
+library(boot)
+```
+
+Given a set of data points $y \in {\mathbf R}^m$,
+@TibshiraniHoefling:2011 fit a nearly-isotonic approximation $\beta
+\in {\mathbf R}^m$ by solving
+
+$$
+\begin{array}{ll}
+\underset{\beta}{\mbox{minimize}} & \frac{1}{2}\sum_{i=1}^m (y_i - \beta_i)^2 + \lambda \sum_{i=1}^{m-1}(\beta_i - \beta_{i+1})_+,
+\end{array}
+$$
+
+where $\lambda \geq 0$ is a penalty parameter and $x_+
+=\max(x,0)$. This can be directly formulated in `CVXR`.  As an
+example, we use global warming data from
+the
+[Carbon Dioxide Information Analysis Center (CDIAC)](http://cdiac.ess-dive.lbl.gov/ftp/trends/temp/jonescru/). The
+data points are the annual temperature anomalies relative to the
+1961--1990 mean.
+
+```{r}
+data(cdiac)
+str(cdiac)
+```
+
+Since we plan to fit the regression and also get some idea of the
+standard errors, we write a function that computes the fit for use in
+bootstrapping. 
+
+```{r}
+neariso_fit <- function(y, lambda) {
+    m <- length(y)
+    beta <- Variable(m)
+    obj <- 0.5 * sum_squares(y - beta) + lambda * sum(pos(diff(beta)))
+    prob <- Problem(Minimize(obj))
+    solve(prob)$getValue(beta)
+}
+```
+
+The `CVXR::pos` atom evaluates $x_+$ elementwise on the input
+expression.
+
+The `boot` library provides all the tools for bootstrapping, but
+requires a statistic function that takes particular arguments: a data
+frame, followed by the bootstrap indices and any other arguments
+($\lambda$ for instance). This is defined below.
+
+_NOTE_ In what follows, we use a very small number of bootstrap
+samples as the fits are time consuming.
+
+```{r}
+neariso_fit_stat <- function(data, index, lambda) {
+    sample <- data[index,]                  # Bootstrap sample of rows
+    sample <- sample[order(sample$year),]   # Order ascending by year
+    neariso_fit(sample$annual, lambda)
+}
+```
+
+```{r, eval = FALSE}
+set.seed(123)
+boot.neariso <- boot(data = cdiac,
+                     statistic = neariso_fit_stat,
+                     R = 10, lambda = 0.44)
+ci.neariso <- t(sapply(seq_len(nrow(cdiac)),
+                       function(i) boot.ci(boot.out = boot.neariso, conf = 0.95,
+                                           type = "norm", index = i)$normal[-1]))
+data.neariso <- data.frame(year = cdiac$year,
+                           annual = cdiac$annual,
+                           est = boot.neariso$t0,
+                           lower = ci.neariso[, 1],
+                           upper = ci.neariso[, 2])
+```
+
+We can now plot the fit and confidence bands for the nearly-isotonic
+fit. 
+
+```{r, eval = FALSE}
+(plot.neariso <- ggplot(data = data.neariso) +
+     geom_point(mapping = aes(year, annual), color = "red") +
+     geom_line(mapping = aes(year, est), color = "blue") +
+     geom_ribbon(mapping = aes(x = year, ymin = lower,ymax = upper),alpha=0.3) +
+     labs(x = "Year", y = "Temperature Anomalies")
+)
+```
+The curve follows the data well, but exhibits some choppiness in
+regions with a steep trend. 
+
+### Exercise
+
+Fit a smoother curve using a nearly-convex fit described in the same
+paper:
+
+$$
+\begin{array}{ll}
+\underset{\beta}{\mbox{minimize}} & \frac{1}{2}\sum_{i=1}^m (y_i -
+\beta_i)^2 + \lambda \sum_{i=1}^{m-2}(\beta_i - 2\beta_{i+1} + \beta_{i+2})_+ \end{array} 
+$$
+
+#### Solution
+
+This replaces the first difference term with an approximation to the
+second derivative at $\beta_{i+1}$. In `CVXR`, the only change
+necessary is the penalty line: replace `diff(x)` by 
+`diff(x, differences = 2)`.
+
+```{r, eval = FALSE}
+nearconvex_fit <- function(y, lambda) {
+    m <- length(y)
+    beta <- Variable(m)
+    obj <- 0.5 * sum_squares(y - beta) + lambda * sum(pos(diff(beta, differences = 2)))
+    prob <- Problem(Minimize(obj))
+    solve(prob)$getValue(beta)
+}
+
+nearconvex_fit_stat <- function(data, index, lambda) {
+    sample <- data[index,]                  # Bootstrap sample of rows
+    sample <- sample[order(sample$year),]   # Order ascending by year
+    nearconvex_fit(sample$annual, lambda)
+}
+
+set.seed(987)
+boot.nearconvex <- boot(data = cdiac,
+                        statistic = nearconvex_fit_stat,
+                        R = 5,
+                        lambda = 0.44)
+
+ci.nearconvex <- t(sapply(seq_len(nrow(cdiac)),
+                          function(i) boot.ci(boot.out = boot.nearconvex, conf = 0.95,
+                                              type = "norm", index = i)$normal[-1]))
+data.nearconvex <- data.frame(year = cdiac$year,
+                              annual = cdiac$annual,
+                              est = boot.nearconvex$t0,
+                              lower = ci.nearconvex[, 1],
+                              upper = ci.nearconvex[, 2])
+
+```
+
+The resulting curve for the nearly-convex fit is depicted below with
+95\% confidence bands generated from $R = 5$ samples. Note the jagged
+staircase pattern has been smoothed out. 
+
+
+```{r, eval = FALSE}
+(plot.nearconvex <- ggplot(data = data.nearconvex) +
+     geom_point(mapping = aes(year, annual), color = "red") +
+     geom_line(mapping = aes(year, est), color = "blue") +
+     geom_ribbon(mapping = aes(x = year, ymin = lower,ymax = upper),alpha=0.3) +
+     labs(x = "Year", y = "Temperature Anomalies")
+)
+```
+
+## References

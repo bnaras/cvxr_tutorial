@@ -1,0 +1,35 @@
+# Types of Convex Optimization Problems
+
+Recall that a convex optimization problem is of the form
+\[
+\begin{array}{lll} \text{minimize} & f_0(x) & \\
+  \text{subject to} & f_i(x) \leq 0, & i=1, \ldots, M \\
+             & Ax=b &
+	     (\#eq:cvx-problem)
+\end{array}
+\]
+for $x \in {\mathbf R}^n$. 
+
+
+## Linear Programs
+
+When the functions $f_i$ for all $i$ are linear in $x$, the
+problem is called a linear program.  These are much easier to solve,
+and the celebrated work of [George
+Dantzig](https://en.wikipedia.org/wiki/George_Dantzig) resulted in the
+[_Simplex Algorithm_](https://en.wikipedia.org/wiki/Simplex_algorithm)
+for linear programs. 
+
+## Quadratic Programs
+
+When the objective $f_0$ is quadratic in $x$, the problem is called a
+quadratic program.
+
+## Cone Programs
+
+Second order cone programs
+
+## Integer and Mixed Integer Programs
+
+When all of $x$ is constrained to be integers, or even binary ($\{0,1\}$) values, the problem is called an integer program. If only a few $x$ are constrained to be integers, then the problem is a mixed integer program.
+

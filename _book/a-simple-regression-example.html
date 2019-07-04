@@ -1,0 +1,2088 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 6 A Simple Regression Example | Disciplined Convex Optimization in R</title>
+  <meta name="description" content="Chapter 6 A Simple Regression Example | Disciplined Convex Optimization in R" />
+  <meta name="generator" content="bookdown 0.11 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 6 A Simple Regression Example | Disciplined Convex Optimization in R" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 6 A Simple Regression Example | Disciplined Convex Optimization in R" />
+  
+  
+  
+
+<meta name="author" content="Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd" />
+
+
+<meta name="date" content="2019-07-01" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="disciplined-convex-programming.html">
+<link rel="next" href="how-cvxr-works.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<script src="libs/htmlwidgets-1.3/htmlwidgets.js"></script>
+<script src="libs/d3-3.5.6/d3.min.js"></script>
+<link href="libs/profvis-0.3.6/profvis.css" rel="stylesheet" />
+<script src="libs/profvis-0.3.6/profvis.js"></script>
+<link href="libs/highlight-6.2.0/textmate.css" rel="stylesheet" />
+<script src="libs/highlight-6.2.0/highlight.js"></script>
+<script src="libs/profvis-binding-0.3.6/profvis.js"></script>
+<script>
+  // Added visibility option for solution (naras@stat)
+  $(document).ready(function () {
+      process_solutions();
+  });
+  function process_solutions() {
+      $("div.section[id^='solution']").each(function(i) {
+	  var soln_wrapper_id = "cvxr_ex_" + i;
+	  var solution_id = $(this).attr('id');
+	  var button = $("<button onclick=\"toggle_solution('" + soln_wrapper_id + "')\">Show/Hide</button>");
+	  var new_div = $("<div id='" + soln_wrapper_id + "' class='solution' style='display: none;'></div>");
+	  var h = $(this).first();
+	  var others = $(this).children().slice(1);
+	  $(others).each(function() {
+	      $(this).appendTo($(new_div));
+	  });
+	  $(button).insertAfter($(h));
+	  $(new_div).insertAfter($(button));
+      })
+  }
+  function toggle_solution(el_id) {
+      $("#" + el_id).toggle();
+  } 
+</script>
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Disciplined Convex Optimization in R</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#convex-problems-in-statistics-machine-learning"><i class="fa fa-check"></i><b>1.1</b> Convex Problems in Statistics, Machine Learning</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#non-convex-problems"><i class="fa fa-check"></i><b>1.2</b> Non-convex Problems</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="getting-started.html"><a href="getting-started.html"><i class="fa fa-check"></i><b>2</b> Getting Started</a><ul>
+<li class="chapter" data-level="2.1" data-path="getting-started.html"><a href="getting-started.html#solver-prerequisites"><i class="fa fa-check"></i><b>2.1</b> Solver Prerequisites</a><ul>
+<li class="chapter" data-level="2.1.1" data-path="getting-started.html"><a href="getting-started.html#mosek"><i class="fa fa-check"></i><b>2.1.1</b> MOSEK</a></li>
+<li class="chapter" data-level="2.1.2" data-path="getting-started.html"><a href="getting-started.html#gurobi"><i class="fa fa-check"></i><b>2.1.2</b> GUROBI</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="types-of-convex-optimization-problems.html"><a href="types-of-convex-optimization-problems.html"><i class="fa fa-check"></i><b>3</b> Types of Convex Optimization Problems</a><ul>
+<li class="chapter" data-level="3.1" data-path="types-of-convex-optimization-problems.html"><a href="types-of-convex-optimization-problems.html#linear-programs"><i class="fa fa-check"></i><b>3.1</b> Linear Programs</a></li>
+<li class="chapter" data-level="3.2" data-path="types-of-convex-optimization-problems.html"><a href="types-of-convex-optimization-problems.html#quadratic-programs"><i class="fa fa-check"></i><b>3.2</b> Quadratic Programs</a></li>
+<li class="chapter" data-level="3.3" data-path="types-of-convex-optimization-problems.html"><a href="types-of-convex-optimization-problems.html#cone-programs"><i class="fa fa-check"></i><b>3.3</b> Cone Programs</a></li>
+<li class="chapter" data-level="3.4" data-path="types-of-convex-optimization-problems.html"><a href="types-of-convex-optimization-problems.html#integer-and-mixed-integer-programs"><i class="fa fa-check"></i><b>3.4</b> Integer and Mixed Integer Programs</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="solving-convex-problems.html"><a href="solving-convex-problems.html"><i class="fa fa-check"></i><b>4</b> Solving Convex Problems</a><ul>
+<li class="chapter" data-level="4.1" data-path="solving-convex-problems.html"><a href="solving-convex-problems.html#verifying-convexity"><i class="fa fa-check"></i><b>4.1</b> Verifying Convexity</a></li>
+<li class="chapter" data-level="4.2" data-path="solving-convex-problems.html"><a href="solving-convex-problems.html#domain-specific-languages-for-convex-optimization"><i class="fa fa-check"></i><b>4.2</b> Domain Specific Languages for Convex Optimization</a></li>
+<li class="chapter" data-level="4.3" data-path="solving-convex-problems.html"><a href="solving-convex-problems.html#references"><i class="fa fa-check"></i><b>4.3</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="disciplined-convex-programming.html"><a href="disciplined-convex-programming.html"><i class="fa fa-check"></i><b>5</b> Disciplined Convex Programming</a><ul>
+<li class="chapter" data-level="5.1" data-path="disciplined-convex-programming.html"><a href="disciplined-convex-programming.html#basic-convex-functions"><i class="fa fa-check"></i><b>5.1</b> Basic Convex Functions</a></li>
+<li class="chapter" data-level="5.2" data-path="disciplined-convex-programming.html"><a href="disciplined-convex-programming.html#calculus-rules"><i class="fa fa-check"></i><b>5.2</b> Calculus Rules</a></li>
+<li class="chapter" data-level="5.3" data-path="disciplined-convex-programming.html"><a href="disciplined-convex-programming.html#examples"><i class="fa fa-check"></i><b>5.3</b> Examples</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html"><i class="fa fa-check"></i><b>6</b> A Simple Regression Example</a><ul>
+<li class="chapter" data-level="6.1" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#goals"><i class="fa fa-check"></i><b>6.1</b> Goals</a></li>
+<li class="chapter" data-level="6.2" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#ordinary-least-squares-regression"><i class="fa fa-check"></i><b>6.2</b> Ordinary Least-Squares Regression</a></li>
+<li class="chapter" data-level="6.3" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#the-cvxr-formulation"><i class="fa fa-check"></i><b>6.3</b> The <code>CVXR</code> Formulation</a><ul>
+<li class="chapter" data-level="6.3.1" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#exercise"><i class="fa fa-check"></i><b>6.3.1</b> Exercise</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#adding-constraints"><i class="fa fa-check"></i><b>6.4</b> Adding Constraints</a><ul>
+<li class="chapter" data-level="6.4.1" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#exercise-1"><i class="fa fa-check"></i><b>6.4.1</b> Exercise</a></li>
+<li class="chapter" data-level="6.4.2" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#exercise-2"><i class="fa fa-check"></i><b>6.4.2</b> Exercise</a></li>
+<li class="chapter" data-level="6.4.3" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#exercise-3"><i class="fa fa-check"></i><b>6.4.3</b> Exercise</a></li>
+<li class="chapter" data-level="6.4.4" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#exercise-4"><i class="fa fa-check"></i><b>6.4.4</b> Exercise</a></li>
+</ul></li>
+<li class="chapter" data-level="6.5" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#summary"><i class="fa fa-check"></i><b>6.5</b> Summary</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html"><i class="fa fa-check"></i><b>7</b> How <code>CVXR</code> Works</a><ul>
+<li class="chapter" data-level="7.1" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html#variables"><i class="fa fa-check"></i><b>7.1</b> Variables</a></li>
+<li class="chapter" data-level="7.2" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html#objectives-constraints-and-problems"><i class="fa fa-check"></i><b>7.2</b> Objectives, Constraints, and Problems</a></li>
+<li class="chapter" data-level="7.3" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html#solving-the-problem"><i class="fa fa-check"></i><b>7.3</b> Solving the Problem</a></li>
+<li class="chapter" data-level="7.4" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html#solver-options"><i class="fa fa-check"></i><b>7.4</b> Solver Options</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>8</b> Logistic Regression</a><ul>
+<li class="chapter" data-level="8.1" data-path="logistic-regression.html"><a href="logistic-regression.html#goals-1"><i class="fa fa-check"></i><b>8.1</b> Goals</a></li>
+<li class="chapter" data-level="8.2" data-path="logistic-regression.html"><a href="logistic-regression.html#logistic-regression-problem"><i class="fa fa-check"></i><b>8.2</b> Logistic Regression Problem</a></li>
+<li class="chapter" data-level="8.3" data-path="logistic-regression.html"><a href="logistic-regression.html#example"><i class="fa fa-check"></i><b>8.3</b> Example</a></li>
+<li class="chapter" data-level="8.4" data-path="logistic-regression.html"><a href="logistic-regression.html#exercise-5"><i class="fa fa-check"></i><b>8.4</b> Exercise</a><ul>
+<li class="chapter" data-level="8.4.1" data-path="logistic-regression.html"><a href="logistic-regression.html#solution-5"><i class="fa fa-check"></i><b>8.4.1</b> Solution</a></li>
+</ul></li>
+<li class="chapter" data-level="8.5" data-path="logistic-regression.html"><a href="logistic-regression.html#references-1"><i class="fa fa-check"></i><b>8.5</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="isotonic-regression.html"><a href="isotonic-regression.html"><i class="fa fa-check"></i><b>9</b> Isotonic Regression</a><ul>
+<li class="chapter" data-level="9.1" data-path="isotonic-regression.html"><a href="isotonic-regression.html#goals-2"><i class="fa fa-check"></i><b>9.1</b> Goals</a></li>
+<li class="chapter" data-level="9.2" data-path="isotonic-regression.html"><a href="isotonic-regression.html#pituitary-data-example"><i class="fa fa-check"></i><b>9.2</b> Pituitary Data Example</a><ul>
+<li class="chapter" data-level="9.2.1" data-path="isotonic-regression.html"><a href="isotonic-regression.html#exercise-6"><i class="fa fa-check"></i><b>9.2.1</b> Exercise</a></li>
+</ul></li>
+<li class="chapter" data-level="9.3" data-path="isotonic-regression.html"><a href="isotonic-regression.html#handling-ties"><i class="fa fa-check"></i><b>9.3</b> Handling Ties</a><ul>
+<li class="chapter" data-level="9.3.1" data-path="isotonic-regression.html"><a href="isotonic-regression.html#exercise-7"><i class="fa fa-check"></i><b>9.3.1</b> Exercise</a></li>
+<li class="chapter" data-level="9.3.2" data-path="isotonic-regression.html"><a href="isotonic-regression.html#exercise-8"><i class="fa fa-check"></i><b>9.3.2</b> Exercise</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html"><i class="fa fa-check"></i><b>10</b> Lasso and Elastic Net</a><ul>
+<li class="chapter" data-level="10.1" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html#goals-3"><i class="fa fa-check"></i><b>10.1</b> Goals</a></li>
+<li class="chapter" data-level="10.2" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html#regularized-regression"><i class="fa fa-check"></i><b>10.2</b> Regularized Regression</a><ul>
+<li class="chapter" data-level="10.2.1" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html#exercise-9"><i class="fa fa-check"></i><b>10.2.1</b> Exercise</a></li>
+<li class="chapter" data-level="10.2.2" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html#exercise-10"><i class="fa fa-check"></i><b>10.2.2</b> Exercise</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html"><i class="fa fa-check"></i><b>11</b> Nearly Isotonic Fits</a><ul>
+<li class="chapter" data-level="11.1" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html#goals-4"><i class="fa fa-check"></i><b>11.1</b> Goals</a><ul>
+<li class="chapter" data-level="11.1.1" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html#exercise-11"><i class="fa fa-check"></i><b>11.1.1</b> Exercise</a></li>
+</ul></li>
+<li class="chapter" data-level="11.2" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html#references-2"><i class="fa fa-check"></i><b>11.2</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="speed-considerations.html"><a href="speed-considerations.html"><i class="fa fa-check"></i><b>12</b> Speed Considerations</a><ul>
+<li class="chapter" data-level="12.1" data-path="speed-considerations.html"><a href="speed-considerations.html#goals-5"><i class="fa fa-check"></i><b>12.1</b> Goals</a></li>
+<li class="chapter" data-level="12.2" data-path="speed-considerations.html"><a href="speed-considerations.html#global-warming-example"><i class="fa fa-check"></i><b>12.2</b> Global Warming Example</a></li>
+<li class="chapter" data-level="12.3" data-path="speed-considerations.html"><a href="speed-considerations.html#profiling-the-code"><i class="fa fa-check"></i><b>12.3</b> Profiling the Code</a></li>
+<li class="chapter" data-level="12.4" data-path="speed-considerations.html"><a href="speed-considerations.html#directly-calling-the-solver"><i class="fa fa-check"></i><b>12.4</b> Directly Calling the Solver</a></li>
+<li class="chapter" data-level="12.5" data-path="speed-considerations.html"><a href="speed-considerations.html#profiling-the-direct-call"><i class="fa fa-check"></i><b>12.5</b> Profiling the Direct Call</a></li>
+<li class="chapter" data-level="12.6" data-path="speed-considerations.html"><a href="speed-considerations.html#same-answer"><i class="fa fa-check"></i><b>12.6</b> Same Answer?</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="pliable-lasso.html"><a href="pliable-lasso.html"><i class="fa fa-check"></i><b>13</b> Pliable Lasso</a><ul>
+<li class="chapter" data-level="13.1" data-path="pliable-lasso.html"><a href="pliable-lasso.html#goals-6"><i class="fa fa-check"></i><b>13.1</b> Goals</a></li>
+<li class="chapter" data-level="13.2" data-path="pliable-lasso.html"><a href="pliable-lasso.html#pliable-lasso-problem"><i class="fa fa-check"></i><b>13.2</b> Pliable Lasso Problem</a></li>
+<li class="chapter" data-level="13.3" data-path="pliable-lasso.html"><a href="pliable-lasso.html#example-1"><i class="fa fa-check"></i><b>13.3</b> Example</a><ul>
+<li class="chapter" data-level="13.3.1" data-path="pliable-lasso.html"><a href="pliable-lasso.html#parameters"><i class="fa fa-check"></i><b>13.3.1</b> Parameters</a></li>
+<li class="chapter" data-level="13.3.2" data-path="pliable-lasso.html"><a href="pliable-lasso.html#penalty-terms"><i class="fa fa-check"></i><b>13.3.2</b> Penalty Terms</a></li>
+<li class="chapter" data-level="13.3.3" data-path="pliable-lasso.html"><a href="pliable-lasso.html#fitted-value"><i class="fa fa-check"></i><b>13.3.3</b> Fitted Value</a></li>
+<li class="chapter" data-level="13.3.4" data-path="pliable-lasso.html"><a href="pliable-lasso.html#objective-function"><i class="fa fa-check"></i><b>13.3.4</b> Objective Function</a></li>
+<li class="chapter" data-level="13.3.5" data-path="pliable-lasso.html"><a href="pliable-lasso.html#solving-the-problem-1"><i class="fa fa-check"></i><b>13.3.5</b> Solving the Problem</a></li>
+<li class="chapter" data-level="13.3.6" data-path="pliable-lasso.html"><a href="pliable-lasso.html#return-values"><i class="fa fa-check"></i><b>13.3.6</b> Return Values</a></li>
+</ul></li>
+<li class="chapter" data-level="13.4" data-path="pliable-lasso.html"><a href="pliable-lasso.html#full-function"><i class="fa fa-check"></i><b>13.4</b> Full Function</a></li>
+<li class="chapter" data-level="13.5" data-path="pliable-lasso.html"><a href="pliable-lasso.html#results"><i class="fa fa-check"></i><b>13.5</b> Results</a></li>
+<li class="chapter" data-level="13.6" data-path="pliable-lasso.html"><a href="pliable-lasso.html#final-comments"><i class="fa fa-check"></i><b>13.6</b> Final Comments</a></li>
+<li class="chapter" data-level="13.7" data-path="pliable-lasso.html"><a href="pliable-lasso.html#references-3"><i class="fa fa-check"></i><b>13.7</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="survey-calibration.html"><a href="survey-calibration.html"><i class="fa fa-check"></i><b>14</b> Survey Calibration</a><ul>
+<li class="chapter" data-level="14.1" data-path="survey-calibration.html"><a href="survey-calibration.html#goals-7"><i class="fa fa-check"></i><b>14.1</b> Goals</a></li>
+<li class="chapter" data-level="14.2" data-path="survey-calibration.html"><a href="survey-calibration.html#survey-calibration-problem"><i class="fa fa-check"></i><b>14.2</b> Survey Calibration Problem</a></li>
+<li class="chapter" data-level="14.3" data-path="survey-calibration.html"><a href="survey-calibration.html#raking"><i class="fa fa-check"></i><b>14.3</b> Raking</a><ul>
+<li class="chapter" data-level="14.3.1" data-path="survey-calibration.html"><a href="survey-calibration.html#exercise-12"><i class="fa fa-check"></i><b>14.3.1</b> Exercise</a></li>
+<li class="chapter" data-level="14.3.2" data-path="survey-calibration.html"><a href="survey-calibration.html#exercise-13"><i class="fa fa-check"></i><b>14.3.2</b> Exercise</a></li>
+<li class="chapter" data-level="14.3.3" data-path="survey-calibration.html"><a href="survey-calibration.html#solution-13"><i class="fa fa-check"></i><b>14.3.3</b> Solution</a></li>
+<li class="chapter" data-level="14.3.4" data-path="survey-calibration.html"><a href="survey-calibration.html#exercise-14"><i class="fa fa-check"></i><b>14.3.4</b> Exercise</a></li>
+<li class="chapter" data-level="14.3.5" data-path="survey-calibration.html"><a href="survey-calibration.html#exercise-15"><i class="fa fa-check"></i><b>14.3.5</b> Exercise</a></li>
+</ul></li>
+<li class="chapter" data-level="14.4" data-path="survey-calibration.html"><a href="survey-calibration.html#references-4"><i class="fa fa-check"></i><b>14.4</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html"><i class="fa fa-check"></i><b>15</b> Sparse Inverse Covariance Estimation</a><ul>
+<li class="chapter" data-level="15.1" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#goals-8"><i class="fa fa-check"></i><b>15.1</b> Goals</a></li>
+<li class="chapter" data-level="15.2" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#sparse-inverse-covariance-problem"><i class="fa fa-check"></i><b>15.2</b> Sparse Inverse Covariance Problem</a></li>
+<li class="chapter" data-level="15.3" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#example-2"><i class="fa fa-check"></i><b>15.3</b> Example</a></li>
+<li class="chapter" data-level="15.4" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#results-1"><i class="fa fa-check"></i><b>15.4</b> Results</a></li>
+<li class="chapter" data-level="15.5" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#references-5"><i class="fa fa-check"></i><b>15.5</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="16" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html"><i class="fa fa-check"></i><b>16</b> Portfolio Estimation</a><ul>
+<li class="chapter" data-level="16.1" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#goals-9"><i class="fa fa-check"></i><b>16.1</b> Goals</a></li>
+<li class="chapter" data-level="16.2" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#markovwitz-portfolio-problem"><i class="fa fa-check"></i><b>16.2</b> Markovwitz Portfolio Problem</a></li>
+<li class="chapter" data-level="16.3" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#example-3"><i class="fa fa-check"></i><b>16.3</b> Example</a></li>
+<li class="chapter" data-level="16.4" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#discussion"><i class="fa fa-check"></i><b>16.4</b> Discussion</a></li>
+<li class="chapter" data-level="16.5" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#references-6"><i class="fa fa-check"></i><b>16.5</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="17" data-path="using-other-solvers.html"><a href="using-other-solvers.html"><i class="fa fa-check"></i><b>17</b> Using Other Solvers</a><ul>
+<li class="chapter" data-level="17.1" data-path="using-other-solvers.html"><a href="using-other-solvers.html#goals-10"><i class="fa fa-check"></i><b>17.1</b> Goals</a></li>
+<li class="chapter" data-level="17.2" data-path="using-other-solvers.html"><a href="using-other-solvers.html#default-solvers"><i class="fa fa-check"></i><b>17.2</b> Default Solvers</a></li>
+<li class="chapter" data-level="17.3" data-path="using-other-solvers.html"><a href="using-other-solvers.html#commercial-solvers"><i class="fa fa-check"></i><b>17.3</b> Commercial Solvers</a><ul>
+<li class="chapter" data-level="17.3.1" data-path="using-other-solvers.html"><a href="using-other-solvers.html#gotchas"><i class="fa fa-check"></i><b>17.3.1</b> Gotchas</a></li>
+<li class="chapter" data-level="17.3.2" data-path="using-other-solvers.html"><a href="using-other-solvers.html#installing-mosek"><i class="fa fa-check"></i><b>17.3.2</b> Installing <code>MOSEK</code></a></li>
+<li class="chapter" data-level="17.3.3" data-path="using-other-solvers.html"><a href="using-other-solvers.html#installing-gurobi"><i class="fa fa-check"></i><b>17.3.3</b> Installing <code>GUROBI</code></a></li>
+<li class="chapter" data-level="17.3.4" data-path="using-other-solvers.html"><a href="using-other-solvers.html#example-session"><i class="fa fa-check"></i><b>17.3.4</b> Example Session</a></li>
+</ul></li>
+<li class="chapter" data-level="17.4" data-path="using-other-solvers.html"><a href="using-other-solvers.html#solver-peculiarities"><i class="fa fa-check"></i><b>17.4</b> Solver Peculiarities</a></li>
+<li class="chapter" data-level="17.5" data-path="using-other-solvers.html"><a href="using-other-solvers.html#references-7"><i class="fa fa-check"></i><b>17.5</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="18" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html"><i class="fa fa-check"></i><b>18</b> The Structure of Atoms</a><ul>
+<li class="chapter" data-level="18.1" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#definition"><i class="fa fa-check"></i><b>18.1</b> Definition</a></li>
+<li class="chapter" data-level="18.2" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#atom-properties"><i class="fa fa-check"></i><b>18.2</b> Atom Properties</a><ul>
+<li class="chapter" data-level="18.2.1" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#mathematical-basics"><i class="fa fa-check"></i><b>18.2.1</b> Mathematical Basics</a></li>
+<li class="chapter" data-level="18.2.2" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#dimension-sign-and-curvature"><i class="fa fa-check"></i><b>18.2.2</b> Dimension, Sign, and Curvature</a></li>
+<li class="chapter" data-level="18.2.3" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#additional-characteristics"><i class="fa fa-check"></i><b>18.2.3</b> Additional Characteristics</a></li>
+</ul></li>
+<li class="chapter" data-level="18.3" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#canonicalization"><i class="fa fa-check"></i><b>18.3</b> Canonicalization</a></li>
+<li class="chapter" data-level="18.4" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#putting-it-all-together"><i class="fa fa-check"></i><b>18.4</b> Putting It All Together</a></li>
+</ul></li>
+<li class="chapter" data-level="19" data-path="future-enhancements.html"><a href="future-enhancements.html"><i class="fa fa-check"></i><b>19</b> Future Enhancements</a><ul>
+<li class="chapter" data-level="19.1" data-path="future-enhancements.html"><a href="future-enhancements.html#version-1.0"><i class="fa fa-check"></i><b>19.1</b> Version 1.0</a></li>
+<li class="chapter" data-level="19.2" data-path="future-enhancements.html"><a href="future-enhancements.html#internal-changes"><i class="fa fa-check"></i><b>19.2</b> Internal Changes</a></li>
+</ul></li>
+<li class="chapter" data-level="20" data-path="references-8.html"><a href="references-8.html"><i class="fa fa-check"></i><b>20</b> References</a></li>
+<li class="chapter" data-level="" data-path="references-9.html"><a href="references-9.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Disciplined Convex Optimization in R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="a-simple-regression-example" class="section level1">
+<h1><span class="header-section-number">Chapter 6</span> A Simple Regression Example</h1>
+<div id="goals" class="section level2">
+<h2><span class="header-section-number">6.1</span> Goals</h2>
+<ul>
+<li>Basic introduction to <code>CVXR</code></li>
+<li>Exercise on formulating a different objective, demonstrating how
+<code>CVXR</code> works with native R functions</li>
+<li>Exercises on formulating linear dependence constraints on estimates
+using linear algebra</li>
+<li>Exercises on formulating monotonicity constraints using <code>CVXR</code>
+atoms</li>
+</ul>
+</div>
+<div id="ordinary-least-squares-regression" class="section level2">
+<h2><span class="header-section-number">6.2</span> Ordinary Least-Squares Regression</h2>
+<p>Consider a simple linear regression problem, where it is desired to
+estimate a set of parameters using a least-squares criterion.</p>
+<p>We generate some synthetic data in which we know the model completely,
+i.e.</p>
+<p><span class="math display">\[ 
+Y = X\beta + \epsilon,
+\]</span></p>
+<p>where <span class="math inline">\(Y\)</span> is a <span class="math inline">\(100\times 1\)</span> vector, <span class="math inline">\(X\)</span> is a <span class="math inline">\(100\times 10\)</span> matrix,
+<span class="math inline">\(\beta = [-4, -3, \ldots ,4, 5]\)</span> is a <span class="math inline">\(10\times 1\)</span> vector, and
+<span class="math inline">\(\epsilon \sim N(0, 1)\)</span>.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">set.seed</span>(<span class="dv">123</span>)
+n &lt;-<span class="st"> </span><span class="dv">50</span>; p &lt;-<span class="st"> </span><span class="dv">10</span>;
+beta &lt;-<span class="st"> </span><span class="dv">-4</span><span class="op">:</span><span class="dv">5</span>    <span class="co"># beta is just -4 through 5.</span>
+X &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rnorm</span>(n <span class="op">*</span><span class="st"> </span>p), <span class="dt">nrow=</span>n)
+<span class="kw">colnames</span>(X) &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;beta_&quot;</span>, beta)
+Y &lt;-<span class="st"> </span>X <span class="op">%*%</span><span class="st"> </span>beta <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(n)</code></pre>
+<p>Given the data <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>, we can estimate the <span class="math inline">\(\beta\)</span> vector using the
+<code>lm</code> function in R, which fits a standard regression model.</p>
+<pre class="sourceCode r"><code class="sourceCode r">ls.model &lt;-<span class="st"> </span><span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span><span class="dv">0</span> <span class="op">+</span><span class="st"> </span>X)   <span class="co"># There is no intercept in our model above</span>
+m &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">coef</span>(ls.model), <span class="dt">ncol =</span> <span class="dv">1</span>)</code></pre>
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+<tbody>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{1}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-3.9025328
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{2}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-2.9683386
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{3}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-1.8234267
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{4}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-1.1562133
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{5}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0.0753986
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{6}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0.9224317
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{7}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+1.8799511
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{8}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+3.1107020
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{9}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+4.1086503
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{10}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+5.0947592
+</td>
+</tr>
+</tbody>
+</table>
+<p>These are the least-squares estimates and can be seen to be reasonably
+close to the original <span class="math inline">\(\beta\)</span> values -4 through 5.</p>
+</div>
+<div id="the-cvxr-formulation" class="section level2">
+<h2><span class="header-section-number">6.3</span> The <code>CVXR</code> Formulation</h2>
+<p>The <code>CVXR</code> formulation states the above as an optimization problem:
+<span class="math display">\[
+  \begin{array}{ll}
+    \underset{\beta}{\mbox{minimize}} &amp; \|y - X\beta\|_2^2,
+  \end{array}
+\]</span>
+which directly translates into a problem that <code>CVXR</code> can solve as shown
+in the steps below.</p>
+<ul>
+<li>Step 0. Load the <code>CVXR</code> library</li>
+</ul>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(CVXR, <span class="dt">warn.conflicts=</span><span class="ot">FALSE</span>)</code></pre>
+<ul>
+<li>Step 1. Define the variable to be estimated</li>
+</ul>
+<pre class="sourceCode r"><code class="sourceCode r">beta &lt;-<span class="st"> </span><span class="kw">Variable</span>(p)</code></pre>
+<ul>
+<li>Step 2. Define the objective to be optimized</li>
+</ul>
+<pre class="sourceCode r"><code class="sourceCode r">objective &lt;-<span class="st"> </span><span class="kw">Minimize</span>(<span class="kw">sum</span>((Y <span class="op">-</span><span class="st"> </span>X <span class="op">%*%</span><span class="st"> </span>beta)<span class="op">^</span><span class="dv">2</span>))</code></pre>
+<p>Notice how the objective is specified using functions such as <code>sum</code>,
+<code>*%*</code>, and <code>^</code> that are familiar to R users despite the fact that
+<code>beta</code> is no ordinary R expression, but a <code>CVXR</code> expression.
+- Step 3. Create a problem to solve</p>
+<pre class="sourceCode r"><code class="sourceCode r">problem &lt;-<span class="st"> </span><span class="kw">Problem</span>(objective)</code></pre>
+<ul>
+<li>Step 4. Solve it!</li>
+</ul>
+<pre class="sourceCode r"><code class="sourceCode r">result &lt;-<span class="st"> </span><span class="kw">solve</span>(problem)</code></pre>
+<ul>
+<li>Step 5. Examine solution status and obtain objective value and estimate</li>
+</ul>
+<pre><code>## OLS Solution Status: optimal, OLS Objective value: 34.134608</code></pre>
+<p>We can indeed satisfy ourselves that the results we get match those
+from <code>lm</code>.</p>
+<pre class="sourceCode r"><code class="sourceCode r">m &lt;-<span class="st"> </span><span class="kw">cbind</span>(result<span class="op">$</span><span class="kw">getValue</span>(beta), <span class="kw">coef</span>(ls.model))</code></pre>
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+CVXR est.
+</th>
+<th style="text-align:right;">
+lm est.
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{1}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-3.9025287
+</td>
+<td style="text-align:right;">
+-3.9025328
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{2}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-2.9683398
+</td>
+<td style="text-align:right;">
+-2.9683386
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{3}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-1.8234197
+</td>
+<td style="text-align:right;">
+-1.8234267
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{4}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-1.1562118
+</td>
+<td style="text-align:right;">
+-1.1562133
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{5}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0.0753994
+</td>
+<td style="text-align:right;">
+0.0753986
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{6}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0.9224320
+</td>
+<td style="text-align:right;">
+0.9224317
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{7}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+1.8799483
+</td>
+<td style="text-align:right;">
+1.8799511
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{8}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+3.1107023
+</td>
+<td style="text-align:right;">
+3.1107020
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{9}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+4.1086481
+</td>
+<td style="text-align:right;">
+4.1086503
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{10}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+5.0947622
+</td>
+<td style="text-align:right;">
+5.0947592
+</td>
+</tr>
+</tbody>
+</table>
+<div id="exercise" class="section level3">
+<h3><span class="header-section-number">6.3.1</span> Exercise</h3>
+<ol style="list-style-type: decimal">
+<li>Modify the objective to perform least absolute deviation regression
+and solve the problem. Compare the results to OLS. Which objective has
+a lower value?</li>
+</ol>
+<div id="solution" class="section level4">
+<h4><span class="header-section-number">6.3.1.1</span> Solution</h4>
+<pre class="sourceCode r"><code class="sourceCode r">objective2 &lt;-<span class="st"> </span><span class="kw">Minimize</span>(<span class="kw">sum</span>(<span class="kw">abs</span>(Y <span class="op">-</span><span class="st"> </span>X <span class="op">%*%</span><span class="st"> </span>beta)))
+problem2 &lt;-<span class="st"> </span><span class="kw">Problem</span>(objective2)
+result2 &lt;-<span class="st"> </span><span class="kw">solve</span>(problem2)
+<span class="kw">cat</span>(<span class="kw">sprintf</span>(<span class="st">&quot;LAD Solution Status: %s, LAD Objective value: %f</span><span class="ch">\n</span><span class="st">&quot;</span>, result2<span class="op">$</span>status, result2<span class="op">$</span>value))</code></pre>
+<pre><code>## LAD Solution Status: optimal, LAD Objective value: 31.270018</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">m2 &lt;-<span class="st"> </span><span class="kw">cbind</span>(result2<span class="op">$</span><span class="kw">getValue</span>(beta), <span class="kw">coef</span>(ls.model))</code></pre>
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+CVXR LAD est.
+</th>
+<th style="text-align:right;">
+lm est.
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{1}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-4.0324773
+</td>
+<td style="text-align:right;">
+-3.9025328
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{2}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-2.8267845
+</td>
+<td style="text-align:right;">
+-2.9683386
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{3}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-1.9473476
+</td>
+<td style="text-align:right;">
+-1.8234267
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{4}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-1.1859615
+</td>
+<td style="text-align:right;">
+-1.1562133
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{5}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0.1886891
+</td>
+<td style="text-align:right;">
+0.0753986
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{6}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0.9447007
+</td>
+<td style="text-align:right;">
+0.9224317
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{7}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+1.9321485
+</td>
+<td style="text-align:right;">
+1.8799511
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{8}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+3.0070658
+</td>
+<td style="text-align:right;">
+3.1107020
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{9}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+4.2535749
+</td>
+<td style="text-align:right;">
+4.1086503
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{10}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+5.0186776
+</td>
+<td style="text-align:right;">
+5.0947592
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="st">&quot;LAD objective value: %f, OLS objective value: %f</span><span class="ch">\n</span><span class="st">&quot;</span>,
+    result2<span class="op">$</span>value, result<span class="op">$</span>value)</code></pre>
+<pre><code>## LAD objective value: %f, OLS objective value: %f
+##  31.27002 34.13461</code></pre>
+<p><strong>N.B.</strong> Note the reuse of <code>beta</code> in <code>objective2</code>. The value of
+<code>beta</code> will change depending on the problem context, and the
+function <code>result$getValue()</code> or <code>result2$getValue()</code> will account for
+the context as shown below.</p>
+<pre class="sourceCode r"><code class="sourceCode r">m3 &lt;-<span class="st"> </span><span class="kw">cbind</span>(result<span class="op">$</span><span class="kw">getValue</span>(beta), result2<span class="op">$</span><span class="kw">getValue</span>(beta))</code></pre>
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Problem 1 est.
+</th>
+<th style="text-align:right;">
+Problem 2 est.
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{1}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-3.9025287
+</td>
+<td style="text-align:right;">
+-4.0324773
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{2}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-2.9683398
+</td>
+<td style="text-align:right;">
+-2.8267845
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{3}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-1.8234197
+</td>
+<td style="text-align:right;">
+-1.9473476
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{4}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-1.1562118
+</td>
+<td style="text-align:right;">
+-1.1859615
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{5}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0.0753994
+</td>
+<td style="text-align:right;">
+0.1886891
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{6}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0.9224320
+</td>
+<td style="text-align:right;">
+0.9447007
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{7}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+1.8799483
+</td>
+<td style="text-align:right;">
+1.9321485
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{8}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+3.1107023
+</td>
+<td style="text-align:right;">
+3.0070658
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{9}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+4.1086481
+</td>
+<td style="text-align:right;">
+4.2535749
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{10}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+5.0947622
+</td>
+<td style="text-align:right;">
+5.0186776
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="adding-constraints" class="section level2">
+<h2><span class="header-section-number">6.4</span> Adding Constraints</h2>
+<p>On the surface, it appears that we have replaced one call to <code>lm</code> with
+at least five or six lines of new R code. On top of that, the code
+actually runs slower, so it is not clear what we really achieved.</p>
+<p>However, suppose we knew that the <span class="math inline">\(\beta\)</span>s were nonnegative and wished to
+take this fact into account in our model. This
+is <a href="https://en.wikipedia.org/wiki/Non-negative_least_squares">nonnegative least squares regression</a>, and
+<code>lm</code> would no longer do the job.</p>
+<p>In <code>CVXR</code>, the modified problem merely requires the addition of a constraint to the
+problem definition.</p>
+<pre class="sourceCode r"><code class="sourceCode r">problem &lt;-<span class="st"> </span><span class="kw">Problem</span>(objective, <span class="dt">constraints =</span> <span class="kw">list</span>(beta <span class="op">&gt;=</span><span class="st"> </span><span class="dv">0</span>))
+result &lt;-<span class="st"> </span><span class="kw">solve</span>(problem)
+betaEstimate &lt;-<span class="st"> </span>result<span class="op">$</span><span class="kw">getValue</span>(beta)</code></pre>
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+<tbody>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{1}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0.000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{2}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0.000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{3}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0.000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{4}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0.000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{5}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+1.190669
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{6}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+1.460135
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{7}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+1.817812
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{8}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+3.147371
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{9}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+5.828918
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{10}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+5.287357
+</td>
+</tr>
+</tbody>
+</table>
+<p>We can verify once again that these values are comparable to those
+obtained from another R package,
+say <a href="https://CRAN.R-project.org/package=nnls">nnls</a>.</p>
+<pre class="sourceCode r"><code class="sourceCode r">nnls.fit &lt;-<span class="st"> </span>nnls<span class="op">::</span><span class="kw">nnls</span>(X, Y)<span class="op">$</span>x
+m &lt;-<span class="st"> </span><span class="kw">cbind</span>(betaEstimate, nnls.fit)</code></pre>
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+CVXR NNLS est.
+</th>
+<th style="text-align:right;">
+nnls est.
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{1}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0.000000
+</td>
+<td style="text-align:right;">
+0.000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{2}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0.000000
+</td>
+<td style="text-align:right;">
+0.000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{3}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0.000000
+</td>
+<td style="text-align:right;">
+0.000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{4}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0.000000
+</td>
+<td style="text-align:right;">
+0.000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{5}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+1.190669
+</td>
+<td style="text-align:right;">
+1.190672
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{6}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+1.460135
+</td>
+<td style="text-align:right;">
+1.460162
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{7}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+1.817812
+</td>
+<td style="text-align:right;">
+1.817840
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{8}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+3.147371
+</td>
+<td style="text-align:right;">
+3.147380
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{9}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+5.828918
+</td>
+<td style="text-align:right;">
+5.828936
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{10}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+5.287357
+</td>
+<td style="text-align:right;">
+5.287308
+</td>
+</tr>
+</tbody>
+</table>
+<div id="exercise-1" class="section level3">
+<h3><span class="header-section-number">6.4.1</span> Exercise</h3>
+<p>Suppose it is known that <span class="math inline">\(\sum_{i=1}^4\beta_i &lt;= 0\)</span>. Modify the original OLS problem to add this constraint.</p>
+<div id="solution-1" class="section level4">
+<h4><span class="header-section-number">6.4.1.1</span> Solution</h4>
+<p>The obvious solution is to add a constraint of the form</p>
+<pre class="sourceCode r"><code class="sourceCode r">constraint1 &lt;-<span class="st"> </span>beta[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>beta[<span class="dv">2</span>] <span class="op">+</span><span class="st"> </span>beta[<span class="dv">3</span>] <span class="op">+</span><span class="st"> </span>beta[<span class="dv">4</span>] <span class="op">&lt;=</span><span class="st"> </span><span class="dv">0</span></code></pre>
+<p>but it is generally easier working with matrices in <code>CVXR</code>, and so
+we construct a row vector with zeros everywhere except in positions 1
+through 4.</p>
+<pre class="sourceCode r"><code class="sourceCode r">A &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">1</span>, <span class="dv">4</span>), <span class="kw">rep</span>(<span class="dv">0</span>, <span class="dv">6</span>)), <span class="dt">nrow =</span> <span class="dv">1</span>)</code></pre>
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:right;">
+<span class="math inline">\(\beta_{1}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(\beta_{2}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(\beta_{3}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(\beta_{4}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(\beta_{5}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(\beta_{6}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(\beta_{7}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(\beta_{8}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(\beta_{9}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(\beta_{10}\)</span>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;background-color: #ececec !important;">
+1
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+<p>The sum constraint on <span class="math inline">\(\beta\)</span> is therefore
+<span class="math display">\[
+A\beta &lt;= 0
+\]</span>
+which we express in R as</p>
+<pre class="sourceCode r"><code class="sourceCode r">constraint1 &lt;-<span class="st"> </span>A <span class="op">%*%</span><span class="st"> </span>beta <span class="op">&lt;=</span><span class="st"> </span><span class="dv">0</span></code></pre>
+<p>We are ready to solve the problem.</p>
+<pre class="sourceCode r"><code class="sourceCode r">problem &lt;-<span class="st"> </span><span class="kw">Problem</span>(objective, <span class="dt">constraints =</span> <span class="kw">list</span>(constraint1))
+ex1 &lt;-<span class="st"> </span><span class="kw">solve</span>(problem)</code></pre>
+<p>And we can get the estimates of <span class="math inline">\(\beta\)</span>.</p>
+<pre class="sourceCode r"><code class="sourceCode r">betaEstimate &lt;-<span class="st"> </span>ex1<span class="op">$</span><span class="kw">getValue</span>(beta)</code></pre>
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+<tbody>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{1}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-3.9025294
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{2}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-2.9683400
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{3}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-1.8234216
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{4}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-1.1562124
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{5}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0.0753985
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{6}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0.9224310
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{7}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+1.8799481
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{8}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+3.1107013
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{9}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+4.1086493
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{10}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+5.0947612
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="exercise-2" class="section level3">
+<h3><span class="header-section-number">6.4.2</span> Exercise</h3>
+<p>Add an additional constraint to the previous exercise that
+<span class="math inline">\(\beta_i \leq 4\)</span> for <span class="math inline">\(i=5,\ldots,10\)</span>.</p>
+<div id="solution-2" class="section level4">
+<h4><span class="header-section-number">6.4.2.1</span> Solution</h4>
+<p>We create a diagonal matrix with ones along the diagonal entries <span class="math inline">\(i=5,\ldots,10\)</span>.</p>
+<pre class="sourceCode r"><code class="sourceCode r">B &lt;-<span class="st"> </span><span class="kw">diag</span>(<span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>), <span class="kw">rep</span>(<span class="dv">1</span>, <span class="dv">6</span>)))</code></pre>
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(\beta_{1}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(\beta_{2}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(\beta_{3}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(\beta_{4}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(\beta_{5}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(\beta_{6}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(\beta_{7}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(\beta_{8}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(\beta_{9}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(\beta_{10}\)</span>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{1}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{2}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{3}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{4}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{5}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{6}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{7}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{8}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{9}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{10}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+</tbody>
+</table>
+<p>So this new constraint is nothing but</p>
+<pre class="sourceCode r"><code class="sourceCode r">constraint2 &lt;-<span class="st"> </span>B <span class="op">%*%</span><span class="st"> </span>beta <span class="op">&lt;=</span><span class="st"> </span><span class="dv">4</span>
+problem2 &lt;-<span class="st"> </span><span class="kw">Problem</span>(objective, <span class="dt">constraints =</span> <span class="kw">list</span>(constraint1, constraint2))
+ex2 &lt;-<span class="st"> </span><span class="kw">solve</span>(problem2)
+betaEstimate &lt;-<span class="st"> </span>ex2<span class="op">$</span><span class="kw">getValue</span>(beta)</code></pre>
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+<tbody>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{1}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-4.0635758
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{2}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-2.9932126
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{3}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-1.9214620
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{4}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-1.0858502
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{5}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0.0684265
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{6}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0.8810524
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{7}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+1.8415389
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{8}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+3.0255391
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{9}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+4.0000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{10}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+4.0000000
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="exercise-3" class="section level3">
+<h3><span class="header-section-number">6.4.3</span> Exercise</h3>
+<p>Solve the OLS regression problem under the constraint that the
+<span class="math inline">\(\beta_i\)</span> are nonnegative and monotonically nondecreasing.</p>
+<p><em>Hint</em>: What function in R computes lagged differences?</p>
+<div id="solution-3" class="section level4">
+<h4><span class="header-section-number">6.4.3.1</span> Solution</h4>
+<p>This requires some additional knowledge about R and <code>CVXR</code>
+functions. The <code>base::diff</code> generic function generates lagged
+differences of any order. <code>CVXR</code> provides a method for the generic. So
+the monotonicity constraint can be succintly expressed as <code>diff(beta) &gt;= 0</code>.</p>
+<pre class="sourceCode r"><code class="sourceCode r">problem3 &lt;-<span class="st"> </span><span class="kw">Problem</span>(objective,
+                   <span class="dt">constraints =</span> <span class="kw">list</span>(beta <span class="op">&gt;=</span><span class="st"> </span><span class="dv">0</span>, <span class="kw">diff</span>(beta) <span class="op">&gt;=</span><span class="st"> </span><span class="dv">0</span>))
+ex3 &lt;-<span class="st"> </span><span class="kw">solve</span>(problem3)
+betaEstimate &lt;-<span class="st"> </span>ex3<span class="op">$</span><span class="kw">getValue</span>(beta)</code></pre>
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+<tbody>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{1}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0.000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{2}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0.000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{3}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0.000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{4}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0.000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{5}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+1.168836
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{6}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+1.448058
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{7}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+1.842127
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{8}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+3.233809
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{9}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+5.564729
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{10}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+5.564729
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="exercise-4" class="section level3">
+<h3><span class="header-section-number">6.4.4</span> Exercise</h3>
+<p>Fit OLS with just the following order constraints on <span class="math inline">\(\beta\)</span>:
+<span class="math inline">\(\beta_{i} \leq \beta_{i+1}\)</span> for <span class="math inline">\(i=1,\ldots, 4\)</span> and <span class="math inline">\(\beta_i \geq \beta_{i+1}\)</span> for <span class="math inline">\(i=5,\ldots,p\)</span>.</p>
+<div id="solution-4" class="section level4">
+<h4><span class="header-section-number">6.4.4.1</span> Solution</h4>
+<p>We have to combine all that we have learned earlier.</p>
+<pre class="sourceCode r"><code class="sourceCode r">D1 &lt;-<span class="st"> </span>D2 &lt;-<span class="st"> </span><span class="kw">diag</span>(<span class="dv">0</span>, p)
+D1[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">5</span>] &lt;-<span class="st"> </span><span class="dv">1</span>; D2[<span class="dv">5</span><span class="op">:</span>p, <span class="dv">5</span><span class="op">:</span>p] &lt;-<span class="st"> </span><span class="dv">1</span>;
+D3 &lt;-<span class="st"> </span>D4 &lt;-<span class="st"> </span><span class="kw">diag</span>(<span class="dv">0</span>, p <span class="op">-</span><span class="st"> </span><span class="dv">1</span>)
+D3[<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">4</span>] &lt;-<span class="st"> </span><span class="dv">1</span>; D4[<span class="dv">5</span><span class="op">:</span>(p<span class="dv">-1</span>), <span class="dv">5</span><span class="op">:</span>(p<span class="dv">-1</span>)] &lt;-<span class="st"> </span><span class="dv">1</span>;
+constraints =<span class="st"> </span><span class="kw">list</span>(D3 <span class="op">%*%</span><span class="st"> </span><span class="kw">diff</span>(D1 <span class="op">%*%</span><span class="st"> </span>beta) <span class="op">&gt;=</span><span class="st"> </span><span class="dv">0</span>, D4 <span class="op">%*%</span><span class="st"> </span><span class="kw">diff</span>(D2 <span class="op">%*%</span><span class="st"> </span>beta) <span class="op">&lt;=</span><span class="st"> </span><span class="dv">0</span>)
+problem4 &lt;-<span class="st"> </span><span class="kw">Problem</span>(objective, constraints)
+ex4 &lt;-<span class="st"> </span><span class="kw">solve</span>(problem4)
+betaEstimate &lt;-<span class="st"> </span>ex4<span class="op">$</span><span class="kw">getValue</span>(beta)</code></pre>
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+<tbody>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{1}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-3.902531
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{2}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-2.968339
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{3}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-1.823424
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{4}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+-1.156213
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{5}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0.075399
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{6}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+0.922432
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{7}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+1.879950
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{8}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+3.110702
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{9}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+4.108650
+</td>
+</tr>
+<tr>
+<td style="text-align:left;background-color: #ececec !important;">
+<span class="math inline">\(\beta_{10}\)</span>
+</td>
+<td style="text-align:right;background-color: #ececec !important;">
+5.094760
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="summary" class="section level2">
+<h2><span class="header-section-number">6.5</span> Summary</h2>
+<p>This introduction demonstrates a chief advantage of <code>CVXR</code>:
+<em>flexibility</em>. Users can quickly modify and re-solve a problem, which
+is ideal for prototyping and experimenting with new statistical
+methods. The <code>CVXR</code> syntax is simple and mathematically
+intuitive. Furthermore, <code>CVXR</code> combines seamlessly with native R code
+as well as several popular packages, allowing it to be incorporated
+easily into a larger analytical framework. The user is free to
+construct statistical estimators that are solutions to a convex
+optimization problem where there may not be a closed form solution or
+even an implementation. Later, we will see how such solutions can be
+used with resampling techniques like the bootstrap to estimate
+variability.</p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="disciplined-convex-programming.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="how-cvxr-works.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"download": ["cvxr_tutorial.pdf", "cvxr_tutorial.epub"],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:" && /^https?:/.test(src))
+      src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

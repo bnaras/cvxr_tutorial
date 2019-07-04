@@ -1,0 +1,84 @@
+# Getting Started 
+
+The following are pre-requisites.
+
+- A recent R installation (version 3.5.x and up) will do. However, we
+  highly recommend 3.6.0 so as to avoid any unforeseen problems with `CVXR`.
+
+- [`CVXR`](https://cran.r-project.org/package=CVXR) version 0.99-6,
+  which can be installed like any other package from
+  [CRAN](https://cran.r-project.org).
+
+- An IDE/editing environment such as [Rstudio](https://rstudio.com),
+  [Emacs](https://www.gnu.org/software/emacs/), or equivalent. If you
+  use Emacs, we recommend the version packaged and distributed by
+  [Vincent Goulet](https://vgoulet.act.ulaval.ca/en/home/) as it
+  includes many useful modes. (We find, however, that recent versions
+  of these Emacs binaries do not include `poly-R` or the
+  `poly-markdown` packages by default; you'll have to install them
+  like any other Emacs package.)
+  
+- All the additional libraries that are used in this tutorial. The
+  following code snippet in your R session will install them for you.
+  
+```{r, eval = FALSE}
+required_packages  <- c("tidyr",
+                        "ggplot2",
+                        "nnls",
+                        "ISLR",
+                        "glmnet",
+                        "isotone",
+                        "profvis",
+                        "dplyr",
+                        "survey",
+                        "expm",
+                        "RColorBrewer",
+                        "kableExtra")
+install.packages(required_packages)
+```
+
+## Solver Prerequisites 
+
+`CVXR` comes with open source solvers, and most of the tutorial will
+use these _built-in_ open source solvers. However, we will discuss use
+of commercial solvers, [MOSEK](https://www.mosek.com) and
+[GUROBI](https://www.gurobi.com) in particular. These are optional and
+not necessary for the tutorial.
+
+If, however, you wish to follow along, you will need to install the
+(binary) solver packages provided by the vendors. Luckily, academic
+and evaluation single user licenses are available for free.
+
+Ensure you have the R development tools installed:
+  [Xcode](https://developer.apple.com/xcode/) on Macs,
+  [Rtools](http://cran.r-project.org/bin/windows/Rtools/) on
+  Windows.
+
+### MOSEK
+
+1. Follow the [general
+setup](https://docs.mosek.com/9.0/install/index.html) instructions.
+
+2. Obtain an [evaluation or personal academic
+license](https://docs.mosek.com/9.0/licensing/quickstart.html#i-don-t-have-a-license-file-yet).
+
+3. Follow the [instructions
+provided](https://docs.mosek.com/9.0/rmosek/install-interface.html#system-requirements)
+to install the `Rmosek` package.
+
+4. Ensure that you can run any one of the [R examples](https://docs.mosek.com/9.0/rmosek/optimization-tutorials.html). 
+
+### GUROBI
+
+1. Download [GUROBI optimizer version
+8.1.1](http://www.gurobi.com/downloads/gurobi-optimizer). You will
+have to register for an account and accept the license agreement.
+
+2. Obtain an [evaluation or academic licence](http://www.gurobi.com/downloads/licenses/license-center).
+
+3. Install the GUROBI R package using [these
+instructions](http://www.gurobi.com/documentation/8.1/quickstart_mac/r_installing_the_r_package.html).
+
+4. Ensure that you can run any one of the [R
+examples](http://www.gurobi.com/documentation/8.1/examples/r_examples.html).
+

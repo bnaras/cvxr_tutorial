@@ -1,0 +1,61 @@
+\usepackage{booktabs}
+
+% some traditional defintions that can be blamed on craig barratt
+\newcommand{\BEAS}{\begin{eqnarray*}}
+\newcommand{\EEAS}{\end{eqnarray*}}
+\newcommand{\BEA}{\begin{eqnarray}}
+\newcommand{\EEA}{\end{eqnarray}}
+\newcommand{\BEQ}{\begin{equation}}
+\newcommand{\EEQ}{\end{equation}}
+\newcommand{\BIT}{\begin{itemize}}
+\newcommand{\EIT}{\end{itemize}}
+\newcommand{\BNUM}{\begin{enumerate}}
+\newcommand{\ENUM}{\end{enumerate}}
+\newcommand{\BF}{\begin{frame}}
+\newcommand{\EF}{\end{frame}}
+
+\newcommand{\argmin}{\mathop{\rm argmin}}
+\newcommand{\sign}{\mathop{\rm sign}}
+
+% text abbrevs
+\newcommand{\cf}{{\it cf.}}
+\newcommand{\eg}{{\it e.g.}}
+\newcommand{\ie}{{\it i.e.}}
+\newcommand{\etc}{{\it etc.}}
+
+\newcommand{\ones}{\mathbf 1}
+
+% std math stuff
+\newcommand{\reals}{{\mbox{\bf R}}}
+\newcommand{\integers}{{\mbox{\bf Z}}}
+\newcommand{\complex}{{\mbox{\bf C}}}
+\newcommand{\symm}{{\mbox{\bf S}}}  % symmetric matrices
+
+% lin alg stuff
+\newcommand{\Span}{\mbox{\textrm{span}}}
+\newcommand{\Range}{\mbox{\textrm{range}}}
+\newcommand{\nullspace}{{\mathcal N}}
+\newcommand{\range}{{\mathcal R}}
+\newcommand{\Nullspace}{\mbox{\textrm{nullspace}}}
+\newcommand{\Rank}{\mathop{\bf Rank}}
+\newcommand{\Card}{\mathop{\bf Card}}
+\newcommand{\Tr}{\mathop{\bf Tr}}
+\newcommand{\diag}{\mathop{\bf diag}}
+\newcommand{\lambdamax}{{\lambda_{\rm max}}}
+\newcommand{\lambdamin}{\lambda_{\rm min}}
+
+% probability stuff
+\newcommand{\Expect}{\mathop{\bf E{}}}
+\newcommand{\Prob}{\mathop{\bf Prob}}
+\newcommand{\var}{\mathop{\bf var}}
+\newcommand{\std}{\mathop{\bf std}}
+\newcommand{\cov}{\mathop{\bf cov}}
+\newcommand{\erf}{\mathop{\bf erf}}
+
+\usepackage{pgfplots}
+\begin{tikzpicture}
+  %preamble 
+  \begin{axis}[xmin=-1.5, xmax=1.5, samples=101]
+    \addplot[blue, ultra thick] (x, {x^2});
+  \end{axis}
+\end{tikzpicture}

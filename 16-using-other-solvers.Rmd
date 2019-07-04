@@ -1,0 +1,170 @@
+# Using Other Solvers
+
+## Goals
+
+- Show how to use non-default solvers like `MOSEK` and `GUROBI`
+- Discuss solver peculiarities
+
+## Default Solvers
+
+The default installation of `CVXR` comes with two (imported) open
+source solvers:
+
+- [ECOS](https://github.com/embotech/ecos) and its mixed integer
+  cousin `ECOS_BB` via the CRAN package
+  [ECOSolveR](https://cloud.r-project.org/package=ECOSolveR)
+- [SCS](https://github.com/cvxgrp/scs) via the CRAN package
+  [scs](https://cloud.r-project.org/package=scs).
+  
+`CVXR` can also make use of several other open source solvers
+implemented in R packages. 
+
+- The linear and mixed integer programming package
+  [`lpSolve`](http://lpsolve.sourceforge.net/5.5/) via the 
+  [`lpSolveAPI`](https://cloud.r-project.org/package=lpSolveAPI) package
+- The linear and mixed integer programming package [`GLPK`](https://www.gnu.org/software/glpk/) via the 
+  [`Rglpk`](https://cloud.r-project.org/package=Rglpk) package.
+  
+Since these are optional, you must install the packages yourself.
+
+```{r}
+lapply(list(LPSOLVE = "lpSolveAPI",
+            GLPK = "Rglpk"),
+       function(x) x %in% installed.packages()[, 1])
+```
+
+Once the packages are installed, a call to `installed_solvers` will
+display the solvers that `CVXR` has detected.
+
+## Commercial Solvers
+
+A few commercial solvers are also currently supported: [MOSEK](https://www.mosek.com) and
+[GUROBI](https://www.gurobi.com).
+
+At the moment, `CVXR` calls vendor Python solver packages via
+[`reticulate`](https://cran.r-project.org/package=reticulate), _not R
+packages_. Future versions will provide support directly using
+[_problem
+reductions_](https://web.stanford.edu/~boyd/papers/cvxpy_rewriting.html),
+implemented in [`CVXPY` version 1.0](https://www.cvxpy.org/).
+
+Thus, one needs two prerequisites to use these commercial solvers:
+
+- A Python installation in addition to R
+- The
+  [`reticulate`](https://cran.r-project.org/package=reticulate) R
+  package. 
+  
+We also recommend that you ensure `reticulate` is installed
+correctly and working. For example `reticulate::py_eval('1+1')` should return
+`2`. 
+
+### Gotchas
+
+If you have an Anaconda installation in your path, you have
+to account for the fact that there may be interactions when using
+RStudio and rendering documents. In particular, Anaconda may include
+its own version of pandoc and other tools that may conflict with what
+Rstudio needs to work properly.
+
+To be concrete, one problem we found was that the `MOSEK` solver was
+not recognized as available in this rendered document, even
+though the command line interface showed it to be present. Ensuring an
+appropriate `PATH` variable solves the problem. 
+
+
+### Installing `MOSEK`
+
+[MOSEK](https://www.mosek.com) provides an academic version that is
+free of charge. As noted in the downloads page, Anaconda users can
+install merely via:
+
+```{bash, eval=FALSE}
+conda install -c mosek mosek
+```
+
+Others can use the `pip` command:
+
+```{bash, eval = FALSE}
+pip install -f https://download.mosek.com/stable/wheel/index.html Mosek
+```
+
+In addition, the license for the product has to be activated per
+instructions on the `Sales` section of the MOSEK web page.
+
+Once activated, you can check that `CVXR` recognizes the solver;
+`installed_solvers()` should list `MOSEK`. Otherwise, rinse and repeat
+until success.
+
+### Installing `GUROBI`
+
+[GUROBI](https://www.gurobi.com) also provides an academic version
+that is free of charge. You must register to receive the license. 
+
+Once registered, install the _Gurobi Optimizer_ software and activate
+your license as necessary.
+
+After activation, you can check that `CVXR::installed_solvers()` lists
+`GUROBI`. Otherwise, rinse and repeat until success.
+
+### Example Session
+
+```{r}
+installed_solvers()
+```
+
+## Solver Peculiarities
+
+The default solver in `CVXR` is `ECOS`. However, it is not always the
+best solver to use. As an example, let us consider again the [catenary
+problem](/cvxr_examples/cvxr_catenary/). 
+
+We will change the problem slightly to use a finer discretization from
+101 to 501 points.
+
+```{r}
+## Problem data
+m <- 501
+L <- 2
+h <- L / (m - 1)
+
+## Form objective
+x <- Variable(m)
+y <- Variable(m)
+objective <- Minimize(sum(y))
+
+## Form constraints
+constraints <- list(x[1] == 0, y[1] == 1,
+                    x[m] == 1, y[m] == 1,
+                    diff(x)^2 + diff(y)^2 <= h^2)
+
+## Solve the catenary problem
+prob <- Problem(objective, constraints)
+result <- solve(prob)
+```
+
+The solution status is no longer optimal.
+
+```{r}
+cat("Solution status is", result$status)
+```
+
+In such cases, using a different solver may give more accurate
+results. Let us try `MOSEK`.
+
+```{r}
+if ("MOSEK" %in% installed_solvers()) {
+    result <- solve(prob, solver = "MOSEK")
+    cat("Solution status is", result$status)
+} else {
+    cat("Solution not available as MOSEK is not installed!")
+}
+```
+
+This returns an optimal solution. 
+
+Here again, even commercial solvers differ; `GUROBI`, for example,
+does not completely solve the problem and in fact throws an error.
+
+
+## References
