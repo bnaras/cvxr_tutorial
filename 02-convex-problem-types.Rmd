@@ -27,9 +27,9 @@ quadratic program.
 
 ## Cone Programs
 
-Second order cone programs
+When $f_i(x) \leq 0$ for all $i$ constrain $x$ to lie in a convex cone $C$, the problem is called a cone program. 
+Examples of $C$ are the positive orthant $\mathbf{R}^n$, the set of positive semidefinite matrices $\mathbf{S}_+^n$, and the second-order cone $\{(x,t) \in \mathbf{R}^n \times \mathbf{R}: \|x\| \leq t\}$.
 
 ## Integer and Mixed Integer Programs
 
-When all of $x$ is constrained to be integers, or even binary ($\{0,1\}$) values, the problem is called an integer program. If only a few $x$ are constrained to be integers, then the problem is a mixed integer program.
-
+When all elements of $x$ are constrained to be integers, or even binary ($\{0,1\}$) values, the problem is called an integer program. If only a few elements of $x$ are constrained to be integers, then the problem is a mixed integer program.

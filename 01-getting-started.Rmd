@@ -1,6 +1,6 @@
 # Getting Started 
 
-The following are pre-requisites.
+The following are prerequisites.
 
 - A recent R installation (version 3.5.x and up) will do. However, we
   highly recommend 3.6.0 so as to avoid any unforeseen problems with `CVXR`.

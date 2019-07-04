@@ -54,4 +54,3 @@ And there are many other rules, but the above will get you far.
 
 Except for log-barrier, these functions are nondifferentiable.
 
-
