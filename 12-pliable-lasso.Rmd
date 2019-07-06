@@ -57,7 +57,7 @@ y &=& \mu(x) + 0.5\epsilon;\ \ \epsilon \sim N(0, 1)\\
 x_4\beta_4(e - 2z_2);\ \ \beta = (2, -2, 2, 2, 0, 0, \ldots),
 \end{eqnarray*}
 \]
-where $e=(1,1,\ldots ,1)^T).$
+where $e=(1,1,\ldots ,1)^T$.
 
 ```{r}
 ## Simulation data.
@@ -240,7 +240,7 @@ knitr::kable(est.table, format = "html", digits = 3) %>%
     kable_styling("striped")
 ```
 
-For this value of $\lambda$, the nonzero $(\beta_1, \beta_2, \beta_3,\beta4)$ are picked up along
+For this value of $\lambda$, the nonzero $(\beta_1, \beta_2, \beta_3,\beta_4)$ are picked up along
 with a few others like $(\beta_{20}, \beta_{34},\beta_{39})$. 
 
 The values for $\theta_0$ are given below.

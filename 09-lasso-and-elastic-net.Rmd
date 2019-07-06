@@ -126,9 +126,9 @@ print_matrix(round(coef_net, 3),
 
 [A Stack Overflow
 Question](https://stats.stackexchange.com/questions/334007/elastic-net-in-glmnet-vs-cvxr)!
+
 _I'm attempting to match some simple results in R using `glmnet` and
 `CVXR`. I have the following code._
-
 ```{r}
 library(glmnet)
 data(QuickStartExample)

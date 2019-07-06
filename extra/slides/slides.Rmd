@@ -34,7 +34,6 @@ Further, we ask that
 \[
 \begin{equation}
   f_i(\theta x + (1-\theta) y) \leq \theta f_i(x) + (1-\theta) f_i(y)
-  (\#eq:convex-function)
 \end{equation}
 \]
 i.e., graphs of $f_i$ curve upward,
@@ -61,10 +60,10 @@ Convex optimization problems have many nice properties:
 - Since the objective is also convex, if we find a local optimal
   solution, it is automatically the global optimal solution.
 
-
-
 There are a host of applications of this problem in many fields,
 including machine learning and statistics.
+
+---
 
 ## Convex Problems in Statistics, Machine Learning
  
@@ -90,7 +89,6 @@ However, even when a problem is non-convex, one may be able to find a
 convex _relaxation_, an approximation to the original problem, that
 can yield useful results. Thus, developing tools to solve convex problems
 can go a long way.
-
 
 
 <!--chapter:end:index.Rmd-->
@@ -133,6 +131,8 @@ required_packages  <- c("tidyr",
                         "kableExtra")
 install.packages(required_packages)
 ```
+
+---
 
 ## Solver Prerequisites 
 
@@ -189,11 +189,9 @@ Recall that a convex optimization problem is of the form
 \begin{array}{lll} \text{minimize} & f_0(x) & \\
   \text{subject to} & f_i(x) \leq 0, & i=1, \ldots, M \\
              & Ax=b &
-	     (\#eq:cvx-problem)
 \end{array}
 \]
 for $x \in {\mathbf R}^n$. 
-
 
 ## Linear Programs
 
@@ -211,7 +209,7 @@ quadratic program.
 
 ## Cone Programs
 
-When $f_i(x) \leq 0$ for all $i$ constrain $x$ to lie in a convex cone $C$, the problem is called a cone program. Examples of $C$ are the positive orthant $\mathbf{R}^n$, the set of positive semidefinite matrices $\mathbf{S}_+^n$, and the second-order cone $\{(x,t) \in \mathbf{R}^n \times \mathbf{R}: \|x\| \leq t\}$.
+When $f_i(x) \leq 0$ for all $i$ constrain $x$ to lie in a convex cone $C$, the problem is called a cone program. Examples of $C$ are the positive orthant $\mathbf{R}_+^n$, the set of positive semidefinite matrices $\{X \in \mathbf{R}^{n \times n}: X \succeq 0\}$, and the second-order cone $\{(x,t) \in \mathbf{R}^n \times \mathbf{R}: \|x\| \leq t\}$.
 
 ## Integer and Mixed Integer Programs
 
@@ -255,16 +253,13 @@ then you can use `ROI` in a straightforward way.
 
 ## Verifying Convexity
 
-Even before attempting a solution, one has to verify a problem is
-convex. One can start with the basic definition
-\@ref{eq:convex-function} or use first or second order conditions
-$\nabla^2{f}\succeq 0.$ These often turn out to be tedious and hard
-to derive.
+Even before attempting a solution, one has to verify a problem is convex. A few possible approaches are:
 
-Another possibility is to construct $f_i$ out of a library of basic
-examples or atoms that are convex. These could be combined using
-calculus rules and transformations that preserve convexity, yielding
-a problem that is automatically verified to be convex.
+- Directly apply the definition of a convex function
+- Check first or second order conditions $\nabla^2{f}\succeq 0$. (These are often tedious and hard to derive).
+- Construct $f_i$ out of a library of basic convex functions/atoms by combining them using calculus rules that preserve convexity, yielding a problem that is automatically convex
+
+---
 
 ## Domain Specific Languages for Convex Optimization
 
@@ -287,10 +282,9 @@ Such DSLs may result in code that is slightly slower, but they are
 extremely flexible and enable fast prototyping of novel methods.
 
 The last one, `CVXR`, is our focus and is described in a paper
-[@fu:naras:boyd:2019] that due to appear in the [Journal of Statistical
+[@fu:naras:boyd:2019] that is due to appear in the [Journal of Statistical
 Software](https://www.jstatsoft.org) any day now.
 
-## References
 
 <!--chapter:end:03-solving-convex-problems.Rmd-->
 
@@ -313,6 +307,7 @@ Software](https://www.jstatsoft.org) any day now.
 >
 > ---Stephen Boyd, on Gauss' letter to Schumacher, April 8, 2019
 
+---
 
 ## Basic Convex Functions
 
@@ -324,9 +319,10 @@ The following are some basic convex functions.
 - $x^Tx$; $x^Tx/y$ for $y>0$; $(x^Tx)^{1/2}$ 
 - $||x||$ (any norm)
 - $\max(x_1, x_2, \ldots, x_n)$, $\log(e^x_{1}+ \ldots + e^x_{n})$
-- $\log(\Phi(x))$, where $\Phi$ is Gaussian CDF
-- $\log(\text{det}X^{-1})$ for $X \succ 0$
+- $\log(\Phi(x))$, where $\Phi$ is the Gaussian CDF
+- $\log(\text{det}(X^{-1}))$ for $X \succ 0$
 
+---
 
 ## Calculus Rules
 
@@ -335,21 +331,21 @@ The following are some basic convex functions.
 - _Affine Composition_: if $f$ is convex, so is $f(Ax+b)$
 - _Pointwise Maximum_: if $f_1,f_2, \ldots, f_m$ are convex, so is $f(x) = \underset{i}{\text{max}}f_i(x)$
 - _Partial Minimization_: if $f(x, y)$ is convex and $C$ is a convex set, then $g(x) = \underset{y\in C}{\text{inf}}f(x,y)$ is convex 
-- _Composition_: if $h$ is convex and increasing and $f$ is convex, then $g(x) = h(f(x))$ is convex. (There are several other composition rules)
+- _Composition_: if $h$ is convex and increasing and $f$ is convex, then $g(x) = h(f(x))$ is convex
 
-And there are many other rules, but the above will get you far.
+There are many other rules, but the above will get you far.
 
+---
 
 ## Examples
 
 - Piecewise-linear function: $f(x) = \underset{i}{\text{max}}(a_i^Tx + b_i)$
 - $l_1$-regularized least-squares cost: $||Ax-b||_2^2 + \lambda ||x||_1$ with $\lambda \geq 0$
 - Sum of $k$ largest elements of $x$: $f(x) = \sum_{i=1}^mx_i - \sum_{i=1}^{m-k}x_{(i)}$
-- Log-barrier: $-\sum_{i=1}^m\log(−f_i(x))$ (on $\{x | f_i(x) < 0\}$, $f_i$ convex)
+- Log-barrier: $-\sum_{i=1}^m\log(−f_i(x))$ (on $\{x \in \mathbf{R}^n : f_i(x) < 0\}$, $f_i$ convex)
 - Distance to convex set $C$: $f(x) = \text{dist}(x,C) =\underset{y\in C}{\text{inf}}||x-y||_2$
 
 Except for log-barrier, these functions are nondifferentiable.
-
 
 
 <!--chapter:end:04-disciplined-convex-programming.Rmd-->
@@ -382,6 +378,8 @@ print_matrix <- function(m, row_names = NULL, col_names = NULL) {
   using linear algebra
 - Exercises on formulating monotonicity constraints using `CVXR`
   atoms
+  
+---
 
 ## Ordinary Least-Squares Regression 
 
@@ -421,6 +419,8 @@ print_matrix(m, row_names = paste0("$\\beta_{", 1:p, "}$"))
 These are the least-squares estimates and can be seen to be reasonably
 close to the original $\beta$ values -4 through 5.
 
+---
+
 ## The `CVXR` Formulation
 
 The `CVXR` formulation states the above as an optimization problem:
@@ -453,6 +453,7 @@ objective <- Minimize(sum((Y - X %*% beta)^2))
 Notice how the objective is specified using functions such as `sum`,
 `*%*`, and `^` that are familiar to R users despite the fact that
 `beta` is no ordinary R expression, but a `CVXR` expression.
+
 - Step 3. Create a problem to solve
 
 ```{r}
@@ -485,11 +486,17 @@ m <- cbind(result$getValue(beta), coef(ls.model))
 print_matrix(m, row_names = paste0("$\\beta_{", 1:p, "}$"), col_names = c("CVXR est.", "lm est."))
 ```
 
+---
+
 ### Exercise
 
-1. Modify the objective to perform least absolute deviation regression
+1. Modify the objective to perform least absolute deviation (LAD) regression
 and solve the problem. Compare the results to OLS. Which objective has
 a lower value?
+
+_Hint_: In LAD regression, we minimize the sum of the absolute value of the residuals.
+
+---
 
 #### Solution
 
@@ -522,6 +529,8 @@ m3 <- cbind(result$getValue(beta), result2$getValue(beta))
 ```{r, echo = FALSE}
 print_matrix(m3, row_names = paste0("$\\beta_{", 1:p, "}$"), col_names = c("Problem 1 est.", "Problem 2 est."))
 ```
+
+---
 
 ## Adding Constraints
 
@@ -561,10 +570,14 @@ m <- cbind(betaEstimate, nnls.fit)
 print_matrix(m, row_names = paste0("$\\beta_{", 1:p, "}$"), col_names = c("CVXR NNLS est.", "nnls est."))
 ```
 
+---
+
 ### Exercise
 
-Suppose it is known that $\sum_{i=1}^4\beta_i <=
+Suppose it is known that $\sum_{i=1}^4\beta_i \leq
 0$. Modify the original OLS problem to add this constraint.
+
+---
 
 #### Solution
 
@@ -588,7 +601,7 @@ print_matrix(A, col_names =  paste0("$\\beta_{", 1:p, "}$"))
 
 The sum constraint on $\beta$ is therefore 
 $$
-A\beta <= 0
+A\beta \leq 0
 $$
 which we express in R as
 
@@ -613,10 +626,13 @@ m <- matrix(betaEstimate, ncol = 1)
 print_matrix(m, row_names = paste0("$\\beta_{", 1:p, "}$"))
 ```
 
+---
+
 ### Exercise
 
-Add an additional constraint to the previous exercise that
-$\beta_i \leq 4$ for $i=5,\ldots,10$.
+Add an additional constraint to the previous exercise that $\beta_i \leq 4$ for $i=5,\ldots,10$.
+
+---
 
 #### Solution 
 
@@ -644,12 +660,16 @@ m <- matrix(betaEstimate, ncol = 1)
 print_matrix(m, row_names =  paste0("$\\beta_{", 1:p, "}$"))
 ```
 
+---
+
 ### Exercise
 
 Solve the OLS regression problem under the constraint that the
 $\beta_i$ are nonnegative and monotonically nondecreasing.
 
 _Hint_: What function in R computes lagged differences?
+
+---
 
 #### Solution
 
@@ -670,11 +690,13 @@ m <- matrix(betaEstimate, ncol = 1)
 print_matrix(m, row_names =  paste0("$\\beta_{", 1:p, "}$"))
 ```
 
+---
+
 ### Exercise
 
-Fit OLS with just the following order constraints on $\beta$:
-$\beta_{i} \leq \beta_{i+1}$ for $i=1,\ldots, 4$ and $\beta_i \geq
-\beta_{i+1}$ for $i=5,\ldots,p$.
+Fit OLS with just the following order constraints on $\beta$: $\beta_{i} \leq \beta_{i+1}$ for $i=1,\ldots, 4$ and $\beta_i \geq \beta_{i+1}$ for $i=5,\ldots,p$.
+
+---
 
 #### Solution
 
@@ -696,20 +718,23 @@ m <- matrix(betaEstimate, ncol = 1)
 print_matrix(m, row_names =  paste0("$\\beta_{", 1:p, "}$"))
 ```
 
+---
+
 ## Summary
 
-This introduction demonstrates a chief advantage of `CVXR`:
-_flexibility_. Users can quickly modify and re-solve a problem, which
-is ideal for prototyping and experimenting with new statistical
-methods. The `CVXR` syntax is simple and mathematically
-intuitive. Furthermore, `CVXR` combines seamlessly with native R code
-as well as several popular packages, allowing it to be incorporated
-easily into a larger analytical framework. The user is free to
+- `CVXR`'s chief advantage is _flexibility_. Users can quickly modify and re-solve a problem, which
+is ideal for prototyping and experimenting with new statistical methods. 
+- `CVXR`'s syntax is simple and mathematically intuitive. 
+- `CVXR` combines seamlessly with native R code as well as several popular packages, allowing it to be incorporated
+easily into a larger analytical framework.
+
+The user is free to
 construct statistical estimators that are solutions to a convex
 optimization problem where there may not be a closed form solution or
 even an implementation. Later, we will see how such solutions can be
 used with resampling techniques like the bootstrap to estimate
 variability.
+
 
 <!--chapter:end:05-a-simple-regression-example.Rmd-->
 
@@ -776,6 +801,8 @@ A problem takes an objective and an optional constraint. It serves as
 the complete representation of the problem along with associated
 data, like the `Y` and `X` in the code snippet above.
 
+---
+
 ## Solving the Problem
 
 Calling the `solve` function on a problem sets several things in motion.
@@ -834,6 +861,8 @@ consulted to set these options.
 - Exercise on extracting fitted values from `CVXR` logistic fit using
   lexically scoped `CVXR` facilities.
 
+---
+
 ## Logistic Regression Problem
 
 In logistic regression [@james2013], the response $y_i$ is
@@ -868,6 +897,8 @@ formulation.
 atom](https://cvxr.rbind.io/cvxr_functions/) as a shortcut for $f(z) =
 \log(1 + e^z)$.
 
+---
+
 ## Example
 
 We use example 4.6.2 of [@james2013] with the `Smarket` data where a
@@ -900,12 +931,18 @@ We can compare with the standard `stats::glm` estimate.
 print_matrix(cbind(beta_hat, coef(glmfit)), row_names = paste0("$\\beta_{", seq.int(0, p-1L), "}$"), col_names = c("CVXR", "GLM"))
 ```
 
+---
+
 ## Exercise
 
 Standard `stats::glm` returns an object that has fitted values:
 `glmfit$fitted.values`. How would you compute the fitted values from
-`CVXR`?  _Hint:_ The `result$getValue()` evalutes expressions in the
+`CVXR`?  
+
+_Hint:_ The `result$getValue()` evalutes expressions in the
 problem context.
+
+---
 
 ### Solution
 
@@ -933,7 +970,6 @@ logistic regression estimate, can be computed as follows.
 log_odds <- result$getValue(X %*% beta)
 ```
 
-## References
 
 <!--chapter:end:07-logistic-regression.Rmd-->
 
@@ -953,6 +989,9 @@ library(isotone)
 - Exercise on handling ties, the tertiary method of `isotone`, using
   `CVXR` atoms
 
+---
+
+## Pituitary Data Example
 
 [Isotonic regression](https://en.wikipedia.org/wiki/Isotonic_regression) is
 regression with monotonicity constraints. There are several packages in R
@@ -960,8 +999,6 @@ to fit isotonic regression models. In this example, we
 consider [`isotone`](https://cran.r-project.org/package=isotone), which
 uses a pooled-adjacent-violators algorithm (PAVA) and active set
 methods to perform the fit.
-
-## Pituitary Data Example
 
 We will use data from the `isotone` package [@isotone] on the size of
 pituitary fissures for 11 subjects between 8 and 14 years of age.
@@ -984,17 +1021,21 @@ observations. The objective to be minimized is the least-squares error
 (`cvxr_norm`), yet another way of specifying least-squares loss. The
 monotonicity is specified using the `diff` function.
 
+---
+
 ### Exercise
 
 Can you explain why `CVXR` provide functions such as `cvxr_norm` and `p_norm`
 rather than just plain `pnorm`?
+
+---
 
 #### Solution
 
 In R, `pnorm` is already defined and refers to the density of the normal
 distribution. So we use a new generic `cvxr_norm` or `p_norm` (see
 [`CVXR` functions](https://cvxr.rbind.io/cvxr_functions/) to avoid
-confusion. The function `cvxr_norm` provides some specialized norms for matrices,
+confusion). The function `cvxr_norm` provides some specialized norms for matrices,
 whereas `p_norm` allows one to specify $p$.
 
 ```{r}
@@ -1014,6 +1055,8 @@ As the output below shows, the results are very close.
 print_matrix(cbind(res_p$x, x_p), col_names = c("isotone", "CVXR"))
 ```
 
+---
+
 ## Handling Ties
 
 Package `isotone` provides additional methods for handling tied data
@@ -1027,10 +1070,14 @@ res_s <- with(pituitary, gpava(age, size, ties = "secondary"))
 res_t <- with(pituitary, gpava(age, size, ties = "tertiary"))
 ```
 
+---
+
 ### Exercise
 
 Implement the secondary method of ties using `CVXR` and compare the
 results with the `isotone` package.
+
+---
 
 #### Solution
 
@@ -1062,10 +1109,14 @@ m <- cbind(res_s$x, x_s)
 print_matrix(m, col_names = c("Isotone (S)", "CVXR (S)"))
 ```
 
+---
+
 ### Exercise
 
 Implement the tertiary method for ties using `CVXR` and compare with
 the `isotone` package.
+
+---
 
 #### Solution
 
@@ -1103,6 +1154,7 @@ m <- cbind(res_t$x, x_t)
 print_matrix(m, col_names = c("Isotone (T)", "CVXR (T)"))
 ```
 
+
 <!--chapter:end:08-isotonic-regression.Rmd-->
 
 # Lasso and Elastic Net
@@ -1116,6 +1168,8 @@ library(glmnet)
 - Formulate lasso and elastic net regression models 
 - Compare with results from `glmnet` package
 - Use loss functions besides squared loss with elastic net penalty
+
+---
 
 ## Regularized Regression
 
@@ -1154,6 +1208,10 @@ elastic_penalty <- function(beta, lambda = 0, alpha = 0) {
     lambda * (lasso + ridge)
 }
 ```
+
+---
+
+## Example
 
 We generate some synthetic sparse data for this example.
 
@@ -1210,7 +1268,9 @@ plot(0, 0, type = "n", main = "CVXR Regularization Path for Lasso Regression",
      ylim = c(-1, 2), xlim = c(-4, 4))
 matlines(log(lambda_vals), t(beta_vals))
 ```
-  
+
+---
+
 We then compare with the `glmnet` results.
 
 ```{r}
@@ -1229,10 +1289,13 @@ print_matrix(round(coef_net, 3),
              col_names = sprintf("$\\lambda = %.3f$", lambda_vals))
 ```
 
+---
+
 ### Exercise
 
 [A Stack Overflow
 Question](https://stats.stackexchange.com/questions/334007/elastic-net-in-glmnet-vs-cvxr)!
+
 _I'm attempting to match some simple results in R using `glmnet` and
 `CVXR`. I have the following code._
 
@@ -1271,9 +1334,11 @@ print(result$value)
 _gives a different objective value `2.859259` and a somewhat different set of
 coefficients. Can you help?_
 
+---
+
 #### Solution
 
-To compare glmnet results to `CVXR` for the Gaussian case, it is
+To compare `glmnet` results to `CVXR` for the Gaussian case, it is
 advisable to standardize the response per the `glmnet` documentation.
 Note also that `glmnet` uses $n$ rather than $n-1$ in the denominator
 for $y$. This will ensure that the $\lambda$ is on the same scale as
@@ -1315,6 +1380,8 @@ beta_est <- solve(prob)$getValue(beta)
 catn("CVXR objective (scaled y):", objective_value(y_s, x, beta_est, lambda, alpha))
 ```
 
+---
+
 To work on the non-standardized scale, we need to match the `lamba`
 values as noted by the `glmnet` authors in Appendix 2 of the package
 vignette [@glmnet].
@@ -1340,11 +1407,15 @@ print_matrix(round(cbind(beta_est, coef(fit)[-1]), 3),
              col_names = c("CVXR", "GLMNET")) 
 ```
 
+---
+
 ### Exercise
 
 Using the data (`X`, `Y`) above, solve an elastic net problem with
 [Huber loss](https://cvxr.rbind.io/cvxr_functions/) using the Huber
 threshold $M = 0.5$.
+
+---
 
 #### Solution 
 
@@ -1373,6 +1444,7 @@ print_matrix(round(beta_vals, 3),
              col_names = sprintf("$\\lambda = %.3f$", lambda_vals))
 ```
 
+
 <!--chapter:end:09-lasso-and-elastic-net.Rmd-->
 
 # Nearly Isotonic Fits
@@ -1387,6 +1459,10 @@ library(ggplot2)
 library(boot)
 ```
 
+---
+
+### Nearly Isotonic Regression
+
 Given a set of data points $y \in {\mathbf R}^m$,
 @TibshiraniHoefling:2011 fit a nearly-isotonic approximation $\beta
 \in {\mathbf R}^m$ by solving
@@ -1398,7 +1474,13 @@ $$
 $$
 
 where $\lambda \geq 0$ is a penalty parameter and $x_+
-=\max(x,0)$. This can be directly formulated in `CVXR`.  As an
+=\max(x,0)$. This can be directly formulated in `CVXR`. 
+
+---
+
+### Global Warming Example
+
+As an
 example, we use global warming data from
 the
 [Carbon Dioxide Information Analysis Center (CDIAC)](http://cdiac.ess-dive.lbl.gov/ftp/trends/temp/jonescru/). The
@@ -1424,8 +1506,10 @@ neariso_fit <- function(y, lambda) {
 }
 ```
 
-The `CVXR::pos` atom evaluates $x_+$ elementwise on the input
+The `CVXR::pos` atom evaluates $x_+ = \max(x,0)$ elementwise on the input
 expression.
+
+---
 
 The `boot` library provides all the tools for bootstrapping, but
 requires a statistic function that takes particular arguments: a data
@@ -1472,6 +1556,8 @@ fit.
 The curve follows the data well, but exhibits some choppiness in
 regions with a steep trend. 
 
+---
+
 ### Exercise
 
 Fit a smoother curve using a nearly-convex fit described in the same
@@ -1482,6 +1568,8 @@ $$
 \underset{\beta}{\mbox{minimize}} & \frac{1}{2}\sum_{i=1}^m (y_i -
 \beta_i)^2 + \lambda \sum_{i=1}^{m-2}(\beta_i - 2\beta_{i+1} + \beta_{i+2})_+ \end{array} 
 $$
+
+---
 
 #### Solution
 
@@ -1526,7 +1614,6 @@ The resulting curve for the nearly-convex fit is depicted below with
 95\% confidence bands generated from $R = 5$ samples. Note the jagged
 staircase pattern has been smoothed out. 
 
-
 ```{r, eval = FALSE}
 (plot.nearconvex <- ggplot(data = data.nearconvex) +
      geom_point(mapping = aes(year, annual), color = "red") +
@@ -1536,11 +1623,17 @@ staircase pattern has been smoothed out.
 )
 ```
 
-## References
 
 <!--chapter:end:10-near-isotonic-fit.Rmd-->
 
 # Speed Considerations
+
+`CVXR` allows one to formulate a convex problem at a high level,
+close to mathematical form, and solves it for you provided you
+follow the DCP rules. Behind the scenes, `CVXR` compiles the domain
+specific language and verifies the convexity of the problem before
+dispatching it to a solver. Therefore, it is generally slower than
+tailor-made solutions for a given problem.
 
 ## Goals
 
@@ -1551,14 +1644,9 @@ staircase pattern has been smoothed out.
 library(profvis)
 ```
 
-`CVXR` allows one to formulate a convex problem at a high level,
-close to mathematical form, and solves it for you provided you
-follow the DCP rules. Behind the scenes, `CVXR` compiles the domain
-specific language and verifies the convexity of the problem before
-dispatching it to a solver. Therefore, it is generally slower than
-tailor-made solutions for a given problem.
+---
 
-## Global Warming Example
+## Example
 
 To understand the speed issues, let us consider the global warming
 data from the [Carbon Dioxide Information Analysis Center
@@ -1569,7 +1657,7 @@ $\beta \in {\mathbf R}^m$ by solving
 
 $$
 \begin{array}{ll}
-\underset{\beta}{\mbox{Minimize}} & \frac{1}{2}\sum_{i=1}^m (y_i - \beta_i)^2 + \lambda \sum_{i=1}^{m-1}(\beta_i - \beta_{i+1})_+,
+\underset{\beta}{\mbox{minimize}} & \frac{1}{2}\sum_{i=1}^m (y_i - \beta_i)^2 + \lambda \sum_{i=1}^{m-1}(\beta_i - \beta_{i+1})_+,
 \end{array}
 $$
 where $\lambda \geq 0$ is a penalty parameter and $x_+ =\max(x,0)$. 
@@ -1597,6 +1685,8 @@ computation time can quickly become limiting.
 Below, we show how one can get at the problem data and directly call a
 solver to get faster results.
 
+---
+
 ## Profiling the Code 
 
 Profiling a single fit to the model is useful to figure out where most
@@ -1623,6 +1713,8 @@ runs) is spent in the call to `is_dcp` generic (about
 2000ms). This generic is responsible for ensuring that the problem
 is DCP-compliant by checking the nature of each of its components. 
 The actual solving took a _much smaller_ fraction of the time.
+
+---
 
 ## Directly Calling the Solver
 
@@ -1664,6 +1756,8 @@ solver results for us. (See `?unpack_results` for further examples.)
 ```{r}
 direct_soln <- unpack_results(prob, "ECOS", solver_output)
 ```
+
+---
 
 ## Profiling the Direct Call
 
@@ -1709,6 +1803,8 @@ identical(betaHat, direct_soln$getValue(beta))
 - Demonstrate how to fit a complex model
 - Show how to apply an atom along a row/column axis
 
+---
+
 ## Pliable Lasso Problem
 
 @tibsjhf:2017 propose a generalization of the lasso that allows the
@@ -1749,6 +1845,8 @@ authors. Nevertheless, the pliable lasso is an excellent example to
 highlight the prototyping capabilities of `CVXR` for research. Along
 the way, we also introduce some new atoms that are needed in this example. 
 
+---
+
 ## Example
 
 We will use a simulated example from Section 3 of @tibsjhf:2017 with
@@ -1758,10 +1856,10 @@ $n=100$, $p=50$ and $K=4$. The response is generated as
 \begin{eqnarray*}
 y &=& \mu(x) + 0.5\epsilon;\ \ \epsilon \sim N(0, 1)\\
 \mu(x) &=& x_1\beta_1 + x_2\beta_2 + x_3(\beta_3 e + 2z_1) +
-x_4\beta_4(e - 2z_2);\ \ \beta = (2, -2, 2, 2, 0, 0, \ldots),
+x_4\beta_4(e - 2z_2);\ \ \beta = (2, -2, 2, 2, 0, 0,\ldots),
 \end{eqnarray*}
 \]
-where $e=(1,1,\ldots ,1)^T).$
+where $e=(1,1,\ldots,1)^T$.
 
 ```{r}
 ## Simulation data.
@@ -1808,9 +1906,11 @@ plasso_fit <- function(y, X, Z, lambda, alpha = 0.5, intercept = TRUE,
 # pliable <- pliable_lasso(y, X, Z, alpha = 0.5, lambda = lambda)
 ```
 
-### Parameters
+---
 
-The parameters are easy: we just have $\beta$, $\theta_0$ and
+### Variables
+
+The variables are easy: we just have $\beta$, $\theta_0$ and
 $\Theta$. 
 
 ```{r Define_Parameters, eval = FALSE}
@@ -1844,7 +1944,7 @@ penalty_term3 <- sum(cvxr_norm(theta, 1))
 
 ### Fitted Value
 
-Equation 1 above for $\hat{y}$ contains a sum:
+The equation for $\hat{y}$ contains a sum:
 $\sum_{j=1}^p(X_j\beta_j + W_j\theta_j)$. This requires multiplication
 of $Z$ by the columns of $X$ component-wise and is thus a natural candidate
 for a map-reduce combination: map the column multiplication function
@@ -1896,6 +1996,8 @@ list(beta0_hat = if (intercept) result$getValue(beta0)[1] else 0.0,
      criterion = result$value)
 ```
 
+---
+
 ## Full Function
 
 We now put it all together.
@@ -1919,6 +2021,8 @@ plasso_fit <- function(y, X, Z, lambda, alpha = 0.5, intercept = TRUE,
     <<Return_Results>>
 }
 ```
+
+---
 
 ## Results
 
@@ -1944,7 +2048,7 @@ knitr::kable(est.table, format = "html", digits = 3) %>%
     kable_styling("striped")
 ```
 
-For this value of $\lambda$, the nonzero $(\beta_1, \beta_2, \beta_3,\beta4)$ are picked up along
+For this value of $\lambda$, the nonzero $(\beta_1, \beta_2, \beta_3,\beta_4)$ are picked up along
 with a few others like $(\beta_{20}, \beta_{34},\beta_{39})$. 
 
 The values for $\theta_0$ are given below.
@@ -1964,7 +2068,7 @@ names(est.table) <- paste0("$\\theta_{,", 1:K, "}$")
 knitr::kable(est.table, format = "html", digits = 3) %>%
     kable_styling("striped")
 ```
-                
+
 ## Final Comments
 
 Typically, one would run the fits for various values of $\lambda$, 
@@ -1974,7 +2078,6 @@ discussed previously can be used to speed up the
 computations. However, the potential of `CVXR` in prototyping novel
 methods is clear.
 
-## References
 
 <!--chapter:end:12-pliable-lasso.Rmd-->
 
@@ -2003,19 +2106,13 @@ build_table <- function(d1, d2, title) {
 }
 ```
 
-## Goals
-
-- Demonstrate different methods for calibrating data
-
-## Survey Calibration Problem
-
 Calibration is a widely used technique in survey sampling. Suppose
 $m$ sampling units in a survey have been assigned initial weights
 $d_i$ for $i = 1,\ldots,m$, and furthermore, there are $n$ auxiliary
 variables whose values in the sample are known. Calibration seeks to
 improve the initial weights $d_i$ by finding new weights $w_i$ that
 incorporate this auxiliary information while perturbing the initial
-weights as little as possible, \ie, the ratio $g_i = w_i/d_i$ must
+weights as little as possible, i.e., the ratio $g_i = w_i/d_i$ must
 be close to one. Such reweighting improves precision of estimates
 (Chapter 7, @Lumley:2010).
 
@@ -2035,6 +2132,8 @@ with respect to $g \in {\mathbf R}^m$, where $\phi:{\mathbf R} \rightarrow
 {\mathbf R}^n$ are the known population totals of the auxiliary variables,
 and $A \in {\mathbf R}^{m \times n}$ is related to $X$ by $A_{ij} =
 d_iX_{ij}$ for $i = 1,\ldots,m$ and $j = 1,\ldots,n$. 
+
+---
 
 ## Raking 
 
@@ -2092,6 +2191,8 @@ build_table(d1 = build_df(apisrs, "Survey", w_survey),
             title = "Calibration weights from Raking")
 ```
 
+---
+
 ### Exercise
 
 The quadratic penalty function
@@ -2106,6 +2207,8 @@ is also sometimes used. Calibrate using `CVXR` and the `SCS` solver and compare 
 ```{r}
 w_survey_q <- weights(calibrate(design_api, formula, population = T, calfun = cal.linear))
 ```
+
+---
 
 #### Solution
 
@@ -2126,6 +2229,8 @@ build_table(d1 = build_df(apisrs, "Survey", w_survey_q),
             title = "Calibration weights from Quadratic metric")
 ```
 
+---
+
 ### Exercise
 
 Repeat the above exercise with the logistic function 
@@ -2143,6 +2248,8 @@ w_survey_l <- weights(calibrate(design_api, formula, population = T, calfun = ca
                                 bounds = c(l, u)))
 ```
 
+---
+
 ### Solution
 
 ```{r}
@@ -2158,6 +2265,8 @@ build_table(d1 = build_df(apisrs, "Survey", w_survey_l),
             d2 = build_df(apisrs, "CVXR", w_cvxr_l),
             title = "Calibration weights from Logit metric")
 ```
+
+---
 
 ### Exercise 
 
@@ -2176,6 +2285,8 @@ hellinger <- make.calfun(Fm1 = function(u, bounds)  ((1 - u / 2)^-2) - 1,
 w_survey_h <- weights(calibrate(design_api, formula, population = T, calfun = hellinger))
 ```
 
+---
+
 #### Solution
 
 ```{r}
@@ -2190,6 +2301,8 @@ build_table(d1 = build_df(apisrs, "Survey", w_survey_h),
             d2 = build_df(apisrs, "CVXR", w_cvxr_h),
             title = "Calibration weights from Hellinger distance metric")
 ```
+
+---
 
 ### Exercise
 
@@ -2206,6 +2319,8 @@ w_survey_s <- weights(calibrate(design_api, formula, population = T, calfun = ca
                                 bounds = c(l, u)))
 ```
 
+---
+
 #### Solution
 
 ```{r}
@@ -2220,8 +2335,6 @@ build_table(d1 = build_df(apisrs, "Survey", w_survey_s),
             d2 = build_df(apisrs, "CVXR", w_cvxr_s),
             title = "Calibration weights from derivative of sinh metric")
 ```
-
-## References
 
 
 <!--chapter:end:13-survey-sampling.Rmd-->
@@ -2300,6 +2413,8 @@ theme_bare <- theme(
 - Introduce `CVXR::Semidef` and `CVXR::log_det`
 - Demonstrate how to build functions for complex tasks
 
+---
+
 ## Sparse Inverse Covariance Problem
 
 Assume we are given i.i.d. observations $x_i \sim N(0,\Sigma)$ for $i
@@ -2312,13 +2427,14 @@ that $S$ is sparse [@spinvcov], which amounts to the optimization
 problem:
 
 $$
-\begin{array}{ll} \underset{S}{\mbox{maximize}} & \log\det(S) - \mbox{tr}(SQ) \\
-\mbox{subject to} & S \in {\mathbf S}_+^n, \quad \sum_{i=1}^n \sum_{j=1}^n |S_{ij}| \leq \alpha.
+\begin{array}{ll} \mbox{maximize} & \log\det(S) - \mbox{tr}(SQ) \\
+\mbox{subject to} & \sum_{i=1}^n \sum_{j=1}^n |S_{ij}| \leq \alpha
 \end{array}
 $$
-
-The parameter $\alpha \geq 0$ controls the degree of sparsity. The problem
+with respect to $S \in {\mathbf S}_+^n$, where the parameter $\alpha \geq 0$ controls the degree of sparsity. The problem
 is convex, so we can solve it using `CVXR`.
+
+---
 
 ## Example
 
@@ -2375,12 +2491,14 @@ S.est <- lapply(alphas,
 In the code above, the `Semidef` constructor restricts `S` to the
 positive semidefinite cone. We use `CVXR` functions 
 for the log-determinant and trace in the objective. The expression `matrix_trace(S %*%
-Q)` is equivalent to `sum(diag(S %*% Q))}, but the former is preferred
+Q)` is equivalent to `sum(diag(S %*% Q))}`, but the former is preferred
 because it is more efficient than making nested function calls.
 
 However, a standalone atom does not exist for the determinant, so we
 cannot replace `log_det(S)` with `log(det(S))` since `det` is
 undefined for a `Semidef` object.
+
+---
 
 ## Results
 
@@ -2418,9 +2536,6 @@ do.call(multiplot, args = c(list(plotSpMat(Strue)),
 ```
 
 
-## References
-
-
 <!--chapter:end:14-sparse-inverse-covariance-estimation.Rmd-->
 
 # Portfolio Estimation
@@ -2432,13 +2547,7 @@ library(RColorBrewer)
 library(tidyr)
 ```
 
-## Goals
-
-- Demonstrate `CVXR` on a financial example
-
-## Markovwitz Portfolio Problem
-
-The Markovwitz portfolio problem [@Markowitz:1952; @Roy:1952;
+The Markowitz portfolio problem [@Markowitz:1952; @Roy:1952;
 @LoboFazelBoyd:2007] is well known in finance. We will solve this
 problem under various constraints.
 
@@ -2457,11 +2566,13 @@ long portfolios, so our problem is
 $$
 \begin{array}{ll} 
 \underset{w}{\mbox{maximize}} & \mu^Tw - \gamma w^T\Sigma w \\
-\mbox{subject to} & w \geq 0, \quad \sum_{i=1}^n w = 1
+\mbox{subject to} & w \geq 0, \quad \sum_{i=1}^n w = 1,
 \end{array}
 $$
 where the objective is the risk-adjusted return and $\gamma > 0$ is a
 risk aversion parameter.
+
+---
 
 ## Example
 
@@ -2512,6 +2623,10 @@ result$getValue(risk)
 result$getValue(ret)
 ```
 
+---
+
+## Results
+
 The trade-off curve is shown below. The $x$-axis represents the standard
 deviation of the return. Red points indicate the result from investing
 the entire budget in a single asset. As $\gamma$ increases, our
@@ -2534,6 +2649,8 @@ p1 + geom_point(data = df, mapping = aes(x = x, y = y), color = "black") +
     labs(x = "Risk (Standard Deviation)", y = "Return")
 ```
 
+---
+
 We can also plot the fraction of budget invested in each asset.
 
 ```{r}
@@ -2549,6 +2666,8 @@ ggplot(data = tidyW, mapping = aes(x = gamma, y = fraction)) +
     labs(x = "Risk Aversion", y = "Fraction of Budget")
 ```
 
+---
+
 ## Discussion
 
 Many variations on the classical portfolio problem exist. For
@@ -2562,11 +2681,12 @@ An alternative is to set a lower bound on the return and minimize just
 the risk. To account for transaction costs, we could add a term to the
 objective that penalizes deviations of $w$ from the previous
 portfolio. These extensions and more are described in
-@BoydBusseti:2017. The key takeaway is that all of these convex
+@BoydBusseti:2017.
+
+The key takeaway is that all of these convex
 problems can be easily solved in `CVXR` with just a few alterations
 to the code above.
 
-## References
 
 <!--chapter:end:15-portfolio-estimation.Rmd-->
 
@@ -2576,6 +2696,8 @@ to the code above.
 
 - Show how to use non-default solvers like `MOSEK` and `GUROBI`
 - Discuss solver peculiarities
+
+---
 
 ## Default Solvers
 
@@ -2608,6 +2730,8 @@ lapply(list(LPSOLVE = "lpSolveAPI",
 Once the packages are installed, a call to `installed_solvers` will
 display the solvers that `CVXR` has detected.
 
+---
+
 ## Commercial Solvers
 
 A few commercial solvers are also currently supported: [MOSEK](https://www.mosek.com) and
@@ -2629,21 +2753,9 @@ Thus, one needs two prerequisites to use these commercial solvers:
   
 We also recommend that you ensure `reticulate` is installed
 correctly and working. For example `reticulate::py_eval('1+1')` should return
-`2`. 
+`2`.
 
-### Gotchas
-
-If you have an Anaconda installation in your path, you have
-to account for the fact that there may be interactions when using
-RStudio and rendering documents. In particular, Anaconda may include
-its own version of pandoc and other tools that may conflict with what
-Rstudio needs to work properly.
-
-To be concrete, one problem we found was that the `MOSEK` solver was
-not recognized as available in this rendered document, even
-though the command line interface showed it to be present. Ensuring an
-appropriate `PATH` variable solves the problem. 
-
+---
 
 ### Installing `MOSEK`
 
@@ -2679,11 +2791,26 @@ your license as necessary.
 After activation, you can check that `CVXR::installed_solvers()` lists
 `GUROBI`. Otherwise, rinse and repeat until success.
 
+### Gotchas
+
+If you have an Anaconda installation in your path, you have
+to account for the fact that there may be interactions when using
+RStudio and rendering documents. In particular, Anaconda may include
+its own version of pandoc and other tools that may conflict with what
+Rstudio needs to work properly.
+
+To be concrete, one problem we found was that the `MOSEK` solver was
+not recognized as available in this rendered document, even
+though the command line interface showed it to be present. Ensuring an
+appropriate `PATH` variable solves the problem. 
+
 ### Example Session
 
 ```{r}
 installed_solvers()
 ```
+
+---
 
 ## Solver Peculiarities
 
@@ -2738,8 +2865,6 @@ This returns an optimal solution.
 Here again, even commercial solvers differ; `GUROBI`, for example,
 does not completely solve the problem and in fact throws an error.
 
-
-## References
 
 <!--chapter:end:16-using-other-solvers.Rmd-->
 
@@ -2818,6 +2943,8 @@ recognize that the atom arguments are converted into `CVXR` objects
 and saved in a list in the `args` slot. We will be accessing this slot
 later.
 
+---
+
 ## Atom Properties
 
 Now that we have created the atom's S4 class, it is time to define
@@ -2878,9 +3005,11 @@ variables, and atoms. The latter is a list of R numeric constants like
 `numeric` and `matrix`, denoting the values of the corresponding
 expressions.
 
+---
+
 ### Dimension, Sign, and Curvature
 
-For DCP analysis to work, we must explicitly define each atom's dimension, sign, and curvature. CVXR uses this information when applying the composition rules to an expression. It is easy to see that $f$ is scalar-valued, nonnegative, and convex over its domain. These properties are encoded in
+For DCP analysis to work, we must explicitly define each atom's dimension, sign, and curvature. `CVXR` uses this information when applying the composition rules to an expression. It is easy to see that $f$ is scalar-valued, nonnegative, and convex over its domain. These properties are encoded in
 
 ```{r, eval=FALSE}
 setMethod("dim_from_args", "QuadOverLin", function(object) { c() })
@@ -2907,6 +3036,8 @@ where `idx` is the index of the argument of interest. We call the
 if an argument is nonnegative (resp. nonpositive). The user may be
 tempted to write `object@args[[1]] >= 0`, but this is **incorrect**
 because it returns a `Constraint` rather than a logical value.
+
+---
 
 ### Additional Characteristics
 
@@ -2944,9 +3075,9 @@ f(x,y))$, wraps each in a sparse `Matrix`, and returns them in a list
 ordered exactly like in the input values. If $(x,y) \notin
 \mathbf{dom}\;f$, all gradients are set to `NA`.
 
-Furthermore, we allow CVXR to solve certain problems involving QoL
+Furthermore, we allow `CVXR` to solve certain problems involving QoL
 functions as a quadratic program (QP). Before calling a QP solver,
-CVXR must verify that an objective function is quadratic. It is easy
+`CVXR` must verify that an objective function is quadratic. It is easy
 to see that $f(x,y)$ is quadratic if its first argument is an affine
 expression and its second argument is constant. Therefore, we define
 the method
@@ -2963,9 +3094,11 @@ quadratic of a piecewise affine function.
 setMethod("is_qpwa", "QuadOverLin", function(object) { is_pwl(object@args[[1]]) && is_constant(object@args[[2]]) })
 ```
 
+---
+
 ## Canonicalization
 
-Once CVXR verifies a problem is DCP, it converts that problem into a
+Once `CVXR` verifies a problem is DCP, it converts that problem into a
 solver-compatible form. This *canonicalization* process is carried out
 through a series of calls to individual atom canonicalizers, defined
 in the reductions framework. To implement an atom, we must explicitly
@@ -3012,7 +3145,7 @@ solution to an SOCP, which may be evaluated using any conic
 solver. The canonicalizer for the QoL function takes as input $(x,y)$
 and outputs the above SOCP.
 
-In `CVXR`, this canonicalizer function is defined in dcp2cone.R, since
+In `CVXR`, this canonicalizer function is defined in `dcp2cone.R`, since
 it is used to reduce a DCP problem to a cone program.
 
 ```{r, eval=FALSE}
@@ -3042,6 +3175,8 @@ $\|u\|_2 \leq t$. Finally, the canonicalizer returns a list containing
 $t$, the epigraph variable, and a list of `Constraint`s from the graph
 implementation - in this case, the single second-order cone
 constraint.
+
+---
 
 ## Putting It All Together
 
@@ -3121,8 +3256,6 @@ objective value $f(x^*,y^*)$ for the original problem.
 - Uniform interface for solver settings
 - Speed improvements by moving operations to C++
 - Possibly connect to `ROI` library
-
-# References
 
 <!--chapter:end:98-future.Rmd-->
 

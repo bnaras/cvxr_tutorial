@@ -59,20 +59,6 @@ We also recommend that you ensure `reticulate` is installed
 correctly and working. For example `reticulate::py_eval('1+1')` should return
 `2`. 
 
-### Gotchas
-
-If you have an Anaconda installation in your path, you have
-to account for the fact that there may be interactions when using
-RStudio and rendering documents. In particular, Anaconda may include
-its own version of pandoc and other tools that may conflict with what
-Rstudio needs to work properly.
-
-To be concrete, one problem we found was that the `MOSEK` solver was
-not recognized as available in this rendered document, even
-though the command line interface showed it to be present. Ensuring an
-appropriate `PATH` variable solves the problem. 
-
-
 ### Installing `MOSEK`
 
 [MOSEK](https://www.mosek.com) provides an academic version that is
@@ -106,6 +92,19 @@ your license as necessary.
 
 After activation, you can check that `CVXR::installed_solvers()` lists
 `GUROBI`. Otherwise, rinse and repeat until success.
+
+### Gotchas
+
+If you have an Anaconda installation in your path, you have
+to account for the fact that there may be interactions when using
+RStudio and rendering documents. In particular, Anaconda may include
+its own version of pandoc and other tools that may conflict with what
+Rstudio needs to work properly.
+
+To be concrete, one problem we found was that the `MOSEK` solver was
+not recognized as available in this rendered document, even
+though the command line interface showed it to be present. Ensuring an
+appropriate `PATH` variable solves the problem. 
 
 ### Example Session
 

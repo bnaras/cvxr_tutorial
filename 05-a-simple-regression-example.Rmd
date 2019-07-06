@@ -97,6 +97,7 @@ objective <- Minimize(sum((Y - X %*% beta)^2))
 Notice how the objective is specified using functions such as `sum`,
 `*%*`, and `^` that are familiar to R users despite the fact that
 `beta` is no ordinary R expression, but a `CVXR` expression.
+
 - Step 3. Create a problem to solve
 
 ```{r}
@@ -131,9 +132,11 @@ print_matrix(m, row_names = paste0("$\\beta_{", 1:p, "}$"), col_names = c("CVXR 
 
 ### Exercise
 
-1. Modify the objective to perform least absolute deviation regression
+Modify the objective to perform least absolute deviation regression
 and solve the problem. Compare the results to OLS. Which objective has
 a lower value?
+
+_Hint_: In LAD regression, we minimize the sum of the absolute value of the residuals.
 
 #### Solution
 
@@ -207,7 +210,7 @@ print_matrix(m, row_names = paste0("$\\beta_{", 1:p, "}$"), col_names = c("CVXR 
 
 ### Exercise
 
-Suppose it is known that $\sum_{i=1}^4\beta_i <=
+Suppose it is known that $\sum_{i=1}^4\beta_i \leq
 0$. Modify the original OLS problem to add this constraint.
 
 #### Solution
@@ -232,7 +235,7 @@ print_matrix(A, col_names =  paste0("$\\beta_{", 1:p, "}$"))
 
 The sum constraint on $\beta$ is therefore 
 $$
-A\beta <= 0
+A\beta \leq 0
 $$
 which we express in R as
 

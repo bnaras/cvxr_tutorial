@@ -21,7 +21,11 @@ $$
 $$
 
 where $\lambda \geq 0$ is a penalty parameter and $x_+
-=\max(x,0)$. This can be directly formulated in `CVXR`.  As an
+=\max(x,0)$. This can be directly formulated in `CVXR`.
+
+## Global Warming Example
+
+As an
 example, we use global warming data from
 the
 [Carbon Dioxide Information Analysis Center (CDIAC)](http://cdiac.ess-dive.lbl.gov/ftp/trends/temp/jonescru/). The
@@ -47,7 +51,7 @@ neariso_fit <- function(y, lambda) {
 }
 ```
 
-The `CVXR::pos` atom evaluates $x_+$ elementwise on the input
+The `CVXR::pos` atom evaluates $x_+ = \max(x,0)$ elementwise on the input
 expression.
 
 The `boot` library provides all the tools for bootstrapping, but

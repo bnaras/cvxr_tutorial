@@ -16,7 +16,7 @@ specific language and verifies the convexity of the problem before
 dispatching it to a solver. Therefore, it is generally slower than
 tailor-made solutions for a given problem.
 
-## Global Warming Example
+## Example
 
 To understand the speed issues, let us consider the global warming
 data from the [Carbon Dioxide Information Analysis Center
@@ -27,7 +27,7 @@ $\beta \in {\mathbf R}^m$ by solving
 
 $$
 \begin{array}{ll}
-\underset{\beta}{\mbox{Minimize}} & \frac{1}{2}\sum_{i=1}^m (y_i - \beta_i)^2 + \lambda \sum_{i=1}^{m-1}(\beta_i - \beta_{i+1})_+,
+\underset{\beta}{\mbox{minimize}} & \frac{1}{2}\sum_{i=1}^m (y_i - \beta_i)^2 + \lambda \sum_{i=1}^{m-1}(\beta_i - \beta_{i+1})_+,
 \end{array}
 $$
 where $\lambda \geq 0$ is a penalty parameter and $x_+ =\max(x,0)$. 

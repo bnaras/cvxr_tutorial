@@ -77,7 +77,9 @@ print_matrix(cbind(beta_hat, coef(glmfit)), row_names = paste0("$\\beta_{", seq.
 
 Standard `stats::glm` returns an object that has fitted values:
 `glmfit$fitted.values`. How would you compute the fitted values from
-`CVXR`?  _Hint:_ The `result$getValue()` evalutes expressions in the
+`CVXR`?
+
+_Hint:_ The `result$getValue()` evalutes expressions in the
 problem context.
 
 ### Solution

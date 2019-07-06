@@ -85,11 +85,11 @@ problem:
 
 $$
 \begin{array}{ll} \underset{S}{\mbox{maximize}} & \log\det(S) - \mbox{tr}(SQ) \\
-\mbox{subject to} & S \in {\mathbf S}_+^n, \quad \sum_{i=1}^n \sum_{j=1}^n |S_{ij}| \leq \alpha.
+\mbox{subject to} & \sum_{i=1}^n \sum_{j=1}^n |S_{ij}| \leq \alpha
 \end{array}
 $$
 
-The parameter $\alpha \geq 0$ controls the degree of sparsity. The problem
+with respect to $S \in {\mathbf S}_+^n$, where the parameter $\alpha \geq 0$ controls the degree of sparsity. The problem
 is convex, so we can solve it using `CVXR`.
 
 ## Example

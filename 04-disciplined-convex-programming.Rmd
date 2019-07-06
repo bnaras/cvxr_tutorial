@@ -39,9 +39,9 @@ The following are some basic convex functions.
 - _Affine Composition_: if $f$ is convex, so is $f(Ax+b)$
 - _Pointwise Maximum_: if $f_1,f_2, \ldots, f_m$ are convex, so is $f(x) = \underset{i}{\text{max}}f_i(x)$
 - _Partial Minimization_: if $f(x, y)$ is convex and $C$ is a convex set, then $g(x) = \underset{y\in C}{\text{inf}}f(x,y)$ is convex 
-- _Composition_: if $h$ is convex and increasing and $f$ is convex, then $g(x) = h(f(x))$ is convex. (There are several other composition rules)
+- _Composition_: if $h$ is convex and increasing and $f$ is convex, then $g(x) = h(f(x))$ is convex
 
-And there are many other rules, but the above will get you far.
+There are many other rules, but the above will get you far.
 
 
 ## Examples
