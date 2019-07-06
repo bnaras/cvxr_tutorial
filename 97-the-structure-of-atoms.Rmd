@@ -48,23 +48,21 @@ the default `QuadOverLin` initialization method with
 setMethod("initialize", "QuadOverLin", function(.Object, ..., x, y) {
   .Object@x <- x
   .Object@y <- y
-  callNextMethod(.Object, ..., atom_args = list(.Object@x, .Object@y))
+  callNextMethod(.Object, ..., args = list(.Object@x, .Object@y))
 })
 ```
 
 The first two lines save `x` and `y` to their respective slots in
 `QuadOverLin`, while the third calls `Atom`'s `initialize` with
-`atom_args` equal to the list of arguments. For explanatory purposes,
+`args` equal to the list of arguments. For explanatory purposes,
 we reproduce this method below.
 
 ```{r, eval=FALSE}
-setMethod("initialize", "Atom", function(.Object, ..., atom_args = list(), .dim = NULL) {
-  .Object@args <- lapply(atom_args, as.Constant)
+setMethod("initialize", "Atom", function(.Object, ..., args = list(), .size = NA_real_) {
+  .Object@args <- lapply(args, as.Constant)
   validate_args(.Object)
-  .Object@.dim <- dim_from_args(.Object)
-  if(length(.Object@.dim) > 2)
-    stop("Atoms must be at most 2D.")
-  .Object
+  .Object@.size <- size_from_args(.Object)
+  callNextMethod(.Object, ...)
 })
 ```
 
@@ -88,14 +86,13 @@ a scalar, so our validation method looks like
 ```{r, eval=FALSE}
 setMethod("validate_args", "QuadOverLin", function(object) {
   if(!is_scalar(object@args[[2]]))
-    stop("The second argument to QuadOverLin must be a scalar.")
-  callNextMethod()
+    stop("[QuadOverLin: validation] y must be a scalar")
 })
 ```
 
 The input `object` is a `QuadOverLin` atom. We access its arguments
 via its `args` slot inherited from `Atom`. Given our ordering in
-`atom_args`, we know `object@args[[1]]` contains the argument for $x$
+`args`, we know `object@args[[1]]` contains the argument for $x$
 and `object@args[[2]]` the one for $y$. Hence, we invoke `is_scalar`,
 an `Expression` class method, on the latter to check if $y$ is indeed
 scalar. If this check passes, then a call is made up the stack to
@@ -121,7 +118,7 @@ setMethod(".domain", "QuadOverLin", function(object) { list(object@args[[2]] >= 
 Both validation and domain methods may be dropped if an atom's
 arguments span the reals.
 
-The `to_numeric` method is always required. It takes as input an atom and a list `values` containing the numeric values of the its arguments (given in the same order as in `atom_args`), then evaluates the atom at these values. For the QoL function, this method is simply
+The `to_numeric` method is always required. It takes as input an atom and a list `values` containing the numeric values of the its arguments (given in the same order as in `args`), then evaluates the atom at these values. For the QoL function, this method is simply
 
 ```{r, eval=FALSE}
 setMethod("to_numeric", "QuadOverLin", function(object, values) { sum(values[[1]]^2) / values[[2]] })
@@ -135,10 +132,10 @@ expressions.
 
 ### Dimension, Sign, and Curvature
 
-For DCP analysis to work, we must explicitly define each atom's dimension, sign, and curvature. CVXR uses this information when applying the composition rules to an expression. It is easy to see that $f$ is scalar-valued, nonnegative, and convex over its domain. These properties are encoded in
+For DCP analysis to work, we must explicitly define each atom's dimension, sign, and curvature. `CVXR` uses this information when applying the composition rules to an expression. It is easy to see that $f$ is scalar-valued, nonnegative, and convex over its domain. These properties are encoded in
 
 ```{r, eval=FALSE}
-setMethod("dim_from_args", "QuadOverLin", function(object) { c() })
+setMethod("size_from_args", "QuadOverLin", function(object) { c(1,1) })
 setMethod("sign_from_args",  "QuadOverLin", function(object) { c(TRUE, FALSE) })
 setMethod("is_atom_convex", "QuadOverLin", function(object) { TRUE })
 setMethod("is_atom_concave", "QuadOverLin", function(object) { FALSE })
@@ -153,12 +150,12 @@ increasing in $x$ on $\mathbf{R}_+^n$, and weakly decreasing in $x$ on
 $\mathbf{R}_-^n$. These properties are spelled out in
 
 ```{r, eval=FALSE}
-setMethod("is_incr", "QuadOverLin", function(object, idx) { (idx == 1) && is_nonneg(object@args[[idx]]) })
-setMethod("is_decr", "QuadOverLin", function(object, idx) { ((idx == 1) && is_nonpos(object@args[[idx]])) || (idx == 2) })
+setMethod("is_incr", "QuadOverLin", function(object, idx) { (idx == 1) && is_positive(object@args[[idx]]) })
+setMethod("is_decr", "QuadOverLin", function(object, idx) { ((idx == 1) && is_negative(object@args[[idx]])) || (idx == 2) })
 ```
 
 where `idx` is the index of the argument of interest. We call the
-`Expression` class method `is_nonneg` (resp. `is_nonpos`) to determine
+`Expression` class method `is_positive` (resp. `is_negative`) to determine
 if an argument is nonnegative (resp. nonpositive). The user may be
 tempted to write `object@args[[1]] >= 0`, but this is **incorrect**
 because it returns a `Constraint` rather than a logical value.
@@ -166,8 +163,7 @@ because it returns a `Constraint` rather than a logical value.
 ### Additional Characteristics
 
 The methods we have just described are the bare minimum required to
-define an atom. Additional methods may be implemented that handle
-complex numbers, support new solver classes, or provide further
+define an atom. Additional methods may be implemented that provide further
 functional characterization. For instance, we furnish a method for
 computing the gradient of the QoL function,
 
@@ -199,34 +195,13 @@ f(x,y))$, wraps each in a sparse `Matrix`, and returns them in a list
 ordered exactly like in the input values. If $(x,y) \notin
 \mathbf{dom}\;f$, all gradients are set to `NA`.
 
-Furthermore, we allow CVXR to solve certain problems involving QoL
-functions as a quadratic program (QP). Before calling a QP solver,
-CVXR must verify that an objective function is quadratic. It is easy
-to see that $f(x,y)$ is quadratic if its first argument is an affine
-expression and its second argument is constant. Therefore, we define
-the method
-
-```{r, eval=FALSE}
-setMethod("is_quadratic", "QuadOverLin", function(object) { is_affine(object@args[[1]]) && is_constant(object@args[[2]]) })
-```
-
-where `is_affine` and `is_constant` are given in the `Expression`
-class. A similar method exists for checking if $f(x,y)$ is the
-quadratic of a piecewise affine function.
-
-```{r, eval=FALSE}
-setMethod("is_qpwa", "QuadOverLin", function(object) { is_pwl(object@args[[1]]) && is_constant(object@args[[2]]) })
-```
-
 ## Canonicalization
 
-Once CVXR verifies a problem is DCP, it converts that problem into a
+Once `CVXR` verifies a problem is DCP, it converts that problem into a
 solver-compatible form. This *canonicalization* process is carried out
-through a series of calls to individual atom canonicalizers, defined
-in the reductions framework. To implement an atom, we must explicitly
-derive its canonicalizer for a particular class of problems (e.g.,
-conic programs) supported by the desired solver. Below we provide a
-derivation based on the graph implementation.
+through a series of calls to individual atom canonicalizers. 
+To implement an atom, we must explicitly derive its canonicalizer for a conic program. 
+Below we provide a derivation based on the graph implementation.
 
 A function $g: \mathbf{R}^n \rightarrow \mathbf{R}$ is convex if and
 only if its epigraph
@@ -267,36 +242,27 @@ solution to an SOCP, which may be evaluated using any conic
 solver. The canonicalizer for the QoL function takes as input $(x,y)$
 and outputs the above SOCP.
 
-In `CVXR`, this canonicalizer function is defined in dcp2cone.R, since
-it is used to reduce a DCP problem to a cone program.
+In `CVXR`, this canonicalizer function is defined as
 
 ```{r, eval=FALSE}
-Dcp2Cone.quad_over_lin_canon <- function(expr, args) {
-  # quad_over_lin := sum_{ij} X^2_{ij} / y
-  x <- args[[1]]
-  y <- flatten(args[[2]])
-  
-  # Pre-condition: dim = c()
-  t <- Variable(1)
-  
-  # (y+t, y-t, 2*x) must lie in the second-order cone, where y+t is the scalar part
-  # of the second-order cone constraint
-  constraints <- list(SOC(t = y+t, X = VStack(y-t, 2*flatten(x)), axis = 2))
-  return(list(t, constraints))
+QuadOverLin.graph_implementation <- function(arg_objs, size, data = NA_real_) {
+  x <- arg_objs[[1]]
+  y <- arg_objs[[2]]   # Known to be a scalar.
+  t <- create_var(c(1,1))
+  two <- create_const(2, c(1,1))
+  constraints <- list(SOC(lo.sum_expr(list(y, t)),
+                          list(lo.sub_expr(y, t),
+                               lo.mul_expr(two, x, x$size))),
+                      create_geq(y))
+  list(t, constraints)
 }
 ```
 
-It takes as input a `QuadOverLin` expression `expr` and a list of
-arguments `args`, which specify the input values $(x,y)$. The first
-two lines of the function extract $x$ and $y$ from `args`, and the
-third line constructs the `Variable` $t \in \mathbf{R}$. The fourth
-line forms the constraint $\left(\begin{pmatrix} y-t \\ 2x
-\end{pmatrix}, y+t\right) \in \mathcal{K}$ with a call to the
-constructor `SOC`. If $u \in \mathbf{R}^n$, then `SOC(t,u)` enforces
-$\|u\|_2 \leq t$. Finally, the canonicalizer returns a list containing
-$t$, the epigraph variable, and a list of `Constraint`s from the graph
-implementation - in this case, the single second-order cone
-constraint.
+It takes as input a list of arguments `arg_objs`, which specify the input values $(x,y)$, the `size` of the resulting expression, and a list of additional `data` required by the atom. 
+The first two lines of the function extract $x$ and $y$ from `args`, the third line constructs the `Variable` $t \in \mathbf{R}$, and the fourth line defines the constant $2$. 
+The fifth line forms the constraint $\left(\begin{pmatrix} y-t \\ 2x \end{pmatrix}, y+t\right) \in \mathcal{K}$ with a call to the constructor `SOC`. 
+If $u \in \mathbf{R}^n$, then `SOC(t,u)` enforces $\|u\|_2 \leq t$. Finally, the canonicalizer returns a list containing
+$t$, the epigraph variable, and a list of `Constraint`s from the graph implementation - in this case, the second-order cone constraint and $y \geq 0$.
 
 ## Putting It All Together
 
@@ -312,7 +278,7 @@ $$
 $$
 
 with respect to $x \in \mathbf{R}^n$ and $y \in \mathbf{R}_{++}$. In
-CVXR, we write
+`CVXR`, we write
 
 ```{r, eval=FALSE}
 x <- Variable(n)
@@ -323,13 +289,12 @@ prob <- Problem(Minimize(obj), constr)
 solve(prob)
 ```
 
-Once `solve` is invoked, CVXR checks if the problem is DCP with calls
+Once `solve` is invoked, `CVXR` checks if the problem is DCP with calls
 to `is_atom_convex`, `is_incr`, and `is_decr` for each atom in the
-expression tree. It then constructs a chain of *reductions*, which
-reduces the problem as modeled to a form compatible with the desired
+expression tree. It then converts the problem as modeled to a form compatible with the desired
 solver.
 
-In our example, one of these reductions is a transformation into a
+In our example, this requires a transformation into a
 cone program. Substituting in the graph implementation of $f$, our
 original problem can be written as
 
@@ -353,9 +318,7 @@ $$
 $$
 
 In `CVXR`, this SOCP canonicalization is performed automatically via a
-call to `DCP2Cone.quad_over_lin_canon`. Then, in a final reduction,
-the relevant matrices are formed and passed to the selected conic
-solver. After the solver returns $(x^*,y^*,t^*)$, this chain of
-reductions is inverted to obtain the optimal point $(x^*,y^*)$ and
+call to `QuadOverLin.graph_implementation`. Then, the relevant matrices are formed and passed to the selected conic
+solver. After the solver returns $(x^*,y^*,t^*)$, the transformation is reversed to obtain the optimal point $(x^*,y^*)$ and
 objective value $f(x^*,y^*)$ for the original problem.
 
