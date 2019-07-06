@@ -372,10 +372,10 @@ implemented in R packages.</p>
             <span class="dt">GLPK =</span> <span class="st">&quot;Rglpk&quot;</span>),
        <span class="cf">function</span>(x) x <span class="op">%in%</span><span class="st"> </span><span class="kw">installed.packages</span>()[, <span class="dv">1</span>])</code></pre>
 <pre><code>## $LPSOLVE
-## [1] FALSE
+## [1] TRUE
 ## 
 ## $GLPK
-## [1] FALSE</code></pre>
+## [1] TRUE</code></pre>
 <p>Once the packages are installed, a call to <code>installed_solvers</code> will
 display the solvers that <code>CVXR</code> has detected.</p>
 </div>
@@ -437,7 +437,7 @@ appropriate <code>PATH</code> variable solves the problem.</p>
 <div id="example-session" class="section level3">
 <h3><span class="header-section-number">17.3.4</span> Example Session</h3>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">installed_solvers</span>()</code></pre>
-<pre><code>## [1] &quot;ECOS&quot;    &quot;ECOS_BB&quot; &quot;SCS&quot;</code></pre>
+<pre><code>## [1] &quot;ECOS&quot;    &quot;ECOS_BB&quot; &quot;SCS&quot;     &quot;MOSEK&quot;   &quot;LPSOLVE&quot; &quot;GLPK&quot;    &quot;GUROBI&quot;</code></pre>
 </div>
 </div>
 <div id="solver-peculiarities" class="section level2">
@@ -476,7 +476,7 @@ results. Let us try <code>MOSEK</code>.</p>
 } <span class="cf">else</span> {
     <span class="kw">cat</span>(<span class="st">&quot;Solution not available as MOSEK is not installed!&quot;</span>)
 }</code></pre>
-<pre><code>## Solution not available as MOSEK is not installed!</code></pre>
+<pre><code>## Solution status is optimal</code></pre>
 <p>This returns an optimal solution.</p>
 <p>Here again, even commercial solvers differ; <code>GUROBI</code>, for example,
 does not completely solve the problem and in fact throws an error.</p>

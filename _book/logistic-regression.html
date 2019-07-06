@@ -351,7 +351,7 @@ lexically scoped <code>CVXR</code> facilities.</li>
 </div>
 <div id="logistic-regression-problem" class="section level2">
 <h2><span class="header-section-number">8.2</span> Logistic Regression Problem</h2>
-<p>In logistic regression <span class="citation">(James et al. <a href="#ref-james2013">2013</a>)</span>, the response <span class="math inline">\(y_i\)</span> is
+<p>In logistic regression <span class="citation">(James et al. <a href="#ref-james2013" role="doc-biblioref">2013</a>)</span>, the response <span class="math inline">\(y_i\)</span> is
 binary: 0 or 1. (In a classification setting, the values of the
 response would represent class membership in one of two classes.) The
 conditional response given covariates <span class="math inline">\(x\)</span> is modeled as</p>
@@ -378,7 +378,7 @@ atom</a> as a shortcut for <span class="math inline">\(f(z) = \log(1 + e^z)\)</s
 </div>
 <div id="example" class="section level2">
 <h2><span class="header-section-number">8.3</span> Example</h2>
-<p>We use example 4.6.2 of <span class="citation">(James et al. <a href="#ref-james2013">2013</a>)</span> with the <code>Smarket</code> data where a
+<p>We use example 4.6.2 of <span class="citation">(James et al. <a href="#ref-james2013" role="doc-biblioref">2013</a>)</span> with the <code>Smarket</code> data where a
 <code>glm</code> is fit as follows.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(ISLR)
 <span class="kw">data</span>(Smarket)
@@ -506,7 +506,7 @@ solutions to the optimization problem.</p>
 <p>We can also satisfy ourselves that the fitted values match the <code>glm</code>
 estimate, by computing the sum of squared differences.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sum</span>((fitted_values <span class="op">-</span><span class="st"> </span>glmfit<span class="op">$</span>fitted.values))<span class="op">^</span><span class="dv">2</span></code></pre>
-<pre><code>## [1] 1.294332e-14</code></pre>
+<pre><code>## [1] 1.293855e-14</code></pre>
 <p>Similarly, the log-odds, <span class="math inline">\(X\hat{\beta}\)</span> , where <span class="math inline">\(\hat{\beta}\)</span> is the
 logistic regression estimate, can be computed as follows.</p>
 <pre class="sourceCode r"><code class="sourceCode r">log_odds &lt;-<span class="st"> </span>result<span class="op">$</span><span class="kw">getValue</span>(X <span class="op">%*%</span><span class="st"> </span>beta)</code></pre>

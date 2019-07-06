@@ -356,10 +356,10 @@ improve the initial weights <span class="math inline">\(d_i\)</span> by finding 
 incorporate this auxiliary information while perturbing the initial
 weights as little as possible, , the ratio <span class="math inline">\(g_i = w_i/d_i\)</span> must
 be close to one. Such reweighting improves precision of estimates
-(Chapter 7, <span class="citation">Lumley (<a href="#ref-Lumley:2010">2010</a>)</span>).</p>
+(Chapter 7, <span class="citation">Lumley (<a href="#ref-Lumley:2010" role="doc-biblioref">2010</a>)</span>).</p>
 <p>Let <span class="math inline">\(X \in {\mathbf R}^{m \times n}\)</span> be the matrix of survey samples, with
 each column corresponding to an auxiliary variable. Reweighting can be
-expressed as the optimization problem (see <span class="citation">Davies, Gillard, and Zhigljavsky (<a href="#ref-Davies:2016">2016</a>)</span>):</p>
+expressed as the optimization problem (see <span class="citation">Davies, Gillard, and Zhigljavsky (<a href="#ref-Davies:2016" role="doc-biblioref">2016</a>)</span>):</p>
 <p><span class="math display">\[
     \begin{array}{ll}
         \mbox{minimize} &amp; \sum_{i=1}^m d_i\phi(g_i) \\
@@ -375,7 +375,7 @@ and <span class="math inline">\(A \in {\mathbf R}^{m \times n}\)</span> is relat
 function <span class="math inline">\(\phi(g_i) = g_i\log(g_i) - g_i + 1\)</span> as the calibration
 metric.</p>
 <p>We illustrate this with the California Academic Performance Index data in
-the <code>survey</code> package (<span class="citation">Lumley (<a href="#ref-lumley:2018">2018</a>)</span>), which also supplies facilities for
+the <code>survey</code> package (<span class="citation">Lumley (<a href="#ref-lumley:2018" role="doc-biblioref">2018</a>)</span>), which also supplies facilities for
 calibration via the function <code>calibrate</code>. Both the population dataset
 (<code>apipop</code>) and a simple random sample of <span class="math inline">\(m = 200\)</span> (<code>apisrs</code>) are
 provided. Suppose that we wish to reweight the observations in the

@@ -48,13 +48,6 @@
 
 
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
-<script src="libs/htmlwidgets-1.3/htmlwidgets.js"></script>
-<script src="libs/d3-3.5.6/d3.min.js"></script>
-<link href="libs/profvis-0.3.6/profvis.css" rel="stylesheet" />
-<script src="libs/profvis-0.3.6/profvis.js"></script>
-<link href="libs/highlight-6.2.0/textmate.css" rel="stylesheet" />
-<script src="libs/highlight-6.2.0/highlight.js"></script>
-<script src="libs/profvis-binding-0.3.6/profvis.js"></script>
 <script>
   // Added visibility option for solution (naras@stat)
   $(document).ready(function () {
@@ -355,7 +348,7 @@ regularization to prevent overfitting, introduce sparsity, facilitate
 variable selection, or impose prior distributions on parameters. Two
 of the most common regularization functions are the <span class="math inline">\(l_1\)</span>-norm and
 squared <span class="math inline">\(l_2\)</span>-norm, combined in the elastic net regression model
-(<span class="citation">H. Zou (<a href="#ref-elasticnet">2005</a>)</span> and <span class="citation">Friedman, Hastie, and Tibshirani (<a href="#ref-glmnet">2010</a>)</span>).</p>
+(<span class="citation">H. Zou (<a href="#ref-elasticnet" role="doc-biblioref">2005</a>)</span> and <span class="citation">Friedman, Hastie, and Tibshirani (<a href="#ref-glmnet" role="doc-biblioref">2010</a>)</span>).</p>
 <p><span class="math display">\[
 \begin{array}{ll} 
 \underset{\beta}{\mbox{minimize}} &amp; \frac{1}{2m}\|y - X\beta\|_2^2 +
@@ -460,10 +453,10 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 0.888
 </td>
 <td style="text-align:right;">
-0.882
+0.883
 </td>
 <td style="text-align:right;">
-0.870
+0.869
 </td>
 <td style="text-align:right;">
 0.836
@@ -486,19 +479,19 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 <span class="math inline">\(\beta_{2}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.041
+0.040
+</td>
+<td style="text-align:right;">
+0.040
 </td>
 <td style="text-align:right;">
 0.041
-</td>
-<td style="text-align:right;">
-0.038
 </td>
 <td style="text-align:right;">
 0.036
 </td>
 <td style="text-align:right;">
-0.028
+0.035
 </td>
 <td style="text-align:right;">
 0.010
@@ -524,13 +517,13 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 0.301
 </td>
 <td style="text-align:right;">
-0.301
+0.300
 </td>
 <td style="text-align:right;">
-0.299
+0.300
 </td>
 <td style="text-align:right;">
-0.293
+0.294
 </td>
 <td style="text-align:right;">
 0.283
@@ -542,7 +535,7 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 0.181
 </td>
 <td style="text-align:right;">
-0.006
+0.011
 </td>
 <td style="text-align:right;">
 0.000
@@ -562,13 +555,13 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 -0.578
 </td>
 <td style="text-align:right;">
--0.576
+-0.577
 </td>
 <td style="text-align:right;">
 -0.572
 </td>
 <td style="text-align:right;">
--0.561
+-0.560
 </td>
 <td style="text-align:right;">
 -0.534
@@ -597,13 +590,13 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 0.385
 </td>
 <td style="text-align:right;">
-0.384
+0.385
 </td>
 <td style="text-align:right;">
-0.379
+0.380
 </td>
 <td style="text-align:right;">
-0.371
+0.370
 </td>
 <td style="text-align:right;">
 0.347
@@ -612,7 +605,7 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 0.280
 </td>
 <td style="text-align:right;">
-0.114
+0.111
 </td>
 <td style="text-align:right;">
 0.000
@@ -626,19 +619,19 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 <span class="math inline">\(\beta_{6}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-1.538
+1.539
 </td>
 <td style="text-align:right;">
 1.538
 </td>
 <td style="text-align:right;">
-1.536
+1.535
 </td>
 <td style="text-align:right;">
 1.531
 </td>
 <td style="text-align:right;">
-1.519
+1.518
 </td>
 <td style="text-align:right;">
 1.487
@@ -667,10 +660,10 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 0.180
 </td>
 <td style="text-align:right;">
-0.178
+0.180
 </td>
 <td style="text-align:right;">
-0.173
+0.174
 </td>
 <td style="text-align:right;">
 0.163
@@ -682,7 +675,7 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 0.067
 </td>
 <td style="text-align:right;">
-0.000
+0.001
 </td>
 <td style="text-align:right;">
 0.000
@@ -702,10 +695,10 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 -0.134
 </td>
 <td style="text-align:right;">
--0.132
+-0.134
 </td>
 <td style="text-align:right;">
--0.125
+-0.127
 </td>
 <td style="text-align:right;">
 -0.114
@@ -743,7 +736,7 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 0.931
 </td>
 <td style="text-align:right;">
-0.918
+0.917
 </td>
 <td style="text-align:right;">
 0.885
@@ -769,10 +762,10 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 -0.329
 </td>
 <td style="text-align:right;">
--0.329
+-0.328
 </td>
 <td style="text-align:right;">
--0.327
+-0.328
 </td>
 <td style="text-align:right;">
 -0.322
@@ -787,7 +780,7 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 -0.213
 </td>
 <td style="text-align:right;">
--0.032
+-0.031
 </td>
 <td style="text-align:right;">
 0.000
@@ -803,7 +796,7 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
      <span class="dt">xlab =</span> <span class="st">&quot;Log Lambda&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Coefficients&quot;</span>,
      <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">2</span>), <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">4</span>, <span class="dv">4</span>))
 <span class="kw">matlines</span>(<span class="kw">log</span>(lambda_vals), <span class="kw">t</span>(beta_vals))</code></pre>
-<p><img src="cvxr_tutorial_files/figure-html/unnamed-chunk-66-1.png" width="672" /></p>
+<p><img src="cvxr_tutorial_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <p>We then compare with the <code>glmnet</code> results.</p>
 <pre class="sourceCode r"><code class="sourceCode r">model_net &lt;-<span class="st"> </span><span class="kw">glmnet</span>(X, Y, <span class="dt">family =</span> <span class="st">&quot;gaussian&quot;</span>, <span class="dt">alpha =</span> alpha,
                     <span class="dt">lambda =</span> lambda_vals,
@@ -1274,16 +1267,17 @@ beta_est &lt;-<span class="st"> </span><span class="kw">solve</span>(prob)<span 
 <pre><code>## CVXR objective (scaled y): 0.2504412</code></pre>
 <p>To work on the non-standardized scale, we need to match the <code>lamba</code>
 values as noted by the <code>glmnet</code> authors in Appendix 2 of the package
-vignette <span class="citation">(Friedman, Hastie, and Tibshirani <a href="#ref-glmnet">2010</a>)</span>.</p>
+vignette <span class="citation">(Friedman, Hastie, and Tibshirani <a href="#ref-glmnet" role="doc-biblioref">2010</a>)</span>.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co">## NONSTANDARDIZED COMPARISON</span>
 fit &lt;-<span class="st"> </span><span class="kw">glmnet</span>(x, y, <span class="dt">intercept=</span>F, <span class="dt">standardize=</span>F, <span class="dt">lambda =</span> lambda, <span class="dt">alpha=</span>alpha)
 <span class="kw">catn</span>(<span class="st">&quot;Glmnet objective (unscaled y)&quot;</span>, <span class="kw">objective_value</span>(y, x, <span class="kw">coef</span>(fit)[<span class="op">-</span><span class="dv">1</span>], lambda, alpha))</code></pre>
 <pre><code>## Glmnet objective (unscaled y) 2.559086</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">obj &lt;-<span class="st"> </span>loss <span class="op">+</span><span class="st"> </span><span class="kw">elastic_reg</span>(beta, <span class="dt">lambda =</span> lambda <span class="op">/</span><span class="st"> </span><span class="kw">attr</span>(y_s, <span class="st">&quot;scaled:scale&quot;</span>), alpha)
+<pre class="sourceCode r"><code class="sourceCode r">loss &lt;-<span class="st"> </span><span class="kw">sum_squares</span>(y <span class="op">-</span><span class="st"> </span>x <span class="op">%*%</span><span class="st"> </span>beta) <span class="op">/</span><span class="st"> </span>( <span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">nrow</span>(x))
+obj &lt;-<span class="st"> </span>loss <span class="op">+</span><span class="st"> </span><span class="kw">elastic_reg</span>(beta, <span class="dt">lambda =</span> lambda <span class="op">/</span><span class="st"> </span><span class="kw">attr</span>(y_s, <span class="st">&quot;scaled:scale&quot;</span>), alpha)
 prob &lt;-<span class="st"> </span><span class="kw">Problem</span>(<span class="kw">Minimize</span>(obj))
 beta_est &lt;-<span class="st"> </span><span class="kw">solve</span>(prob)<span class="op">$</span><span class="kw">getValue</span>(beta)
 <span class="kw">catn</span>(<span class="st">&quot;CVXR objective (unscaled y)&quot;</span>, <span class="kw">objective_value</span>(y, x, beta_est, lambda, alpha))</code></pre>
-<pre><code>## CVXR objective (unscaled y) 2.864181</code></pre>
+<pre><code>## CVXR objective (unscaled y) 2.558958</code></pre>
 <p>Finally, we can check that the coefficients are close enough.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print_matrix</span>(<span class="kw">round</span>(<span class="kw">cbind</span>(beta_est, <span class="kw">coef</span>(fit)[<span class="op">-</span><span class="dv">1</span>]), <span class="dv">3</span>), 
              <span class="dt">row_names =</span> <span class="kw">sprintf</span>(<span class="st">&quot;$</span><span class="ch">\\</span><span class="st">beta_{%d}$&quot;</span>, <span class="kw">seq_len</span>(<span class="dv">20</span>)),
@@ -1307,7 +1301,7 @@ GLMNET
 <span class="math inline">\(\beta_{1}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.345
+1.117
 </td>
 <td style="text-align:right;">
 1.117
@@ -1318,7 +1312,7 @@ GLMNET
 <span class="math inline">\(\beta_{2}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.018
+0.070
 </td>
 <td style="text-align:right;">
 0.070
@@ -1329,7 +1323,7 @@ GLMNET
 <span class="math inline">\(\beta_{3}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.186
+0.567
 </td>
 <td style="text-align:right;">
 0.567
@@ -1340,7 +1334,7 @@ GLMNET
 <span class="math inline">\(\beta_{4}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--0.027
+0.007
 </td>
 <td style="text-align:right;">
 0.007
@@ -1351,7 +1345,7 @@ GLMNET
 <span class="math inline">\(\beta_{5}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--0.225
+-0.683
 </td>
 <td style="text-align:right;">
 -0.683
@@ -1362,7 +1356,7 @@ GLMNET
 <span class="math inline">\(\beta_{6}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.196
+0.537
 </td>
 <td style="text-align:right;">
 0.537
@@ -1373,7 +1367,7 @@ GLMNET
 <span class="math inline">\(\beta_{7}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.039
+0.121
 </td>
 <td style="text-align:right;">
 0.121
@@ -1384,7 +1378,7 @@ GLMNET
 <span class="math inline">\(\beta_{8}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.112
+0.302
 </td>
 <td style="text-align:right;">
 0.302
@@ -1395,7 +1389,7 @@ GLMNET
 <span class="math inline">\(\beta_{9}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--0.010
+-0.075
 </td>
 <td style="text-align:right;">
 -0.075
@@ -1406,7 +1400,7 @@ GLMNET
 <span class="math inline">\(\beta_{10}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--0.001
+0.054
 </td>
 <td style="text-align:right;">
 0.054
@@ -1417,7 +1411,7 @@ GLMNET
 <span class="math inline">\(\beta_{11}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.091
+0.143
 </td>
 <td style="text-align:right;">
 0.143
@@ -1428,7 +1422,7 @@ GLMNET
 <span class="math inline">\(\beta_{12}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--0.013
+-0.073
 </td>
 <td style="text-align:right;">
 -0.072
@@ -1439,7 +1433,7 @@ GLMNET
 <span class="math inline">\(\beta_{13}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.002
+-0.029
 </td>
 <td style="text-align:right;">
 -0.029
@@ -1450,7 +1444,7 @@ GLMNET
 <span class="math inline">\(\beta_{14}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--0.296
+-0.932
 </td>
 <td style="text-align:right;">
 -0.932
@@ -1461,7 +1455,7 @@ GLMNET
 <span class="math inline">\(\beta_{15}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--0.003
+-0.077
 </td>
 <td style="text-align:right;">
 -0.077
@@ -1472,7 +1466,7 @@ GLMNET
 <span class="math inline">\(\beta_{16}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--0.007
+0.019
 </td>
 <td style="text-align:right;">
 0.018
@@ -1483,7 +1477,7 @@ GLMNET
 <span class="math inline">\(\beta_{17}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.000
+0.008
 </td>
 <td style="text-align:right;">
 0.008
@@ -1494,7 +1488,7 @@ GLMNET
 <span class="math inline">\(\beta_{18}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.049
+0.009
 </td>
 <td style="text-align:right;">
 0.009
@@ -1505,7 +1499,7 @@ GLMNET
 <span class="math inline">\(\beta_{19}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--0.006
+0.031
 </td>
 <td style="text-align:right;">
 0.031
@@ -1516,7 +1510,7 @@ GLMNET
 <span class="math inline">\(\beta_{20}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--0.268
+-0.784
 </td>
 <td style="text-align:right;">
 -0.784
@@ -1535,7 +1529,7 @@ threshold <span class="math inline">\(M = 0.5\)</span>.</p>
 <h4><span class="header-section-number">10.2.2.1</span> Solution</h4>
 <p>Just set the loss as follows.</p>
 <pre class="sourceCode r"><code class="sourceCode r">beta &lt;-<span class="st"> </span><span class="kw">Variable</span>(p)  
-loss  &lt;-<span class="st"> </span><span class="kw">huber</span>(Y <span class="op">-</span><span class="st"> </span>X <span class="op">%*%</span><span class="st"> </span>beta, <span class="dt">M =</span> <span class="dv">1</span>)
+loss  &lt;-<span class="st"> </span><span class="kw">huber</span>(Y <span class="op">-</span><span class="st"> </span>X <span class="op">%*%</span><span class="st"> </span>beta, <span class="dt">M =</span> <span class="fl">0.5</span>)
 loss &lt;-<span class="st"> </span><span class="kw">sum_squares</span>(Y <span class="op">-</span><span class="st"> </span>X <span class="op">%*%</span><span class="st"> </span>beta) <span class="op">/</span><span class="st"> </span>(<span class="dv">2</span> <span class="op">*</span><span class="st"> </span>n)
 <span class="co">## Elastic-net regression LASSO</span>
 alpha &lt;-<span class="st"> </span><span class="dv">1</span>
@@ -1546,7 +1540,7 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
                         result &lt;-<span class="st"> </span><span class="kw">solve</span>(prob)
                         result<span class="op">$</span><span class="kw">getValue</span>(beta)
                     })</code></pre>
-<p>The estimates are below and don’t change in this example.</p>
+<p>The estimates are below.</p>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -1599,10 +1593,10 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 0.888
 </td>
 <td style="text-align:right;">
-0.882
+0.883
 </td>
 <td style="text-align:right;">
-0.870
+0.869
 </td>
 <td style="text-align:right;">
 0.836
@@ -1625,19 +1619,19 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 <span class="math inline">\(\beta_{2}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.041
+0.040
+</td>
+<td style="text-align:right;">
+0.040
 </td>
 <td style="text-align:right;">
 0.041
-</td>
-<td style="text-align:right;">
-0.038
 </td>
 <td style="text-align:right;">
 0.036
 </td>
 <td style="text-align:right;">
-0.028
+0.035
 </td>
 <td style="text-align:right;">
 0.010
@@ -1663,13 +1657,13 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 0.301
 </td>
 <td style="text-align:right;">
-0.301
+0.300
 </td>
 <td style="text-align:right;">
-0.299
+0.300
 </td>
 <td style="text-align:right;">
-0.293
+0.294
 </td>
 <td style="text-align:right;">
 0.283
@@ -1681,7 +1675,7 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 0.181
 </td>
 <td style="text-align:right;">
-0.006
+0.011
 </td>
 <td style="text-align:right;">
 0.000
@@ -1701,13 +1695,13 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 -0.578
 </td>
 <td style="text-align:right;">
--0.576
+-0.577
 </td>
 <td style="text-align:right;">
 -0.572
 </td>
 <td style="text-align:right;">
--0.561
+-0.560
 </td>
 <td style="text-align:right;">
 -0.534
@@ -1736,13 +1730,13 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 0.385
 </td>
 <td style="text-align:right;">
-0.384
+0.385
 </td>
 <td style="text-align:right;">
-0.379
+0.380
 </td>
 <td style="text-align:right;">
-0.371
+0.370
 </td>
 <td style="text-align:right;">
 0.347
@@ -1751,7 +1745,7 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 0.280
 </td>
 <td style="text-align:right;">
-0.114
+0.111
 </td>
 <td style="text-align:right;">
 0.000
@@ -1765,19 +1759,19 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 <span class="math inline">\(\beta_{6}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-1.538
+1.539
 </td>
 <td style="text-align:right;">
 1.538
 </td>
 <td style="text-align:right;">
-1.536
+1.535
 </td>
 <td style="text-align:right;">
 1.531
 </td>
 <td style="text-align:right;">
-1.519
+1.518
 </td>
 <td style="text-align:right;">
 1.487
@@ -1806,10 +1800,10 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 0.180
 </td>
 <td style="text-align:right;">
-0.178
+0.180
 </td>
 <td style="text-align:right;">
-0.173
+0.174
 </td>
 <td style="text-align:right;">
 0.163
@@ -1821,7 +1815,7 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 0.067
 </td>
 <td style="text-align:right;">
-0.000
+0.001
 </td>
 <td style="text-align:right;">
 0.000
@@ -1841,10 +1835,10 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 -0.134
 </td>
 <td style="text-align:right;">
--0.132
+-0.134
 </td>
 <td style="text-align:right;">
--0.125
+-0.127
 </td>
 <td style="text-align:right;">
 -0.114
@@ -1882,7 +1876,7 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 0.931
 </td>
 <td style="text-align:right;">
-0.918
+0.917
 </td>
 <td style="text-align:right;">
 0.885
@@ -1908,10 +1902,10 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 -0.329
 </td>
 <td style="text-align:right;">
--0.329
+-0.328
 </td>
 <td style="text-align:right;">
--0.327
+-0.328
 </td>
 <td style="text-align:right;">
 -0.322
@@ -1926,7 +1920,7 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 -0.213
 </td>
 <td style="text-align:right;">
--0.032
+-0.031
 </td>
 <td style="text-align:right;">
 0.000
@@ -1945,7 +1939,7 @@ beta_vals &lt;-<span class="st"> </span><span class="kw">sapply</span>(lambda_va
 <h3>References</h3>
 <div id="refs" class="references">
 <div id="ref-glmnet">
-<p>Friedman, J., T. Hastie, and R. Tibshirani. 2008. “Sparse Inverse Covariance Estimation with the Graphical Lasso.” <em>Biostatistics</em> 9 (3): 432–41.</p> 2010. “Regularization Paths for Generalized Linear Models via Coordinate Descent.” <em>Journal of Statistical Software</em> 33 (1): 1–22.</p>
+<p>Friedman, J., T. Hastie, and R. Tibshirani. 2010. “Regularization Paths for Generalized Linear Models via Coordinate Descent.” <em>Journal of Statistical Software</em> 33 (1): 1–22.</p>
 </div>
 <div id="ref-elasticnet">
 <p>H. Zou, T. Hastie. 2005. “Regularization and Variable Selection via the Elastic–Net.” <em>Journal of the Royal Statistical Society B (Methodological)</em> 67 (2): 301–20.</p>

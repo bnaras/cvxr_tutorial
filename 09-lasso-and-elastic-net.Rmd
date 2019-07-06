@@ -219,6 +219,7 @@ catn("Glmnet objective (unscaled y)", objective_value(y, x, coef(fit)[-1], lambd
 ```
 
 ```{r}
+loss <- sum_squares(y - x %*% beta) / ( 2 * nrow(x))
 obj <- loss + elastic_reg(beta, lambda = lambda / attr(y_s, "scaled:scale"), alpha)
 prob <- Problem(Minimize(obj))
 beta_est <- solve(prob)$getValue(beta)
@@ -245,7 +246,7 @@ Just set the loss as follows.
 
 ```{r}
 beta <- Variable(p)  
-loss  <- huber(Y - X %*% beta, M = 1)
+loss  <- huber(Y - X %*% beta, M = 0.5)
 loss <- sum_squares(Y - X %*% beta) / (2 * n)
 ## Elastic-net regression LASSO
 alpha <- 1
@@ -258,7 +259,7 @@ beta_vals <- sapply(lambda_vals,
                     })
 ```
 
-The estimates are below and don't change in this example.
+The estimates are below.
 
 ```{r, echo = FALSE}
 print_matrix(round(beta_vals, 3),
