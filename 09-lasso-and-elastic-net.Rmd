@@ -201,7 +201,7 @@ elastic_reg <- function(beta, lambda = 0, alpha = 0) {
     lasso <- alpha * p_norm(beta, 1)
     lambda * (lasso + ridge)
 }
-loss <- sum_squares(y_s - x %*% beta) / ( 2 * nrow(x))
+loss <- sum_squares(y_s - x %*% beta) / (2 * nrow(x))
 obj <- loss + elastic_reg(beta, lambda = lambda, alpha)
 prob <- Problem(Minimize(obj))
 beta_est <- solve(prob)$getValue(beta)
@@ -219,7 +219,7 @@ catn("Glmnet objective (unscaled y)", objective_value(y, x, coef(fit)[-1], lambd
 ```
 
 ```{r}
-loss <- sum_squares(y - x %*% beta) / ( 2 * nrow(x))
+loss <- sum_squares(y - x %*% beta) / (2 * nrow(x))
 obj <- loss + elastic_reg(beta, lambda = lambda / attr(y_s, "scaled:scale"), alpha)
 prob <- Problem(Minimize(obj))
 beta_est <- solve(prob)$getValue(beta)

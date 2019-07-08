@@ -302,8 +302,8 @@ Software](https://www.jstatsoft.org) any day now.
 > 
 > ---C. F. Gauss to Schumacher, May 15, 1843
 
-> "That’s awesome!  I was disappointed to not see a direct
-  reference to DCP, but still, it’s pretty clear!"
+> "That's awesome!  I was disappointed to not see a direct
+  reference to DCP, but still, it's pretty clear!"
 >
 > ---Stephen Boyd, on Gauss' letter to Schumacher, April 8, 2019
 
@@ -1392,6 +1392,7 @@ catn("Glmnet objective (unscaled y)", objective_value(y, x, coef(fit)[-1], lambd
 ```
 
 ```{r}
+loss <- sum_squares(y - x %*% beta) / (2 * nrow(x))
 obj <- loss + elastic_reg(beta, lambda = lambda / attr(y_s, "scaled:scale"), alpha)
 prob <- Problem(Minimize(obj))
 beta_est <- solve(prob)$getValue(beta)
@@ -1422,7 +1423,7 @@ Just set the loss as follows.
 
 ```{r}
 beta <- Variable(p)  
-loss  <- huber(Y - X %*% beta, M = 1)
+loss  <- huber(Y - X %*% beta, M = 0.5)
 loss <- sum_squares(Y - X %*% beta) / (2 * n)
 ## Elastic-net regression LASSO
 alpha <- 1
