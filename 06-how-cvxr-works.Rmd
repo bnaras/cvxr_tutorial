@@ -65,10 +65,10 @@ data, like the `Y` and `X` in the code snippet above.
 
 Calling the `solve` function on a problem sets several things in motion.
 
-1. The problem along with the data is converted into a canonical form.
-
-2. The problem is verified for convexity. If it is not convex, the
+1. The problem is verified for convexity. If it is not convex, the
    solve attempt fails with an error message and a non-optimal status.
+   
+2. The problem along with the data is converted into a canonical form.
 
 3. The problem is analyzed and classified according to its type: LP,
    QP, SDP, etc.
@@ -105,5 +105,5 @@ result <- solve(problem, verbose = TRUE)
 
 Solver options are unique to the chosen solver, so any arguments to
 `CVXR::solve` besides the three documented above are simply passed
-along to the solver. he reference for the specific solver must be 
+along to the solver. The reference for the specific solver must be 
 consulted to set these options.

@@ -317,7 +317,7 @@ The following are some basic convex functions.
 - $\exp(x)$, $-\log(x)$, $x\log(x)$
 - $a^Tx + b$
 - $x^Tx$; $x^Tx/y$ for $y>0$; $(x^Tx)^{1/2}$ 
-- $||x||$ (any norm)
+- $\|x\|$ (any norm)
 - $\max(x_1, x_2, \ldots, x_n)$, $\log(e^x_{1}+ \ldots + e^x_{n})$
 - $\log(\Phi(x))$, where $\Phi$ is the Gaussian CDF
 - $\log(\text{det}(X^{-1}))$ for $X \succ 0$
@@ -329,8 +329,8 @@ The following are some basic convex functions.
 - _Nonnegative Scaling_: if $f$ is convex and $\alpha \geq 0$, then $\alpha f$ is convex
 - _Sum_: if $f$ and $g$ are convex, so is $f+g$
 - _Affine Composition_: if $f$ is convex, so is $f(Ax+b)$
-- _Pointwise Maximum_: if $f_1,f_2, \ldots, f_m$ are convex, so is $f(x) = \underset{i}{\text{max}}f_i(x)$
-- _Partial Minimization_: if $f(x, y)$ is convex and $C$ is a convex set, then $g(x) = \underset{y\in C}{\text{inf}}f(x,y)$ is convex 
+- _Pointwise Maximum_: if $f_1,f_2, \ldots, f_m$ are convex, so is $f(x) = \underset{i}{\max}f_i(x)$
+- _Partial Minimization_: if $f(x, y)$ is convex and $C$ is a convex set, then $g(x) = \underset{y\in C}{\inf}f(x,y)$ is convex 
 - _Composition_: if $h$ is convex and increasing and $f$ is convex, then $g(x) = h(f(x))$ is convex
 
 There are many other rules, but the above will get you far.
@@ -339,11 +339,11 @@ There are many other rules, but the above will get you far.
 
 ## Examples
 
-- Piecewise-linear function: $f(x) = \underset{i}{\text{max}}(a_i^Tx + b_i)$
-- $l_1$-regularized least-squares cost: $||Ax-b||_2^2 + \lambda ||x||_1$ with $\lambda \geq 0$
+- Piecewise-linear function: $f(x) = \underset{i}{\max}(a_i^Tx + b_i)$
+- $l_1$-regularized least-squares cost: $\|Ax-b\|_2^2 + \lambda \|x\|_1$ with $\lambda \geq 0$
 - Sum of $k$ largest elements of $x$: $f(x) = \sum_{i=1}^mx_i - \sum_{i=1}^{m-k}x_{(i)}$
 - Log-barrier: $-\sum_{i=1}^m\log(−f_i(x))$ on $\{x \in \mathbf{R}^n : f_i(x) < 0\}$, where $f_i$ are convex
-- Distance to convex set $C$: $f(x) = \text{dist}(x,C) =\underset{y\in C}{\text{inf}}||x-y||_2$
+- Distance to convex set $C$: $f(x) = \text{dist}(x,C) =\underset{y\in C}{\inf}\|x-y\|_2$
 
 Except for log-barrier, these functions are nondifferentiable.
 
@@ -399,10 +399,10 @@ $\epsilon \sim N(0, 1)$.
 ```{r}
 set.seed(123)
 n <- 50; p <- 10;
-beta <- -4:5    # beta is just -4 through 5.
+beta_true <- -4:5    # beta is just -4 through 5.
 X <- matrix(rnorm(n * p), nrow=n)
-colnames(X) <- paste0("beta_", beta)
-Y <- X %*% beta + rnorm(n)
+colnames(X) <- paste0("beta_", beta_true)
+Y <- X %*% beta_true + rnorm(n)
 ```
 
 Given the data $X$ and $Y$, we can estimate the $\beta$ vector using the
@@ -807,10 +807,10 @@ data, like the `Y` and `X` in the code snippet above.
 
 Calling the `solve` function on a problem sets several things in motion.
 
-1. The problem along with the data is converted into a canonical form.
-
-2. The problem is verified for convexity. If it is not convex, the
+1. The problem is verified for convexity. If it is not convex, the
    solve attempt fails with an error message and a non-optimal status.
+
+2. The problem along with the data is converted into a canonical form.
 
 3. The problem is analyzed and classified according to its type: LP,
    QP, SDP, etc.
@@ -847,7 +847,7 @@ result <- solve(problem, verbose = TRUE)
 
 Solver options are unique to the chosen solver, so any arguments to
 `CVXR::solve` besides the three documented above are simply passed
-along to the solver. he reference for the specific solver must be 
+along to the solver. The reference for the specific solver must be 
 consulted to set these options.
 
 <!--chapter:end:06-how-cvxr-works.Rmd-->
@@ -1372,7 +1372,7 @@ elastic_reg <- function(beta, lambda = 0, alpha = 0) {
     lasso <- alpha * p_norm(beta, 1)
     lambda * (lasso + ridge)
 }
-loss <- sum_squares(y_s - x %*% beta) / ( 2 * nrow(x))
+loss <- sum_squares(y_s - x %*% beta) / (2 * nrow(x))
 obj <- loss + elastic_reg(beta, lambda = lambda, alpha)
 prob <- Problem(Minimize(obj))
 beta_est <- solve(prob)$getValue(beta)
@@ -1423,8 +1423,7 @@ Just set the loss as follows.
 
 ```{r}
 beta <- Variable(p)  
-loss  <- huber(Y - X %*% beta, M = 0.5)
-loss <- sum_squares(Y - X %*% beta) / (2 * n)
+loss  <- sum(huber(Y - X %*% beta, M = 0.5))
 ## Elastic-net regression LASSO
 alpha <- 1
 beta_vals <- sapply(lambda_vals,
