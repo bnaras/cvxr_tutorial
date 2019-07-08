@@ -14,4 +14,7 @@ tutorial](http://www.user2019.fr/tutorials/) at [useR!
 3. Ensure that you follow the steps outlined in _Chapter 2: Getting
    Started_ to be ready for the tutorial.
    
-We are happy to see you at _useR! 2019_, Toulouse!
+If you want a single markdown file with all the code, you will find it
+in the `extra/code` folder.
+
+ are happy to see you at _useR! 2019_, Toulouse!

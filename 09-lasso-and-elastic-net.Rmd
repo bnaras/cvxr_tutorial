@@ -246,7 +246,7 @@ Just set the loss as follows.
 
 ```{r}
 beta <- Variable(p)  
-loss  <- huber(Y - X %*% beta, M = 0.5)
+loss  <- sum(huber(Y - X %*% beta, M = 0.5))
 ## Elastic-net regression LASSO
 alpha <- 1
 beta_vals <- sapply(lambda_vals,

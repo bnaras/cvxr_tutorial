@@ -24,7 +24,7 @@
 <meta name="author" content="Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd" />
 
 
-<meta name="date" content="2019-07-06" />
+<meta name="date" content="2019-07-08" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -390,9 +390,9 @@ data, like the <code>Y</code> and <code>X</code> in the code snippet above.</p>
 <h2><span class="header-section-number">7.3</span> Solving the Problem</h2>
 <p>Calling the <code>solve</code> function on a problem sets several things in motion.</p>
 <ol style="list-style-type: decimal">
-<li><p>The problem along with the data is converted into a canonical form.</p></li>
 <li><p>The problem is verified for convexity. If it is not convex, the
 solve attempt fails with an error message and a non-optimal status.</p></li>
+<li><p>The problem along with the data is converted into a canonical form.</p></li>
 <li><p>The problem is analyzed and classified according to its type: LP,
 QP, SDP, etc.</p></li>
 <li><p>Among the available solvers, a suitable one is chosen that can
@@ -421,7 +421,7 @@ by simply passing another parameter to <code>CVXR::solve</code>.</p>
 <h2><span class="header-section-number">7.4</span> Solver Options</h2>
 <p>Solver options are unique to the chosen solver, so any arguments to
 <code>CVXR::solve</code> besides the three documented above are simply passed
-along to the solver. he reference for the specific solver must be
+along to the solver. The reference for the specific solver must be
 consulted to set these options.</p>
 
 </div>
