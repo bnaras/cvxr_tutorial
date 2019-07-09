@@ -735,6 +735,7 @@ even an implementation. Later, we will see how such solutions can be
 used with resampling techniques like the bootstrap to estimate
 variability.
 
+The list of atoms provided by `CVXR` is documented [here](https://cvxr.rbind.io/cvxr_functions/)
 
 <!--chapter:end:05-a-simple-regression-example.Rmd-->
 
@@ -1552,10 +1553,17 @@ fit.
      labs(x = "Year", y = "Temperature Anomalies")
 )
 ```
+---
+
+
+```{r echo=FALSE, fig.cap = "Nearly Isotonic Fit", out.width='100%'}
+knitr::include_graphics('./figures/iso1.png')
+```
+
 The curve follows the data well, but exhibits some choppiness in
 regions with a steep trend. 
 
----
+___
 
 ### Exercise
 
@@ -1622,6 +1630,13 @@ staircase pattern has been smoothed out.
 )
 ```
 
+___
+
+```{r echo=FALSE, fig.cap = "Nearly Convex Fit", out.width='100%'}
+knitr::include_graphics('./figures/iso2.png')
+```
+
+This is a smoother fit as can be seen 
 
 <!--chapter:end:10-near-isotonic-fit.Rmd-->
 
