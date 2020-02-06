@@ -143,7 +143,7 @@ _Hint_: In LAD regression, we minimize the sum of the absolute value of the resi
 ```{r}
 objective2 <- Minimize(sum(abs(Y - X %*% beta)))
 problem2 <- Problem(objective2)
-result2 <- solve(problem2)
+result2 <- solve(problem2, solver = "ECOS")
 cat(sprintf("LAD Solution Status: %s, LAD Objective value: %f\n", result2$status, result2$value))
 m2 <- cbind(result2$getValue(beta), coef(ls.model))
 ```
@@ -328,11 +328,9 @@ $\beta_{i} \leq \beta_{i+1}$ for $i=1,\ldots, 4$ and $\beta_i \geq
 We have to combine all that we have learned earlier. 
 
 ```{r}
-D1 <- D2 <- diag(0, p)
-D1[1:5, 1:5] <- 1; D2[5:p, 5:p] <- 1;
-D3 <- D4 <- diag(0, p - 1)
-D3[1:4, 1:4] <- 1; D4[5:(p-1), 5:(p-1)] <- 1;
-constraints = list(D3 %*% diff(D1 %*% beta) >= 0, D4 %*% diff(D2 %*% beta) <= 0)
+D1 <- cbind(diag(5), diag(0, 5))
+D2 <- cbind(matrix(0, 6, 4), diag(6))
+constraints = list(diff(D1 %*% beta) >= 0, diff(D2 %*% beta) <= 0)
 problem4 <- Problem(objective, constraints)
 ex4 <- solve(problem4)
 betaEstimate <- ex4$getValue(beta)
