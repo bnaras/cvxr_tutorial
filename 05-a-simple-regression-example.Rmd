@@ -136,7 +136,10 @@ Modify the objective to perform least absolute deviation regression
 and solve the problem. Compare the results to OLS. Which objective has
 a lower value?
 
-_Hint_: In LAD regression, we minimize the sum of the absolute value of the residuals.
+_Hint_: In LAD regression, we minimize the sum of the absolute value
+of the residuals. Also, since the default solver `OSQP` has some
+issues at the time of this writing, do pass on the parameter `solver =
+"ECOS"` in your call to `CVXR::solve`.
 
 #### Solution
 

@@ -69,7 +69,7 @@ theme_bare <- theme(
 
 ## Goals
 
-- Introduce `CVXR::Semidef` and `CVXR::log_det`
+- Introduce positive semidefinite matrices and `CVXR::log_det`
 - Demonstrate how to build functions for complex tasks
 
 ## Sparse Inverse Covariance Problem
@@ -126,7 +126,7 @@ Finally, we solve our convex program for a range of $\alpha$ values.
 
 ```{r}
 alphas <- c(10, 8, 6, 4, 1)
-S <- Semidef(n)    ## Variable constrained to positive semidefinite cone
+S <- Variable(c(n, n), PSD = TRUE)    ## Variable constrained to positive semidefinite cone
 obj <- Maximize(log_det(S) - matrix_trace(S %*% Q))
 
 S.est <- lapply(alphas,
@@ -144,7 +144,7 @@ S.est <- lapply(alphas,
                 })
 ```
 
-In the code above, the `Semidef` constructor restricts `S` to the
+In the code above, the `Variable` constructor restricts `S` to the
 positive semidefinite cone. We use `CVXR` functions 
 for the log-determinant and trace in the objective. The expression `matrix_trace(S %*%
 Q)` is equivalent to `sum(diag(S %*% Q))}, but the former is preferred
@@ -152,7 +152,7 @@ because it is more efficient than making nested function calls.
 
 However, a standalone atom does not exist for the determinant, so we
 cannot replace `log_det(S)` with `log(det(S))` since `det` is
-undefined for a `Semidef` object.
+undefined for a positive semidefinite object in `CVXR`.
 
 ## Results
 

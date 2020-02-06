@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 6 A Simple Regression Example | Disciplined Convex Optimization in R</title>
   <meta name="description" content="Chapter 6 A Simple Regression Example | Disciplined Convex Optimization in R" />
-  <meta name="generator" content="bookdown 0.11 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.16 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 6 A Simple Regression Example | Disciplined Convex Optimization in R" />
   <meta property="og:type" content="book" />
@@ -24,15 +24,15 @@
 <meta name="author" content="Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd" />
 
 
-<meta name="date" content="2019-07-08" />
+<meta name="date" content="2020-02-05" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="disciplined-convex-programming.html">
-<link rel="next" href="how-cvxr-works.html">
+<link rel="prev" href="disciplined-convex-programming.html"/>
+<link rel="next" href="how-cvxr-works.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -40,6 +40,9 @@
 <link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
 
 
 
@@ -48,13 +51,6 @@
 
 
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
-<script src="libs/htmlwidgets-1.3/htmlwidgets.js"></script>
-<script src="libs/d3-3.5.6/d3.min.js"></script>
-<link href="libs/profvis-0.3.6/profvis.css" rel="stylesheet" />
-<script src="libs/profvis-0.3.6/profvis.js"></script>
-<link href="libs/highlight-6.2.0/textmate.css" rel="stylesheet" />
-<script src="libs/highlight-6.2.0/highlight.js"></script>
-<script src="libs/profvis-binding-0.3.6/profvis.js"></script>
 <script>
   // Added visibility option for solution (naras@stat)
   $(document).ready(function () {
@@ -87,7 +83,6 @@ a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
 a.sourceLine:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
-div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
@@ -240,18 +235,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="11.3" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html#references-2"><i class="fa fa-check"></i><b>11.3</b> References</a></li>
 </ul></li>
-<li class="chapter" data-level="12" data-path="speed-considerations.html"><a href="speed-considerations.html"><i class="fa fa-check"></i><b>12</b> Speed Considerations</a><ul>
-<li class="chapter" data-level="12.1" data-path="speed-considerations.html"><a href="speed-considerations.html#goals-5"><i class="fa fa-check"></i><b>12.1</b> Goals</a></li>
-<li class="chapter" data-level="12.2" data-path="speed-considerations.html"><a href="speed-considerations.html#example-1"><i class="fa fa-check"></i><b>12.2</b> Example</a></li>
-<li class="chapter" data-level="12.3" data-path="speed-considerations.html"><a href="speed-considerations.html#profiling-the-code"><i class="fa fa-check"></i><b>12.3</b> Profiling the Code</a></li>
-<li class="chapter" data-level="12.4" data-path="speed-considerations.html"><a href="speed-considerations.html#directly-calling-the-solver"><i class="fa fa-check"></i><b>12.4</b> Directly Calling the Solver</a></li>
-<li class="chapter" data-level="12.5" data-path="speed-considerations.html"><a href="speed-considerations.html#profiling-the-direct-call"><i class="fa fa-check"></i><b>12.5</b> Profiling the Direct Call</a></li>
-<li class="chapter" data-level="12.6" data-path="speed-considerations.html"><a href="speed-considerations.html#same-answer"><i class="fa fa-check"></i><b>12.6</b> Same Answer?</a></li>
-</ul></li>
+<li class="chapter" data-level="12" data-path="speed-considerations.html"><a href="speed-considerations.html"><i class="fa fa-check"></i><b>12</b> Speed Considerations</a></li>
 <li class="chapter" data-level="13" data-path="pliable-lasso.html"><a href="pliable-lasso.html"><i class="fa fa-check"></i><b>13</b> Pliable Lasso</a><ul>
-<li class="chapter" data-level="13.1" data-path="pliable-lasso.html"><a href="pliable-lasso.html#goals-6"><i class="fa fa-check"></i><b>13.1</b> Goals</a></li>
+<li class="chapter" data-level="13.1" data-path="pliable-lasso.html"><a href="pliable-lasso.html#goals-5"><i class="fa fa-check"></i><b>13.1</b> Goals</a></li>
 <li class="chapter" data-level="13.2" data-path="pliable-lasso.html"><a href="pliable-lasso.html#pliable-lasso-problem"><i class="fa fa-check"></i><b>13.2</b> Pliable Lasso Problem</a></li>
-<li class="chapter" data-level="13.3" data-path="pliable-lasso.html"><a href="pliable-lasso.html#example-2"><i class="fa fa-check"></i><b>13.3</b> Example</a><ul>
+<li class="chapter" data-level="13.3" data-path="pliable-lasso.html"><a href="pliable-lasso.html#example-1"><i class="fa fa-check"></i><b>13.3</b> Example</a><ul>
 <li class="chapter" data-level="13.3.1" data-path="pliable-lasso.html"><a href="pliable-lasso.html#parameters"><i class="fa fa-check"></i><b>13.3.1</b> Parameters</a></li>
 <li class="chapter" data-level="13.3.2" data-path="pliable-lasso.html"><a href="pliable-lasso.html#penalty-terms"><i class="fa fa-check"></i><b>13.3.2</b> Penalty Terms</a></li>
 <li class="chapter" data-level="13.3.3" data-path="pliable-lasso.html"><a href="pliable-lasso.html#fitted-value"><i class="fa fa-check"></i><b>13.3.3</b> Fitted Value</a></li>
@@ -265,7 +253,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="13.7" data-path="pliable-lasso.html"><a href="pliable-lasso.html#references-3"><i class="fa fa-check"></i><b>13.7</b> References</a></li>
 </ul></li>
 <li class="chapter" data-level="14" data-path="survey-calibration.html"><a href="survey-calibration.html"><i class="fa fa-check"></i><b>14</b> Survey Calibration</a><ul>
-<li class="chapter" data-level="14.1" data-path="survey-calibration.html"><a href="survey-calibration.html#goals-7"><i class="fa fa-check"></i><b>14.1</b> Goals</a></li>
+<li class="chapter" data-level="14.1" data-path="survey-calibration.html"><a href="survey-calibration.html#goals-6"><i class="fa fa-check"></i><b>14.1</b> Goals</a></li>
 <li class="chapter" data-level="14.2" data-path="survey-calibration.html"><a href="survey-calibration.html#survey-calibration-problem"><i class="fa fa-check"></i><b>14.2</b> Survey Calibration Problem</a></li>
 <li class="chapter" data-level="14.3" data-path="survey-calibration.html"><a href="survey-calibration.html#raking"><i class="fa fa-check"></i><b>14.3</b> Raking</a><ul>
 <li class="chapter" data-level="14.3.1" data-path="survey-calibration.html"><a href="survey-calibration.html#exercise-12"><i class="fa fa-check"></i><b>14.3.1</b> Exercise</a></li>
@@ -277,21 +265,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="14.4" data-path="survey-calibration.html"><a href="survey-calibration.html#references-4"><i class="fa fa-check"></i><b>14.4</b> References</a></li>
 </ul></li>
 <li class="chapter" data-level="15" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html"><i class="fa fa-check"></i><b>15</b> Sparse Inverse Covariance Estimation</a><ul>
-<li class="chapter" data-level="15.1" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#goals-8"><i class="fa fa-check"></i><b>15.1</b> Goals</a></li>
+<li class="chapter" data-level="15.1" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#goals-7"><i class="fa fa-check"></i><b>15.1</b> Goals</a></li>
 <li class="chapter" data-level="15.2" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#sparse-inverse-covariance-problem"><i class="fa fa-check"></i><b>15.2</b> Sparse Inverse Covariance Problem</a></li>
-<li class="chapter" data-level="15.3" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#example-3"><i class="fa fa-check"></i><b>15.3</b> Example</a></li>
+<li class="chapter" data-level="15.3" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#example-2"><i class="fa fa-check"></i><b>15.3</b> Example</a></li>
 <li class="chapter" data-level="15.4" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#results-1"><i class="fa fa-check"></i><b>15.4</b> Results</a></li>
 <li class="chapter" data-level="15.5" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#references-5"><i class="fa fa-check"></i><b>15.5</b> References</a></li>
 </ul></li>
 <li class="chapter" data-level="16" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html"><i class="fa fa-check"></i><b>16</b> Portfolio Estimation</a><ul>
-<li class="chapter" data-level="16.1" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#goals-9"><i class="fa fa-check"></i><b>16.1</b> Goals</a></li>
+<li class="chapter" data-level="16.1" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#goals-8"><i class="fa fa-check"></i><b>16.1</b> Goals</a></li>
 <li class="chapter" data-level="16.2" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#markowitz-portfolio-problem"><i class="fa fa-check"></i><b>16.2</b> Markowitz Portfolio Problem</a></li>
-<li class="chapter" data-level="16.3" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#example-4"><i class="fa fa-check"></i><b>16.3</b> Example</a></li>
+<li class="chapter" data-level="16.3" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#example-3"><i class="fa fa-check"></i><b>16.3</b> Example</a></li>
 <li class="chapter" data-level="16.4" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#discussion"><i class="fa fa-check"></i><b>16.4</b> Discussion</a></li>
 <li class="chapter" data-level="16.5" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#references-6"><i class="fa fa-check"></i><b>16.5</b> References</a></li>
 </ul></li>
 <li class="chapter" data-level="17" data-path="using-other-solvers.html"><a href="using-other-solvers.html"><i class="fa fa-check"></i><b>17</b> Using Other Solvers</a><ul>
-<li class="chapter" data-level="17.1" data-path="using-other-solvers.html"><a href="using-other-solvers.html#goals-10"><i class="fa fa-check"></i><b>17.1</b> Goals</a></li>
+<li class="chapter" data-level="17.1" data-path="using-other-solvers.html"><a href="using-other-solvers.html#goals-9"><i class="fa fa-check"></i><b>17.1</b> Goals</a></li>
 <li class="chapter" data-level="17.2" data-path="using-other-solvers.html"><a href="using-other-solvers.html#default-solvers"><i class="fa fa-check"></i><b>17.2</b> Default Solvers</a></li>
 <li class="chapter" data-level="17.3" data-path="using-other-solvers.html"><a href="using-other-solvers.html#commercial-solvers"><i class="fa fa-check"></i><b>17.3</b> Commercial Solvers</a><ul>
 <li class="chapter" data-level="17.3.1" data-path="using-other-solvers.html"><a href="using-other-solvers.html#installing-mosek"><i class="fa fa-check"></i><b>17.3.1</b> Installing <code>MOSEK</code></a></li>
@@ -364,16 +352,16 @@ Y = X\beta + \epsilon,
 <p>where <span class="math inline">\(Y\)</span> is a <span class="math inline">\(100\times 1\)</span> vector, <span class="math inline">\(X\)</span> is a <span class="math inline">\(100\times 10\)</span> matrix,
 <span class="math inline">\(\beta = [-4, -3, \ldots ,4, 5]\)</span> is a <span class="math inline">\(10\times 1\)</span> vector, and
 <span class="math inline">\(\epsilon \sim N(0, 1)\)</span>.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">set.seed</span>(<span class="dv">123</span>)
-n &lt;-<span class="st"> </span><span class="dv">50</span>; p &lt;-<span class="st"> </span><span class="dv">10</span>;
-beta &lt;-<span class="st"> </span><span class="dv">-4</span><span class="op">:</span><span class="dv">5</span>    <span class="co"># beta is just -4 through 5.</span>
-X &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rnorm</span>(n <span class="op">*</span><span class="st"> </span>p), <span class="dt">nrow=</span>n)
-<span class="kw">colnames</span>(X) &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;beta_&quot;</span>, beta)
-Y &lt;-<span class="st"> </span>X <span class="op">%*%</span><span class="st"> </span>beta <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(n)</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">set.seed</span>(<span class="dv">123</span>)</a>
+<a class="sourceLine" id="cb3-2" title="2">n &lt;-<span class="st"> </span><span class="dv">50</span>; p &lt;-<span class="st"> </span><span class="dv">10</span>;</a>
+<a class="sourceLine" id="cb3-3" title="3">beta &lt;-<span class="st"> </span><span class="dv">-4</span><span class="op">:</span><span class="dv">5</span>    <span class="co"># beta is just -4 through 5.</span></a>
+<a class="sourceLine" id="cb3-4" title="4">X &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rnorm</span>(n <span class="op">*</span><span class="st"> </span>p), <span class="dt">nrow=</span>n)</a>
+<a class="sourceLine" id="cb3-5" title="5"><span class="kw">colnames</span>(X) &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;beta_&quot;</span>, beta)</a>
+<a class="sourceLine" id="cb3-6" title="6">Y &lt;-<span class="st"> </span>X <span class="op">%*%</span><span class="st"> </span>beta <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(n)</a></code></pre></div>
 <p>Given the data <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>, we can estimate the <span class="math inline">\(\beta\)</span> vector using the
 <code>lm</code> function in R, which fits a standard regression model.</p>
-<pre class="sourceCode r"><code class="sourceCode r">ls.model &lt;-<span class="st"> </span><span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span><span class="dv">0</span> <span class="op">+</span><span class="st"> </span>X)   <span class="co"># There is no intercept in our model above</span>
-m &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">coef</span>(ls.model), <span class="dt">ncol =</span> <span class="dv">1</span>)</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">ls.model &lt;-<span class="st"> </span><span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span><span class="dv">0</span> <span class="op">+</span><span class="st"> </span>X)   <span class="co"># There is no intercept in our model above</span></a>
+<a class="sourceLine" id="cb4-2" title="2">m &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">coef</span>(ls.model), <span class="dt">ncol =</span> <span class="dv">1</span>)</a></code></pre></div>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <tbody>
 <tr>
@@ -474,33 +462,33 @@ in the steps below.</p>
 <ul>
 <li>Step 0. Load the <code>CVXR</code> library</li>
 </ul>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(CVXR, <span class="dt">warn.conflicts=</span><span class="ot">FALSE</span>)</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">library</span>(CVXR, <span class="dt">warn.conflicts=</span><span class="ot">FALSE</span>)</a></code></pre></div>
 <ul>
 <li>Step 1. Define the variable to be estimated</li>
 </ul>
-<pre class="sourceCode r"><code class="sourceCode r">beta &lt;-<span class="st"> </span><span class="kw">Variable</span>(p)</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">beta &lt;-<span class="st"> </span><span class="kw">Variable</span>(p)</a></code></pre></div>
 <ul>
 <li>Step 2. Define the objective to be optimized</li>
 </ul>
-<pre class="sourceCode r"><code class="sourceCode r">objective &lt;-<span class="st"> </span><span class="kw">Minimize</span>(<span class="kw">sum</span>((Y <span class="op">-</span><span class="st"> </span>X <span class="op">%*%</span><span class="st"> </span>beta)<span class="op">^</span><span class="dv">2</span>))</code></pre>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">objective &lt;-<span class="st"> </span><span class="kw">Minimize</span>(<span class="kw">sum</span>((Y <span class="op">-</span><span class="st"> </span>X <span class="op">%*%</span><span class="st"> </span>beta)<span class="op">^</span><span class="dv">2</span>))</a></code></pre></div>
 <p>Notice how the objective is specified using functions such as <code>sum</code>,
 <code>*%*</code>, and <code>^</code> that are familiar to R users despite the fact that
 <code>beta</code> is no ordinary R expression, but a <code>CVXR</code> expression.</p>
 <ul>
 <li>Step 3. Create a problem to solve</li>
 </ul>
-<pre class="sourceCode r"><code class="sourceCode r">problem &lt;-<span class="st"> </span><span class="kw">Problem</span>(objective)</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">problem &lt;-<span class="st"> </span><span class="kw">Problem</span>(objective)</a></code></pre></div>
 <ul>
 <li>Step 4. Solve it!</li>
 </ul>
-<pre class="sourceCode r"><code class="sourceCode r">result &lt;-<span class="st"> </span><span class="kw">solve</span>(problem)</code></pre>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">result &lt;-<span class="st"> </span><span class="kw">solve</span>(problem)</a></code></pre></div>
 <ul>
 <li>Step 5. Examine solution status and obtain objective value and estimate</li>
 </ul>
-<pre><code>## OLS Solution Status: optimal, OLS Objective value: 34.134608</code></pre>
+<pre><code>## OLS Solution Status: optimal, OLS Objective value: 34.134609</code></pre>
 <p>We can indeed satisfy ourselves that the results we get match those
 from <code>lm</code>.</p>
-<pre class="sourceCode r"><code class="sourceCode r">m &lt;-<span class="st"> </span><span class="kw">cbind</span>(result<span class="op">$</span><span class="kw">getValue</span>(beta), <span class="kw">coef</span>(ls.model))</code></pre>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1">m &lt;-<span class="st"> </span><span class="kw">cbind</span>(result<span class="op">$</span><span class="kw">getValue</span>(beta), <span class="kw">coef</span>(ls.model))</a></code></pre></div>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -520,7 +508,7 @@ lm est.
 <span class="math inline">\(\beta_{1}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--3.9025287
+-3.9025328
 </td>
 <td style="text-align:right;">
 -3.9025328
@@ -531,7 +519,7 @@ lm est.
 <span class="math inline">\(\beta_{2}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--2.9683398
+-2.9683386
 </td>
 <td style="text-align:right;">
 -2.9683386
@@ -542,7 +530,7 @@ lm est.
 <span class="math inline">\(\beta_{3}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--1.8234197
+-1.8234267
 </td>
 <td style="text-align:right;">
 -1.8234267
@@ -553,7 +541,7 @@ lm est.
 <span class="math inline">\(\beta_{4}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--1.1562118
+-1.1562133
 </td>
 <td style="text-align:right;">
 -1.1562133
@@ -564,7 +552,7 @@ lm est.
 <span class="math inline">\(\beta_{5}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.0753994
+0.0753986
 </td>
 <td style="text-align:right;">
 0.0753986
@@ -575,7 +563,7 @@ lm est.
 <span class="math inline">\(\beta_{6}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.9224320
+0.9224317
 </td>
 <td style="text-align:right;">
 0.9224317
@@ -586,7 +574,7 @@ lm est.
 <span class="math inline">\(\beta_{7}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-1.8799483
+1.8799511
 </td>
 <td style="text-align:right;">
 1.8799511
@@ -597,7 +585,7 @@ lm est.
 <span class="math inline">\(\beta_{8}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-3.1107023
+3.1107020
 </td>
 <td style="text-align:right;">
 3.1107020
@@ -608,7 +596,7 @@ lm est.
 <span class="math inline">\(\beta_{9}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-4.1086481
+4.1086503
 </td>
 <td style="text-align:right;">
 4.1086503
@@ -619,7 +607,7 @@ lm est.
 <span class="math inline">\(\beta_{10}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-5.0947622
+5.0947592
 </td>
 <td style="text-align:right;">
 5.0947592
@@ -632,15 +620,17 @@ lm est.
 <p>Modify the objective to perform least absolute deviation regression
 and solve the problem. Compare the results to OLS. Which objective has
 a lower value?</p>
-<p><em>Hint</em>: In LAD regression, we minimize the sum of the absolute value of the residuals.</p>
+<p><em>Hint</em>: In LAD regression, we minimize the sum of the absolute value
+of the residuals. Also, since the default solver <code>OSQP</code> has some
+issues at the time of this writing, do pass on the parameter <code>solver = "ECOS"</code> in your call to <code>CVXR::solve</code>.</p>
 <div id="solution" class="section level4">
 <h4><span class="header-section-number">6.3.1.1</span> Solution</h4>
-<pre class="sourceCode r"><code class="sourceCode r">objective2 &lt;-<span class="st"> </span><span class="kw">Minimize</span>(<span class="kw">sum</span>(<span class="kw">abs</span>(Y <span class="op">-</span><span class="st"> </span>X <span class="op">%*%</span><span class="st"> </span>beta)))
-problem2 &lt;-<span class="st"> </span><span class="kw">Problem</span>(objective2)
-result2 &lt;-<span class="st"> </span><span class="kw">solve</span>(problem2)
-<span class="kw">cat</span>(<span class="kw">sprintf</span>(<span class="st">&quot;LAD Solution Status: %s, LAD Objective value: %f</span><span class="ch">\n</span><span class="st">&quot;</span>, result2<span class="op">$</span>status, result2<span class="op">$</span>value))</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">objective2 &lt;-<span class="st"> </span><span class="kw">Minimize</span>(<span class="kw">sum</span>(<span class="kw">abs</span>(Y <span class="op">-</span><span class="st"> </span>X <span class="op">%*%</span><span class="st"> </span>beta)))</a>
+<a class="sourceLine" id="cb12-2" title="2">problem2 &lt;-<span class="st"> </span><span class="kw">Problem</span>(objective2)</a>
+<a class="sourceLine" id="cb12-3" title="3">result2 &lt;-<span class="st"> </span><span class="kw">solve</span>(problem2, <span class="dt">solver =</span> <span class="st">&quot;ECOS&quot;</span>)</a>
+<a class="sourceLine" id="cb12-4" title="4"><span class="kw">cat</span>(<span class="kw">sprintf</span>(<span class="st">&quot;LAD Solution Status: %s, LAD Objective value: %f</span><span class="ch">\n</span><span class="st">&quot;</span>, result2<span class="op">$</span>status, result2<span class="op">$</span>value))</a></code></pre></div>
 <pre><code>## LAD Solution Status: optimal, LAD Objective value: 31.270018</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">m2 &lt;-<span class="st"> </span><span class="kw">cbind</span>(result2<span class="op">$</span><span class="kw">getValue</span>(beta), <span class="kw">coef</span>(ls.model))</code></pre>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1">m2 &lt;-<span class="st"> </span><span class="kw">cbind</span>(result2<span class="op">$</span><span class="kw">getValue</span>(beta), <span class="kw">coef</span>(ls.model))</a></code></pre></div>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -767,15 +757,15 @@ lm est.
 </tr>
 </tbody>
 </table>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="st">&quot;LAD objective value: %f, OLS objective value: %f</span><span class="ch">\n</span><span class="st">&quot;</span>,
-    result2<span class="op">$</span>value, result<span class="op">$</span>value)</code></pre>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1"><span class="kw">cat</span>(<span class="st">&quot;LAD objective value: %f, OLS objective value: %f</span><span class="ch">\n</span><span class="st">&quot;</span>,</a>
+<a class="sourceLine" id="cb15-2" title="2">    result2<span class="op">$</span>value, result<span class="op">$</span>value)</a></code></pre></div>
 <pre><code>## LAD objective value: %f, OLS objective value: %f
 ##  31.27002 34.13461</code></pre>
 <p><strong>N.B.</strong> Note the reuse of <code>beta</code> in <code>objective2</code>. The value of
 <code>beta</code> will change depending on the problem context, and the
 function <code>result$getValue()</code> or <code>result2$getValue()</code> will account for
 the context as shown below.</p>
-<pre class="sourceCode r"><code class="sourceCode r">m3 &lt;-<span class="st"> </span><span class="kw">cbind</span>(result<span class="op">$</span><span class="kw">getValue</span>(beta), result2<span class="op">$</span><span class="kw">getValue</span>(beta))</code></pre>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1">m3 &lt;-<span class="st"> </span><span class="kw">cbind</span>(result<span class="op">$</span><span class="kw">getValue</span>(beta), result2<span class="op">$</span><span class="kw">getValue</span>(beta))</a></code></pre></div>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -795,7 +785,7 @@ Problem 2 est.
 <span class="math inline">\(\beta_{1}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--3.9025287
+-3.9025328
 </td>
 <td style="text-align:right;">
 -4.0324773
@@ -806,7 +796,7 @@ Problem 2 est.
 <span class="math inline">\(\beta_{2}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--2.9683398
+-2.9683386
 </td>
 <td style="text-align:right;">
 -2.8267845
@@ -817,7 +807,7 @@ Problem 2 est.
 <span class="math inline">\(\beta_{3}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--1.8234197
+-1.8234267
 </td>
 <td style="text-align:right;">
 -1.9473476
@@ -828,7 +818,7 @@ Problem 2 est.
 <span class="math inline">\(\beta_{4}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--1.1562118
+-1.1562133
 </td>
 <td style="text-align:right;">
 -1.1859615
@@ -839,7 +829,7 @@ Problem 2 est.
 <span class="math inline">\(\beta_{5}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.0753994
+0.0753986
 </td>
 <td style="text-align:right;">
 0.1886891
@@ -850,7 +840,7 @@ Problem 2 est.
 <span class="math inline">\(\beta_{6}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.9224320
+0.9224317
 </td>
 <td style="text-align:right;">
 0.9447007
@@ -861,7 +851,7 @@ Problem 2 est.
 <span class="math inline">\(\beta_{7}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-1.8799483
+1.8799511
 </td>
 <td style="text-align:right;">
 1.9321485
@@ -872,7 +862,7 @@ Problem 2 est.
 <span class="math inline">\(\beta_{8}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-3.1107023
+3.1107020
 </td>
 <td style="text-align:right;">
 3.0070658
@@ -883,7 +873,7 @@ Problem 2 est.
 <span class="math inline">\(\beta_{9}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-4.1086481
+4.1086503
 </td>
 <td style="text-align:right;">
 4.2535749
@@ -894,7 +884,7 @@ Problem 2 est.
 <span class="math inline">\(\beta_{10}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-5.0947622
+5.0947592
 </td>
 <td style="text-align:right;">
 5.0186776
@@ -916,9 +906,9 @@ is <a href="https://en.wikipedia.org/wiki/Non-negative_least_squares">nonnegativ
 <code>lm</code> would no longer do the job.</p>
 <p>In <code>CVXR</code>, the modified problem merely requires the addition of a constraint to the
 problem definition.</p>
-<pre class="sourceCode r"><code class="sourceCode r">problem &lt;-<span class="st"> </span><span class="kw">Problem</span>(objective, <span class="dt">constraints =</span> <span class="kw">list</span>(beta <span class="op">&gt;=</span><span class="st"> </span><span class="dv">0</span>))
-result &lt;-<span class="st"> </span><span class="kw">solve</span>(problem)
-betaEstimate &lt;-<span class="st"> </span>result<span class="op">$</span><span class="kw">getValue</span>(beta)</code></pre>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1">problem &lt;-<span class="st"> </span><span class="kw">Problem</span>(objective, <span class="dt">constraints =</span> <span class="kw">list</span>(beta <span class="op">&gt;=</span><span class="st"> </span><span class="dv">0</span>))</a>
+<a class="sourceLine" id="cb18-2" title="2">result &lt;-<span class="st"> </span><span class="kw">solve</span>(problem)</a>
+<a class="sourceLine" id="cb18-3" title="3">betaEstimate &lt;-<span class="st"> </span>result<span class="op">$</span><span class="kw">getValue</span>(beta)</a></code></pre></div>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <tbody>
 <tr>
@@ -958,7 +948,7 @@ betaEstimate &lt;-<span class="st"> </span>result<span class="op">$</span><span 
 <span class="math inline">\(\beta_{5}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-1.190669
+1.190672
 </td>
 </tr>
 <tr>
@@ -966,7 +956,7 @@ betaEstimate &lt;-<span class="st"> </span>result<span class="op">$</span><span 
 <span class="math inline">\(\beta_{6}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-1.460135
+1.460162
 </td>
 </tr>
 <tr>
@@ -974,7 +964,7 @@ betaEstimate &lt;-<span class="st"> </span>result<span class="op">$</span><span 
 <span class="math inline">\(\beta_{7}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-1.817812
+1.817840
 </td>
 </tr>
 <tr>
@@ -982,7 +972,7 @@ betaEstimate &lt;-<span class="st"> </span>result<span class="op">$</span><span 
 <span class="math inline">\(\beta_{8}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-3.147371
+3.147380
 </td>
 </tr>
 <tr>
@@ -990,7 +980,7 @@ betaEstimate &lt;-<span class="st"> </span>result<span class="op">$</span><span 
 <span class="math inline">\(\beta_{9}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-5.828918
+5.828936
 </td>
 </tr>
 <tr>
@@ -998,7 +988,7 @@ betaEstimate &lt;-<span class="st"> </span>result<span class="op">$</span><span 
 <span class="math inline">\(\beta_{10}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-5.287357
+5.287308
 </td>
 </tr>
 </tbody>
@@ -1006,8 +996,8 @@ betaEstimate &lt;-<span class="st"> </span>result<span class="op">$</span><span 
 <p>We can verify once again that these values are comparable to those
 obtained from another R package,
 say <a href="https://CRAN.R-project.org/package=nnls">nnls</a>.</p>
-<pre class="sourceCode r"><code class="sourceCode r">nnls.fit &lt;-<span class="st"> </span>nnls<span class="op">::</span><span class="kw">nnls</span>(X, Y)<span class="op">$</span>x
-m &lt;-<span class="st"> </span><span class="kw">cbind</span>(betaEstimate, nnls.fit)</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1">nnls.fit &lt;-<span class="st"> </span>nnls<span class="op">::</span><span class="kw">nnls</span>(X, Y)<span class="op">$</span>x</a>
+<a class="sourceLine" id="cb19-2" title="2">m &lt;-<span class="st"> </span><span class="kw">cbind</span>(betaEstimate, nnls.fit)</a></code></pre></div>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -1071,7 +1061,7 @@ nnls est.
 <span class="math inline">\(\beta_{5}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-1.190669
+1.190672
 </td>
 <td style="text-align:right;">
 1.190672
@@ -1082,7 +1072,7 @@ nnls est.
 <span class="math inline">\(\beta_{6}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-1.460135
+1.460162
 </td>
 <td style="text-align:right;">
 1.460162
@@ -1093,7 +1083,7 @@ nnls est.
 <span class="math inline">\(\beta_{7}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-1.817812
+1.817840
 </td>
 <td style="text-align:right;">
 1.817840
@@ -1104,7 +1094,7 @@ nnls est.
 <span class="math inline">\(\beta_{8}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-3.147371
+3.147380
 </td>
 <td style="text-align:right;">
 3.147380
@@ -1115,7 +1105,7 @@ nnls est.
 <span class="math inline">\(\beta_{9}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-5.828918
+5.828936
 </td>
 <td style="text-align:right;">
 5.828936
@@ -1126,7 +1116,7 @@ nnls est.
 <span class="math inline">\(\beta_{10}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-5.287357
+5.287308
 </td>
 <td style="text-align:right;">
 5.287308
@@ -1140,11 +1130,11 @@ nnls est.
 <div id="solution-1" class="section level4">
 <h4><span class="header-section-number">6.4.1.1</span> Solution</h4>
 <p>The obvious solution is to add a constraint of the form</p>
-<pre class="sourceCode r"><code class="sourceCode r">constraint1 &lt;-<span class="st"> </span>beta[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>beta[<span class="dv">2</span>] <span class="op">+</span><span class="st"> </span>beta[<span class="dv">3</span>] <span class="op">+</span><span class="st"> </span>beta[<span class="dv">4</span>] <span class="op">&lt;=</span><span class="st"> </span><span class="dv">0</span></code></pre>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" title="1">constraint1 &lt;-<span class="st"> </span>beta[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>beta[<span class="dv">2</span>] <span class="op">+</span><span class="st"> </span>beta[<span class="dv">3</span>] <span class="op">+</span><span class="st"> </span>beta[<span class="dv">4</span>] <span class="op">&lt;=</span><span class="st"> </span><span class="dv">0</span></a></code></pre></div>
 <p>but it is generally easier working with matrices in <code>CVXR</code>, and so
 we construct a row vector with zeros everywhere except in positions 1
 through 4.</p>
-<pre class="sourceCode r"><code class="sourceCode r">A &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">1</span>, <span class="dv">4</span>), <span class="kw">rep</span>(<span class="dv">0</span>, <span class="dv">6</span>)), <span class="dt">nrow =</span> <span class="dv">1</span>)</code></pre>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1">A &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">1</span>, <span class="dv">4</span>), <span class="kw">rep</span>(<span class="dv">0</span>, <span class="dv">6</span>)), <span class="dt">nrow =</span> <span class="dv">1</span>)</a></code></pre></div>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -1220,12 +1210,12 @@ through 4.</p>
 A\beta \leq 0
 \]</span>
 which we express in R as</p>
-<pre class="sourceCode r"><code class="sourceCode r">constraint1 &lt;-<span class="st"> </span>A <span class="op">%*%</span><span class="st"> </span>beta <span class="op">&lt;=</span><span class="st"> </span><span class="dv">0</span></code></pre>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" title="1">constraint1 &lt;-<span class="st"> </span>A <span class="op">%*%</span><span class="st"> </span>beta <span class="op">&lt;=</span><span class="st"> </span><span class="dv">0</span></a></code></pre></div>
 <p>We are ready to solve the problem.</p>
-<pre class="sourceCode r"><code class="sourceCode r">problem &lt;-<span class="st"> </span><span class="kw">Problem</span>(objective, <span class="dt">constraints =</span> <span class="kw">list</span>(constraint1))
-ex1 &lt;-<span class="st"> </span><span class="kw">solve</span>(problem)</code></pre>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" title="1">problem &lt;-<span class="st"> </span><span class="kw">Problem</span>(objective, <span class="dt">constraints =</span> <span class="kw">list</span>(constraint1))</a>
+<a class="sourceLine" id="cb23-2" title="2">ex1 &lt;-<span class="st"> </span><span class="kw">solve</span>(problem)</a></code></pre></div>
 <p>And we can get the estimates of <span class="math inline">\(\beta\)</span>.</p>
-<pre class="sourceCode r"><code class="sourceCode r">betaEstimate &lt;-<span class="st"> </span>ex1<span class="op">$</span><span class="kw">getValue</span>(beta)</code></pre>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" title="1">betaEstimate &lt;-<span class="st"> </span>ex1<span class="op">$</span><span class="kw">getValue</span>(beta)</a></code></pre></div>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <tbody>
 <tr>
@@ -1233,7 +1223,7 @@ ex1 &lt;-<span class="st"> </span><span class="kw">solve</span>(problem)</code><
 <span class="math inline">\(\beta_{1}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--3.9025294
+-3.9025328
 </td>
 </tr>
 <tr>
@@ -1241,7 +1231,7 @@ ex1 &lt;-<span class="st"> </span><span class="kw">solve</span>(problem)</code><
 <span class="math inline">\(\beta_{2}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--2.9683400
+-2.9683386
 </td>
 </tr>
 <tr>
@@ -1249,7 +1239,7 @@ ex1 &lt;-<span class="st"> </span><span class="kw">solve</span>(problem)</code><
 <span class="math inline">\(\beta_{3}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--1.8234216
+-1.8234267
 </td>
 </tr>
 <tr>
@@ -1257,7 +1247,7 @@ ex1 &lt;-<span class="st"> </span><span class="kw">solve</span>(problem)</code><
 <span class="math inline">\(\beta_{4}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--1.1562124
+-1.1562133
 </td>
 </tr>
 <tr>
@@ -1265,7 +1255,7 @@ ex1 &lt;-<span class="st"> </span><span class="kw">solve</span>(problem)</code><
 <span class="math inline">\(\beta_{5}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.0753985
+0.0753986
 </td>
 </tr>
 <tr>
@@ -1273,7 +1263,7 @@ ex1 &lt;-<span class="st"> </span><span class="kw">solve</span>(problem)</code><
 <span class="math inline">\(\beta_{6}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.9224310
+0.9224317
 </td>
 </tr>
 <tr>
@@ -1281,7 +1271,7 @@ ex1 &lt;-<span class="st"> </span><span class="kw">solve</span>(problem)</code><
 <span class="math inline">\(\beta_{7}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-1.8799481
+1.8799511
 </td>
 </tr>
 <tr>
@@ -1289,7 +1279,7 @@ ex1 &lt;-<span class="st"> </span><span class="kw">solve</span>(problem)</code><
 <span class="math inline">\(\beta_{8}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-3.1107013
+3.1107020
 </td>
 </tr>
 <tr>
@@ -1297,7 +1287,7 @@ ex1 &lt;-<span class="st"> </span><span class="kw">solve</span>(problem)</code><
 <span class="math inline">\(\beta_{9}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-4.1086493
+4.1086503
 </td>
 </tr>
 <tr>
@@ -1305,7 +1295,7 @@ ex1 &lt;-<span class="st"> </span><span class="kw">solve</span>(problem)</code><
 <span class="math inline">\(\beta_{10}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-5.0947612
+5.0947592
 </td>
 </tr>
 </tbody>
@@ -1319,7 +1309,7 @@ ex1 &lt;-<span class="st"> </span><span class="kw">solve</span>(problem)</code><
 <div id="solution-2" class="section level4">
 <h4><span class="header-section-number">6.4.2.1</span> Solution</h4>
 <p>We create a diagonal matrix with ones along the diagonal entries <span class="math inline">\(i=5,\ldots,10\)</span>.</p>
-<pre class="sourceCode r"><code class="sourceCode r">B &lt;-<span class="st"> </span><span class="kw">diag</span>(<span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>), <span class="kw">rep</span>(<span class="dv">1</span>, <span class="dv">6</span>)))</code></pre>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" title="1">B &lt;-<span class="st"> </span><span class="kw">diag</span>(<span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>), <span class="kw">rep</span>(<span class="dv">1</span>, <span class="dv">6</span>)))</a></code></pre></div>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -1711,10 +1701,10 @@ ex1 &lt;-<span class="st"> </span><span class="kw">solve</span>(problem)</code><
 </tbody>
 </table>
 <p>So this new constraint is nothing but</p>
-<pre class="sourceCode r"><code class="sourceCode r">constraint2 &lt;-<span class="st"> </span>B <span class="op">%*%</span><span class="st"> </span>beta <span class="op">&lt;=</span><span class="st"> </span><span class="dv">4</span>
-problem2 &lt;-<span class="st"> </span><span class="kw">Problem</span>(objective, <span class="dt">constraints =</span> <span class="kw">list</span>(constraint1, constraint2))
-ex2 &lt;-<span class="st"> </span><span class="kw">solve</span>(problem2)
-betaEstimate &lt;-<span class="st"> </span>ex2<span class="op">$</span><span class="kw">getValue</span>(beta)</code></pre>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" title="1">constraint2 &lt;-<span class="st"> </span>B <span class="op">%*%</span><span class="st"> </span>beta <span class="op">&lt;=</span><span class="st"> </span><span class="dv">4</span></a>
+<a class="sourceLine" id="cb26-2" title="2">problem2 &lt;-<span class="st"> </span><span class="kw">Problem</span>(objective, <span class="dt">constraints =</span> <span class="kw">list</span>(constraint1, constraint2))</a>
+<a class="sourceLine" id="cb26-3" title="3">ex2 &lt;-<span class="st"> </span><span class="kw">solve</span>(problem2)</a>
+<a class="sourceLine" id="cb26-4" title="4">betaEstimate &lt;-<span class="st"> </span>ex2<span class="op">$</span><span class="kw">getValue</span>(beta)</a></code></pre></div>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <tbody>
 <tr>
@@ -1722,7 +1712,7 @@ betaEstimate &lt;-<span class="st"> </span>ex2<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{1}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--4.0635758
+-4.0635639
 </td>
 </tr>
 <tr>
@@ -1730,7 +1720,7 @@ betaEstimate &lt;-<span class="st"> </span>ex2<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{2}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--2.9932126
+-2.9932080
 </td>
 </tr>
 <tr>
@@ -1738,7 +1728,7 @@ betaEstimate &lt;-<span class="st"> </span>ex2<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{3}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--1.9214620
+-1.9214633
 </td>
 </tr>
 <tr>
@@ -1746,7 +1736,7 @@ betaEstimate &lt;-<span class="st"> </span>ex2<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{4}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--1.0858502
+-1.0858480
 </td>
 </tr>
 <tr>
@@ -1754,7 +1744,7 @@ betaEstimate &lt;-<span class="st"> </span>ex2<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{5}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.0684265
+0.0684279
 </td>
 </tr>
 <tr>
@@ -1762,7 +1752,7 @@ betaEstimate &lt;-<span class="st"> </span>ex2<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{6}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.8810524
+0.8810457
 </td>
 </tr>
 <tr>
@@ -1770,7 +1760,7 @@ betaEstimate &lt;-<span class="st"> </span>ex2<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{7}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-1.8415389
+1.8415355
 </td>
 </tr>
 <tr>
@@ -1778,7 +1768,7 @@ betaEstimate &lt;-<span class="st"> </span>ex2<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{8}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-3.0255391
+3.0255314
 </td>
 </tr>
 <tr>
@@ -1812,10 +1802,10 @@ betaEstimate &lt;-<span class="st"> </span>ex2<span class="op">$</span><span cla
 functions. The <code>base::diff</code> generic function generates lagged
 differences of any order. <code>CVXR</code> provides a method for the generic. So
 the monotonicity constraint can be succintly expressed as <code>diff(beta) &gt;= 0</code>.</p>
-<pre class="sourceCode r"><code class="sourceCode r">problem3 &lt;-<span class="st"> </span><span class="kw">Problem</span>(objective,
-                   <span class="dt">constraints =</span> <span class="kw">list</span>(beta <span class="op">&gt;=</span><span class="st"> </span><span class="dv">0</span>, <span class="kw">diff</span>(beta) <span class="op">&gt;=</span><span class="st"> </span><span class="dv">0</span>))
-ex3 &lt;-<span class="st"> </span><span class="kw">solve</span>(problem3)
-betaEstimate &lt;-<span class="st"> </span>ex3<span class="op">$</span><span class="kw">getValue</span>(beta)</code></pre>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" title="1">problem3 &lt;-<span class="st"> </span><span class="kw">Problem</span>(objective,</a>
+<a class="sourceLine" id="cb27-2" title="2">                   <span class="dt">constraints =</span> <span class="kw">list</span>(beta <span class="op">&gt;=</span><span class="st"> </span><span class="dv">0</span>, <span class="kw">diff</span>(beta) <span class="op">&gt;=</span><span class="st"> </span><span class="dv">0</span>))</a>
+<a class="sourceLine" id="cb27-3" title="3">ex3 &lt;-<span class="st"> </span><span class="kw">solve</span>(problem3)</a>
+<a class="sourceLine" id="cb27-4" title="4">betaEstimate &lt;-<span class="st"> </span>ex3<span class="op">$</span><span class="kw">getValue</span>(beta)</a></code></pre></div>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <tbody>
 <tr>
@@ -1823,7 +1813,7 @@ betaEstimate &lt;-<span class="st"> </span>ex3<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{1}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.000000
+-0.0003094
 </td>
 </tr>
 <tr>
@@ -1831,7 +1821,7 @@ betaEstimate &lt;-<span class="st"> </span>ex3<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{2}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.000000
+-0.0001897
 </td>
 </tr>
 <tr>
@@ -1839,7 +1829,7 @@ betaEstimate &lt;-<span class="st"> </span>ex3<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{3}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.000000
+0.0002098
 </td>
 </tr>
 <tr>
@@ -1847,7 +1837,7 @@ betaEstimate &lt;-<span class="st"> </span>ex3<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{4}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.000000
+0.0001500
 </td>
 </tr>
 <tr>
@@ -1855,7 +1845,7 @@ betaEstimate &lt;-<span class="st"> </span>ex3<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{5}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-1.168836
+1.1687435
 </td>
 </tr>
 <tr>
@@ -1863,7 +1853,7 @@ betaEstimate &lt;-<span class="st"> </span>ex3<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{6}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-1.448058
+1.4481293
 </td>
 </tr>
 <tr>
@@ -1871,7 +1861,7 @@ betaEstimate &lt;-<span class="st"> </span>ex3<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{7}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-1.842127
+1.8421746
 </td>
 </tr>
 <tr>
@@ -1879,7 +1869,7 @@ betaEstimate &lt;-<span class="st"> </span>ex3<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{8}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-3.233809
+3.2337443
 </td>
 </tr>
 <tr>
@@ -1887,7 +1877,7 @@ betaEstimate &lt;-<span class="st"> </span>ex3<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{9}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-5.564729
+5.5646969
 </td>
 </tr>
 <tr>
@@ -1895,7 +1885,7 @@ betaEstimate &lt;-<span class="st"> </span>ex3<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{10}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-5.564729
+5.5646783
 </td>
 </tr>
 </tbody>
@@ -1909,14 +1899,12 @@ betaEstimate &lt;-<span class="st"> </span>ex3<span class="op">$</span><span cla
 <div id="solution-4" class="section level4">
 <h4><span class="header-section-number">6.4.4.1</span> Solution</h4>
 <p>We have to combine all that we have learned earlier.</p>
-<pre class="sourceCode r"><code class="sourceCode r">D1 &lt;-<span class="st"> </span>D2 &lt;-<span class="st"> </span><span class="kw">diag</span>(<span class="dv">0</span>, p)
-D1[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">5</span>] &lt;-<span class="st"> </span><span class="dv">1</span>; D2[<span class="dv">5</span><span class="op">:</span>p, <span class="dv">5</span><span class="op">:</span>p] &lt;-<span class="st"> </span><span class="dv">1</span>;
-D3 &lt;-<span class="st"> </span>D4 &lt;-<span class="st"> </span><span class="kw">diag</span>(<span class="dv">0</span>, p <span class="op">-</span><span class="st"> </span><span class="dv">1</span>)
-D3[<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">4</span>] &lt;-<span class="st"> </span><span class="dv">1</span>; D4[<span class="dv">5</span><span class="op">:</span>(p<span class="dv">-1</span>), <span class="dv">5</span><span class="op">:</span>(p<span class="dv">-1</span>)] &lt;-<span class="st"> </span><span class="dv">1</span>;
-constraints =<span class="st"> </span><span class="kw">list</span>(D3 <span class="op">%*%</span><span class="st"> </span><span class="kw">diff</span>(D1 <span class="op">%*%</span><span class="st"> </span>beta) <span class="op">&gt;=</span><span class="st"> </span><span class="dv">0</span>, D4 <span class="op">%*%</span><span class="st"> </span><span class="kw">diff</span>(D2 <span class="op">%*%</span><span class="st"> </span>beta) <span class="op">&lt;=</span><span class="st"> </span><span class="dv">0</span>)
-problem4 &lt;-<span class="st"> </span><span class="kw">Problem</span>(objective, constraints)
-ex4 &lt;-<span class="st"> </span><span class="kw">solve</span>(problem4)
-betaEstimate &lt;-<span class="st"> </span>ex4<span class="op">$</span><span class="kw">getValue</span>(beta)</code></pre>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" title="1">D1 &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">diag</span>(<span class="dv">5</span>), <span class="kw">diag</span>(<span class="dv">0</span>, <span class="dv">5</span>))</a>
+<a class="sourceLine" id="cb28-2" title="2">D2 &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">matrix</span>(<span class="dv">0</span>, <span class="dv">6</span>, <span class="dv">4</span>), <span class="kw">diag</span>(<span class="dv">6</span>))</a>
+<a class="sourceLine" id="cb28-3" title="3">constraints =<span class="st"> </span><span class="kw">list</span>(<span class="kw">diff</span>(D1 <span class="op">%*%</span><span class="st"> </span>beta) <span class="op">&gt;=</span><span class="st"> </span><span class="dv">0</span>, <span class="kw">diff</span>(D2 <span class="op">%*%</span><span class="st"> </span>beta) <span class="op">&lt;=</span><span class="st"> </span><span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb28-4" title="4">problem4 &lt;-<span class="st"> </span><span class="kw">Problem</span>(objective, constraints)</a>
+<a class="sourceLine" id="cb28-5" title="5">ex4 &lt;-<span class="st"> </span><span class="kw">solve</span>(problem4)</a>
+<a class="sourceLine" id="cb28-6" title="6">betaEstimate &lt;-<span class="st"> </span>ex4<span class="op">$</span><span class="kw">getValue</span>(beta)</a></code></pre></div>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <tbody>
 <tr>
@@ -1924,7 +1912,7 @@ betaEstimate &lt;-<span class="st"> </span>ex4<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{1}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--3.902531
+-4.124667
 </td>
 </tr>
 <tr>
@@ -1932,7 +1920,7 @@ betaEstimate &lt;-<span class="st"> </span>ex4<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{2}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--2.968339
+-2.731246
 </td>
 </tr>
 <tr>
@@ -1940,7 +1928,7 @@ betaEstimate &lt;-<span class="st"> </span>ex4<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{3}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--1.823424
+-1.739471
 </td>
 </tr>
 <tr>
@@ -1948,7 +1936,7 @@ betaEstimate &lt;-<span class="st"> </span>ex4<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{4}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--1.156213
+-1.456388
 </td>
 </tr>
 <tr>
@@ -1956,7 +1944,7 @@ betaEstimate &lt;-<span class="st"> </span>ex4<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{5}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.075399
+2.823590
 </td>
 </tr>
 <tr>
@@ -1964,7 +1952,7 @@ betaEstimate &lt;-<span class="st"> </span>ex4<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{6}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.922432
+2.823590
 </td>
 </tr>
 <tr>
@@ -1972,7 +1960,7 @@ betaEstimate &lt;-<span class="st"> </span>ex4<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{7}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-1.879950
+2.823590
 </td>
 </tr>
 <tr>
@@ -1980,7 +1968,7 @@ betaEstimate &lt;-<span class="st"> </span>ex4<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{8}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-3.110702
+2.823590
 </td>
 </tr>
 <tr>
@@ -1988,7 +1976,7 @@ betaEstimate &lt;-<span class="st"> </span>ex4<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{9}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-4.108650
+2.823590
 </td>
 </tr>
 <tr>
@@ -1996,7 +1984,7 @@ betaEstimate &lt;-<span class="st"> </span>ex4<span class="op">$</span><span cla
 <span class="math inline">\(\beta_{10}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-5.094760
+2.823590
 </td>
 </tr>
 </tbody>
@@ -2032,11 +2020,13 @@ variability.</p>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
 <script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
 <script>
 gitbook.require(["gitbook"], function(gitbook) {
 gitbook.start({
@@ -2044,12 +2034,11 @@ gitbook.start({
 "github": false,
 "facebook": true,
 "twitter": true,
-"google": false,
 "linkedin": false,
 "weibo": false,
 "instapaper": false,
 "vk": false,
-"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
 },
 "fontsettings": {
 "theme": "white",
@@ -2061,6 +2050,10 @@ gitbook.start({
 "text": null
 },
 "history": {
+"link": null,
+"text": null
+},
+"view": {
 "link": null,
 "text": null
 },
@@ -2079,8 +2072,9 @@ gitbook.start({
     script.type = "text/javascript";
     var src = "true";
     if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
-    if (location.protocol !== "file:" && /^https?:/.test(src))
-      src = src.replace(/^https?:/, '');
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
     script.src = src;
     document.getElementsByTagName("head")[0].appendChild(script);
   })();

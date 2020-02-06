@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 11 Nearly Isotonic Fits | Disciplined Convex Optimization in R</title>
   <meta name="description" content="Chapter 11 Nearly Isotonic Fits | Disciplined Convex Optimization in R" />
-  <meta name="generator" content="bookdown 0.11 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.16 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 11 Nearly Isotonic Fits | Disciplined Convex Optimization in R" />
   <meta property="og:type" content="book" />
@@ -24,15 +24,15 @@
 <meta name="author" content="Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd" />
 
 
-<meta name="date" content="2019-07-08" />
+<meta name="date" content="2020-02-05" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="lasso-and-elastic-net.html">
-<link rel="next" href="speed-considerations.html">
+<link rel="prev" href="lasso-and-elastic-net.html"/>
+<link rel="next" href="speed-considerations.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -40,6 +40,9 @@
 <link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
 
 
 
@@ -48,13 +51,6 @@
 
 
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
-<script src="libs/htmlwidgets-1.3/htmlwidgets.js"></script>
-<script src="libs/d3-3.5.6/d3.min.js"></script>
-<link href="libs/profvis-0.3.6/profvis.css" rel="stylesheet" />
-<script src="libs/profvis-0.3.6/profvis.js"></script>
-<link href="libs/highlight-6.2.0/textmate.css" rel="stylesheet" />
-<script src="libs/highlight-6.2.0/highlight.js"></script>
-<script src="libs/profvis-binding-0.3.6/profvis.js"></script>
 <script>
   // Added visibility option for solution (naras@stat)
   $(document).ready(function () {
@@ -87,7 +83,6 @@ a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
 a.sourceLine:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
-div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
@@ -240,18 +235,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="11.3" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html#references-2"><i class="fa fa-check"></i><b>11.3</b> References</a></li>
 </ul></li>
-<li class="chapter" data-level="12" data-path="speed-considerations.html"><a href="speed-considerations.html"><i class="fa fa-check"></i><b>12</b> Speed Considerations</a><ul>
-<li class="chapter" data-level="12.1" data-path="speed-considerations.html"><a href="speed-considerations.html#goals-5"><i class="fa fa-check"></i><b>12.1</b> Goals</a></li>
-<li class="chapter" data-level="12.2" data-path="speed-considerations.html"><a href="speed-considerations.html#example-1"><i class="fa fa-check"></i><b>12.2</b> Example</a></li>
-<li class="chapter" data-level="12.3" data-path="speed-considerations.html"><a href="speed-considerations.html#profiling-the-code"><i class="fa fa-check"></i><b>12.3</b> Profiling the Code</a></li>
-<li class="chapter" data-level="12.4" data-path="speed-considerations.html"><a href="speed-considerations.html#directly-calling-the-solver"><i class="fa fa-check"></i><b>12.4</b> Directly Calling the Solver</a></li>
-<li class="chapter" data-level="12.5" data-path="speed-considerations.html"><a href="speed-considerations.html#profiling-the-direct-call"><i class="fa fa-check"></i><b>12.5</b> Profiling the Direct Call</a></li>
-<li class="chapter" data-level="12.6" data-path="speed-considerations.html"><a href="speed-considerations.html#same-answer"><i class="fa fa-check"></i><b>12.6</b> Same Answer?</a></li>
-</ul></li>
+<li class="chapter" data-level="12" data-path="speed-considerations.html"><a href="speed-considerations.html"><i class="fa fa-check"></i><b>12</b> Speed Considerations</a></li>
 <li class="chapter" data-level="13" data-path="pliable-lasso.html"><a href="pliable-lasso.html"><i class="fa fa-check"></i><b>13</b> Pliable Lasso</a><ul>
-<li class="chapter" data-level="13.1" data-path="pliable-lasso.html"><a href="pliable-lasso.html#goals-6"><i class="fa fa-check"></i><b>13.1</b> Goals</a></li>
+<li class="chapter" data-level="13.1" data-path="pliable-lasso.html"><a href="pliable-lasso.html#goals-5"><i class="fa fa-check"></i><b>13.1</b> Goals</a></li>
 <li class="chapter" data-level="13.2" data-path="pliable-lasso.html"><a href="pliable-lasso.html#pliable-lasso-problem"><i class="fa fa-check"></i><b>13.2</b> Pliable Lasso Problem</a></li>
-<li class="chapter" data-level="13.3" data-path="pliable-lasso.html"><a href="pliable-lasso.html#example-2"><i class="fa fa-check"></i><b>13.3</b> Example</a><ul>
+<li class="chapter" data-level="13.3" data-path="pliable-lasso.html"><a href="pliable-lasso.html#example-1"><i class="fa fa-check"></i><b>13.3</b> Example</a><ul>
 <li class="chapter" data-level="13.3.1" data-path="pliable-lasso.html"><a href="pliable-lasso.html#parameters"><i class="fa fa-check"></i><b>13.3.1</b> Parameters</a></li>
 <li class="chapter" data-level="13.3.2" data-path="pliable-lasso.html"><a href="pliable-lasso.html#penalty-terms"><i class="fa fa-check"></i><b>13.3.2</b> Penalty Terms</a></li>
 <li class="chapter" data-level="13.3.3" data-path="pliable-lasso.html"><a href="pliable-lasso.html#fitted-value"><i class="fa fa-check"></i><b>13.3.3</b> Fitted Value</a></li>
@@ -265,7 +253,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="13.7" data-path="pliable-lasso.html"><a href="pliable-lasso.html#references-3"><i class="fa fa-check"></i><b>13.7</b> References</a></li>
 </ul></li>
 <li class="chapter" data-level="14" data-path="survey-calibration.html"><a href="survey-calibration.html"><i class="fa fa-check"></i><b>14</b> Survey Calibration</a><ul>
-<li class="chapter" data-level="14.1" data-path="survey-calibration.html"><a href="survey-calibration.html#goals-7"><i class="fa fa-check"></i><b>14.1</b> Goals</a></li>
+<li class="chapter" data-level="14.1" data-path="survey-calibration.html"><a href="survey-calibration.html#goals-6"><i class="fa fa-check"></i><b>14.1</b> Goals</a></li>
 <li class="chapter" data-level="14.2" data-path="survey-calibration.html"><a href="survey-calibration.html#survey-calibration-problem"><i class="fa fa-check"></i><b>14.2</b> Survey Calibration Problem</a></li>
 <li class="chapter" data-level="14.3" data-path="survey-calibration.html"><a href="survey-calibration.html#raking"><i class="fa fa-check"></i><b>14.3</b> Raking</a><ul>
 <li class="chapter" data-level="14.3.1" data-path="survey-calibration.html"><a href="survey-calibration.html#exercise-12"><i class="fa fa-check"></i><b>14.3.1</b> Exercise</a></li>
@@ -277,21 +265,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="14.4" data-path="survey-calibration.html"><a href="survey-calibration.html#references-4"><i class="fa fa-check"></i><b>14.4</b> References</a></li>
 </ul></li>
 <li class="chapter" data-level="15" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html"><i class="fa fa-check"></i><b>15</b> Sparse Inverse Covariance Estimation</a><ul>
-<li class="chapter" data-level="15.1" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#goals-8"><i class="fa fa-check"></i><b>15.1</b> Goals</a></li>
+<li class="chapter" data-level="15.1" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#goals-7"><i class="fa fa-check"></i><b>15.1</b> Goals</a></li>
 <li class="chapter" data-level="15.2" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#sparse-inverse-covariance-problem"><i class="fa fa-check"></i><b>15.2</b> Sparse Inverse Covariance Problem</a></li>
-<li class="chapter" data-level="15.3" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#example-3"><i class="fa fa-check"></i><b>15.3</b> Example</a></li>
+<li class="chapter" data-level="15.3" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#example-2"><i class="fa fa-check"></i><b>15.3</b> Example</a></li>
 <li class="chapter" data-level="15.4" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#results-1"><i class="fa fa-check"></i><b>15.4</b> Results</a></li>
 <li class="chapter" data-level="15.5" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#references-5"><i class="fa fa-check"></i><b>15.5</b> References</a></li>
 </ul></li>
 <li class="chapter" data-level="16" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html"><i class="fa fa-check"></i><b>16</b> Portfolio Estimation</a><ul>
-<li class="chapter" data-level="16.1" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#goals-9"><i class="fa fa-check"></i><b>16.1</b> Goals</a></li>
+<li class="chapter" data-level="16.1" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#goals-8"><i class="fa fa-check"></i><b>16.1</b> Goals</a></li>
 <li class="chapter" data-level="16.2" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#markowitz-portfolio-problem"><i class="fa fa-check"></i><b>16.2</b> Markowitz Portfolio Problem</a></li>
-<li class="chapter" data-level="16.3" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#example-4"><i class="fa fa-check"></i><b>16.3</b> Example</a></li>
+<li class="chapter" data-level="16.3" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#example-3"><i class="fa fa-check"></i><b>16.3</b> Example</a></li>
 <li class="chapter" data-level="16.4" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#discussion"><i class="fa fa-check"></i><b>16.4</b> Discussion</a></li>
 <li class="chapter" data-level="16.5" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#references-6"><i class="fa fa-check"></i><b>16.5</b> References</a></li>
 </ul></li>
 <li class="chapter" data-level="17" data-path="using-other-solvers.html"><a href="using-other-solvers.html"><i class="fa fa-check"></i><b>17</b> Using Other Solvers</a><ul>
-<li class="chapter" data-level="17.1" data-path="using-other-solvers.html"><a href="using-other-solvers.html#goals-10"><i class="fa fa-check"></i><b>17.1</b> Goals</a></li>
+<li class="chapter" data-level="17.1" data-path="using-other-solvers.html"><a href="using-other-solvers.html#goals-9"><i class="fa fa-check"></i><b>17.1</b> Goals</a></li>
 <li class="chapter" data-level="17.2" data-path="using-other-solvers.html"><a href="using-other-solvers.html#default-solvers"><i class="fa fa-check"></i><b>17.2</b> Default Solvers</a></li>
 <li class="chapter" data-level="17.3" data-path="using-other-solvers.html"><a href="using-other-solvers.html#commercial-solvers"><i class="fa fa-check"></i><b>17.3</b> Commercial Solvers</a><ul>
 <li class="chapter" data-level="17.3.1" data-path="using-other-solvers.html"><a href="using-other-solvers.html#installing-mosek"><i class="fa fa-check"></i><b>17.3.1</b> Installing <code>MOSEK</code></a></li>
@@ -363,8 +351,8 @@ the
 <a href="http://cdiac.ess-dive.lbl.gov/ftp/trends/temp/jonescru/">Carbon Dioxide Information Analysis Center (CDIAC)</a>. The
 data points are the annual temperature anomalies relative to the
 1961–1990 mean.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(cdiac)
-<span class="kw">str</span>(cdiac)</code></pre>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb70-1" title="1"><span class="kw">data</span>(cdiac)</a>
+<a class="sourceLine" id="cb70-2" title="2"><span class="kw">str</span>(cdiac)</a></code></pre></div>
 <pre><code>## &#39;data.frame&#39;:    166 obs. of  14 variables:
 ##  $ year  : int  1850 1851 1852 1853 1854 1855 1856 1857 1858 1859 ...
 ##  $ jan   : num  -0.702 -0.303 -0.308 -0.177 -0.36 -0.176 -0.119 -0.512 -0.532 -0.307 ...
@@ -383,13 +371,13 @@ data points are the annual temperature anomalies relative to the
 <p>Since we plan to fit the regression and also get some idea of the
 standard errors, we write a function that computes the fit for use in
 bootstrapping.</p>
-<pre class="sourceCode r"><code class="sourceCode r">neariso_fit &lt;-<span class="st"> </span><span class="cf">function</span>(y, lambda) {
-    m &lt;-<span class="st"> </span><span class="kw">length</span>(y)
-    beta &lt;-<span class="st"> </span><span class="kw">Variable</span>(m)
-    obj &lt;-<span class="st"> </span><span class="fl">0.5</span> <span class="op">*</span><span class="st"> </span><span class="kw">sum_squares</span>(y <span class="op">-</span><span class="st"> </span>beta) <span class="op">+</span><span class="st"> </span>lambda <span class="op">*</span><span class="st"> </span><span class="kw">sum</span>(<span class="kw">pos</span>(<span class="kw">diff</span>(beta)))
-    prob &lt;-<span class="st"> </span><span class="kw">Problem</span>(<span class="kw">Minimize</span>(obj))
-    <span class="kw">solve</span>(prob)<span class="op">$</span><span class="kw">getValue</span>(beta)
-}</code></pre>
+<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb72-1" title="1">neariso_fit &lt;-<span class="st"> </span><span class="cf">function</span>(y, lambda) {</a>
+<a class="sourceLine" id="cb72-2" title="2">    m &lt;-<span class="st"> </span><span class="kw">length</span>(y)</a>
+<a class="sourceLine" id="cb72-3" title="3">    beta &lt;-<span class="st"> </span><span class="kw">Variable</span>(m)</a>
+<a class="sourceLine" id="cb72-4" title="4">    obj &lt;-<span class="st"> </span><span class="fl">0.5</span> <span class="op">*</span><span class="st"> </span><span class="kw">sum_squares</span>(y <span class="op">-</span><span class="st"> </span>beta) <span class="op">+</span><span class="st"> </span>lambda <span class="op">*</span><span class="st"> </span><span class="kw">sum</span>(<span class="kw">pos</span>(<span class="kw">diff</span>(beta)))</a>
+<a class="sourceLine" id="cb72-5" title="5">    prob &lt;-<span class="st"> </span><span class="kw">Problem</span>(<span class="kw">Minimize</span>(obj))</a>
+<a class="sourceLine" id="cb72-6" title="6">    <span class="kw">solve</span>(prob)<span class="op">$</span><span class="kw">getValue</span>(beta)</a>
+<a class="sourceLine" id="cb72-7" title="7">}</a></code></pre></div>
 <p>The <code>CVXR::pos</code> atom evaluates <span class="math inline">\(x_+ = \max(x,0)\)</span> elementwise on the input
 expression.</p>
 <p>The <code>boot</code> library provides all the tools for bootstrapping, but
@@ -398,31 +386,31 @@ frame, followed by the bootstrap indices and any other arguments
 (<span class="math inline">\(\lambda\)</span> for instance). This is defined below.</p>
 <p><em>NOTE</em> In what follows, we use a very small number of bootstrap
 samples as the fits are time consuming.</p>
-<pre class="sourceCode r"><code class="sourceCode r">neariso_fit_stat &lt;-<span class="st"> </span><span class="cf">function</span>(data, index, lambda) {
-    sample &lt;-<span class="st"> </span>data[index,]                  <span class="co"># Bootstrap sample of rows</span>
-    sample &lt;-<span class="st"> </span>sample[<span class="kw">order</span>(sample<span class="op">$</span>year),]   <span class="co"># Order ascending by year</span>
-    <span class="kw">neariso_fit</span>(sample<span class="op">$</span>annual, lambda)
-}</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">set.seed</span>(<span class="dv">123</span>)
-boot.neariso &lt;-<span class="st"> </span><span class="kw">boot</span>(<span class="dt">data =</span> cdiac,
-                     <span class="dt">statistic =</span> neariso_fit_stat,
-                     <span class="dt">R =</span> <span class="dv">10</span>, <span class="dt">lambda =</span> <span class="fl">0.44</span>)
-ci.neariso &lt;-<span class="st"> </span><span class="kw">t</span>(<span class="kw">sapply</span>(<span class="kw">seq_len</span>(<span class="kw">nrow</span>(cdiac)),
-                       <span class="cf">function</span>(i) <span class="kw">boot.ci</span>(<span class="dt">boot.out =</span> boot.neariso, <span class="dt">conf =</span> <span class="fl">0.95</span>,
-                                           <span class="dt">type =</span> <span class="st">&quot;norm&quot;</span>, <span class="dt">index =</span> i)<span class="op">$</span>normal[<span class="op">-</span><span class="dv">1</span>]))
-data.neariso &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">year =</span> cdiac<span class="op">$</span>year,
-                           <span class="dt">annual =</span> cdiac<span class="op">$</span>annual,
-                           <span class="dt">est =</span> boot.neariso<span class="op">$</span>t0,
-                           <span class="dt">lower =</span> ci.neariso[, <span class="dv">1</span>],
-                           <span class="dt">upper =</span> ci.neariso[, <span class="dv">2</span>])</code></pre>
+<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb73-1" title="1">neariso_fit_stat &lt;-<span class="st"> </span><span class="cf">function</span>(data, index, lambda) {</a>
+<a class="sourceLine" id="cb73-2" title="2">    sample &lt;-<span class="st"> </span>data[index,]                  <span class="co"># Bootstrap sample of rows</span></a>
+<a class="sourceLine" id="cb73-3" title="3">    sample &lt;-<span class="st"> </span>sample[<span class="kw">order</span>(sample<span class="op">$</span>year),]   <span class="co"># Order ascending by year</span></a>
+<a class="sourceLine" id="cb73-4" title="4">    <span class="kw">neariso_fit</span>(sample<span class="op">$</span>annual, lambda)</a>
+<a class="sourceLine" id="cb73-5" title="5">}</a></code></pre></div>
+<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb74-1" title="1"><span class="kw">set.seed</span>(<span class="dv">123</span>)</a>
+<a class="sourceLine" id="cb74-2" title="2">boot.neariso &lt;-<span class="st"> </span><span class="kw">boot</span>(<span class="dt">data =</span> cdiac,</a>
+<a class="sourceLine" id="cb74-3" title="3">                     <span class="dt">statistic =</span> neariso_fit_stat,</a>
+<a class="sourceLine" id="cb74-4" title="4">                     <span class="dt">R =</span> <span class="dv">10</span>, <span class="dt">lambda =</span> <span class="fl">0.44</span>)</a>
+<a class="sourceLine" id="cb74-5" title="5">ci.neariso &lt;-<span class="st"> </span><span class="kw">t</span>(<span class="kw">sapply</span>(<span class="kw">seq_len</span>(<span class="kw">nrow</span>(cdiac)),</a>
+<a class="sourceLine" id="cb74-6" title="6">                       <span class="cf">function</span>(i) <span class="kw">boot.ci</span>(<span class="dt">boot.out =</span> boot.neariso, <span class="dt">conf =</span> <span class="fl">0.95</span>,</a>
+<a class="sourceLine" id="cb74-7" title="7">                                           <span class="dt">type =</span> <span class="st">&quot;norm&quot;</span>, <span class="dt">index =</span> i)<span class="op">$</span>normal[<span class="op">-</span><span class="dv">1</span>]))</a>
+<a class="sourceLine" id="cb74-8" title="8">data.neariso &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">year =</span> cdiac<span class="op">$</span>year,</a>
+<a class="sourceLine" id="cb74-9" title="9">                           <span class="dt">annual =</span> cdiac<span class="op">$</span>annual,</a>
+<a class="sourceLine" id="cb74-10" title="10">                           <span class="dt">est =</span> boot.neariso<span class="op">$</span>t0,</a>
+<a class="sourceLine" id="cb74-11" title="11">                           <span class="dt">lower =</span> ci.neariso[, <span class="dv">1</span>],</a>
+<a class="sourceLine" id="cb74-12" title="12">                           <span class="dt">upper =</span> ci.neariso[, <span class="dv">2</span>])</a></code></pre></div>
 <p>We can now plot the fit and confidence bands for the nearly-isotonic
 fit.</p>
-<pre class="sourceCode r"><code class="sourceCode r">(plot.neariso &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="dt">data =</span> data.neariso) <span class="op">+</span>
-<span class="st">     </span><span class="kw">geom_point</span>(<span class="dt">mapping =</span> <span class="kw">aes</span>(year, annual), <span class="dt">color =</span> <span class="st">&quot;red&quot;</span>) <span class="op">+</span>
-<span class="st">     </span><span class="kw">geom_line</span>(<span class="dt">mapping =</span> <span class="kw">aes</span>(year, est), <span class="dt">color =</span> <span class="st">&quot;blue&quot;</span>) <span class="op">+</span>
-<span class="st">     </span><span class="kw">geom_ribbon</span>(<span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> year, <span class="dt">ymin =</span> lower,<span class="dt">ymax =</span> upper),<span class="dt">alpha=</span><span class="fl">0.3</span>) <span class="op">+</span>
-<span class="st">     </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Year&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Temperature Anomalies&quot;</span>)
-)</code></pre>
+<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb75-1" title="1">(plot.neariso &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="dt">data =</span> data.neariso) <span class="op">+</span></a>
+<a class="sourceLine" id="cb75-2" title="2"><span class="st">     </span><span class="kw">geom_point</span>(<span class="dt">mapping =</span> <span class="kw">aes</span>(year, annual), <span class="dt">color =</span> <span class="st">&quot;red&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb75-3" title="3"><span class="st">     </span><span class="kw">geom_line</span>(<span class="dt">mapping =</span> <span class="kw">aes</span>(year, est), <span class="dt">color =</span> <span class="st">&quot;blue&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb75-4" title="4"><span class="st">     </span><span class="kw">geom_ribbon</span>(<span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> year, <span class="dt">ymin =</span> lower,<span class="dt">ymax =</span> upper),<span class="dt">alpha=</span><span class="fl">0.3</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb75-5" title="5"><span class="st">     </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Year&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Temperature Anomalies&quot;</span>)</a>
+<a class="sourceLine" id="cb75-6" title="6">)</a></code></pre></div>
 <p>The curve follows the data well, but exhibits some choppiness in
 regions with a steep trend.</p>
 <div id="exercise-11" class="section level3">
@@ -440,43 +428,43 @@ paper:</p>
 second derivative at <span class="math inline">\(\beta_{i+1}\)</span>. In <code>CVXR</code>, the only change
 necessary is the penalty line: replace <code>diff(x)</code> by
 <code>diff(x, differences = 2)</code>.</p>
-<pre class="sourceCode r"><code class="sourceCode r">nearconvex_fit &lt;-<span class="st"> </span><span class="cf">function</span>(y, lambda) {
-    m &lt;-<span class="st"> </span><span class="kw">length</span>(y)
-    beta &lt;-<span class="st"> </span><span class="kw">Variable</span>(m)
-    obj &lt;-<span class="st"> </span><span class="fl">0.5</span> <span class="op">*</span><span class="st"> </span><span class="kw">sum_squares</span>(y <span class="op">-</span><span class="st"> </span>beta) <span class="op">+</span><span class="st"> </span>lambda <span class="op">*</span><span class="st"> </span><span class="kw">sum</span>(<span class="kw">pos</span>(<span class="kw">diff</span>(beta, <span class="dt">differences =</span> <span class="dv">2</span>)))
-    prob &lt;-<span class="st"> </span><span class="kw">Problem</span>(<span class="kw">Minimize</span>(obj))
-    <span class="kw">solve</span>(prob)<span class="op">$</span><span class="kw">getValue</span>(beta)
-}
-
-nearconvex_fit_stat &lt;-<span class="st"> </span><span class="cf">function</span>(data, index, lambda) {
-    sample &lt;-<span class="st"> </span>data[index,]                  <span class="co"># Bootstrap sample of rows</span>
-    sample &lt;-<span class="st"> </span>sample[<span class="kw">order</span>(sample<span class="op">$</span>year),]   <span class="co"># Order ascending by year</span>
-    <span class="kw">nearconvex_fit</span>(sample<span class="op">$</span>annual, lambda)
-}
-
-<span class="kw">set.seed</span>(<span class="dv">987</span>)
-boot.nearconvex &lt;-<span class="st"> </span><span class="kw">boot</span>(<span class="dt">data =</span> cdiac,
-                        <span class="dt">statistic =</span> nearconvex_fit_stat,
-                        <span class="dt">R =</span> <span class="dv">5</span>,
-                        <span class="dt">lambda =</span> <span class="fl">0.44</span>)
-
-ci.nearconvex &lt;-<span class="st"> </span><span class="kw">t</span>(<span class="kw">sapply</span>(<span class="kw">seq_len</span>(<span class="kw">nrow</span>(cdiac)),
-                          <span class="cf">function</span>(i) <span class="kw">boot.ci</span>(<span class="dt">boot.out =</span> boot.nearconvex, <span class="dt">conf =</span> <span class="fl">0.95</span>,
-                                              <span class="dt">type =</span> <span class="st">&quot;norm&quot;</span>, <span class="dt">index =</span> i)<span class="op">$</span>normal[<span class="op">-</span><span class="dv">1</span>]))
-data.nearconvex &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">year =</span> cdiac<span class="op">$</span>year,
-                              <span class="dt">annual =</span> cdiac<span class="op">$</span>annual,
-                              <span class="dt">est =</span> boot.nearconvex<span class="op">$</span>t0,
-                              <span class="dt">lower =</span> ci.nearconvex[, <span class="dv">1</span>],
-                              <span class="dt">upper =</span> ci.nearconvex[, <span class="dv">2</span>])</code></pre>
+<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb76-1" title="1">nearconvex_fit &lt;-<span class="st"> </span><span class="cf">function</span>(y, lambda) {</a>
+<a class="sourceLine" id="cb76-2" title="2">    m &lt;-<span class="st"> </span><span class="kw">length</span>(y)</a>
+<a class="sourceLine" id="cb76-3" title="3">    beta &lt;-<span class="st"> </span><span class="kw">Variable</span>(m)</a>
+<a class="sourceLine" id="cb76-4" title="4">    obj &lt;-<span class="st"> </span><span class="fl">0.5</span> <span class="op">*</span><span class="st"> </span><span class="kw">sum_squares</span>(y <span class="op">-</span><span class="st"> </span>beta) <span class="op">+</span><span class="st"> </span>lambda <span class="op">*</span><span class="st"> </span><span class="kw">sum</span>(<span class="kw">pos</span>(<span class="kw">diff</span>(beta, <span class="dt">differences =</span> <span class="dv">2</span>)))</a>
+<a class="sourceLine" id="cb76-5" title="5">    prob &lt;-<span class="st"> </span><span class="kw">Problem</span>(<span class="kw">Minimize</span>(obj))</a>
+<a class="sourceLine" id="cb76-6" title="6">    <span class="kw">solve</span>(prob)<span class="op">$</span><span class="kw">getValue</span>(beta)</a>
+<a class="sourceLine" id="cb76-7" title="7">}</a>
+<a class="sourceLine" id="cb76-8" title="8"></a>
+<a class="sourceLine" id="cb76-9" title="9">nearconvex_fit_stat &lt;-<span class="st"> </span><span class="cf">function</span>(data, index, lambda) {</a>
+<a class="sourceLine" id="cb76-10" title="10">    sample &lt;-<span class="st"> </span>data[index,]                  <span class="co"># Bootstrap sample of rows</span></a>
+<a class="sourceLine" id="cb76-11" title="11">    sample &lt;-<span class="st"> </span>sample[<span class="kw">order</span>(sample<span class="op">$</span>year),]   <span class="co"># Order ascending by year</span></a>
+<a class="sourceLine" id="cb76-12" title="12">    <span class="kw">nearconvex_fit</span>(sample<span class="op">$</span>annual, lambda)</a>
+<a class="sourceLine" id="cb76-13" title="13">}</a>
+<a class="sourceLine" id="cb76-14" title="14"></a>
+<a class="sourceLine" id="cb76-15" title="15"><span class="kw">set.seed</span>(<span class="dv">987</span>)</a>
+<a class="sourceLine" id="cb76-16" title="16">boot.nearconvex &lt;-<span class="st"> </span><span class="kw">boot</span>(<span class="dt">data =</span> cdiac,</a>
+<a class="sourceLine" id="cb76-17" title="17">                        <span class="dt">statistic =</span> nearconvex_fit_stat,</a>
+<a class="sourceLine" id="cb76-18" title="18">                        <span class="dt">R =</span> <span class="dv">5</span>,</a>
+<a class="sourceLine" id="cb76-19" title="19">                        <span class="dt">lambda =</span> <span class="fl">0.44</span>)</a>
+<a class="sourceLine" id="cb76-20" title="20"></a>
+<a class="sourceLine" id="cb76-21" title="21">ci.nearconvex &lt;-<span class="st"> </span><span class="kw">t</span>(<span class="kw">sapply</span>(<span class="kw">seq_len</span>(<span class="kw">nrow</span>(cdiac)),</a>
+<a class="sourceLine" id="cb76-22" title="22">                          <span class="cf">function</span>(i) <span class="kw">boot.ci</span>(<span class="dt">boot.out =</span> boot.nearconvex, <span class="dt">conf =</span> <span class="fl">0.95</span>,</a>
+<a class="sourceLine" id="cb76-23" title="23">                                              <span class="dt">type =</span> <span class="st">&quot;norm&quot;</span>, <span class="dt">index =</span> i)<span class="op">$</span>normal[<span class="op">-</span><span class="dv">1</span>]))</a>
+<a class="sourceLine" id="cb76-24" title="24">data.nearconvex &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">year =</span> cdiac<span class="op">$</span>year,</a>
+<a class="sourceLine" id="cb76-25" title="25">                              <span class="dt">annual =</span> cdiac<span class="op">$</span>annual,</a>
+<a class="sourceLine" id="cb76-26" title="26">                              <span class="dt">est =</span> boot.nearconvex<span class="op">$</span>t0,</a>
+<a class="sourceLine" id="cb76-27" title="27">                              <span class="dt">lower =</span> ci.nearconvex[, <span class="dv">1</span>],</a>
+<a class="sourceLine" id="cb76-28" title="28">                              <span class="dt">upper =</span> ci.nearconvex[, <span class="dv">2</span>])</a></code></pre></div>
 <p>The resulting curve for the nearly-convex fit is depicted below with
 95% confidence bands generated from <span class="math inline">\(R = 5\)</span> samples. Note the jagged
 staircase pattern has been smoothed out.</p>
-<pre class="sourceCode r"><code class="sourceCode r">(plot.nearconvex &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="dt">data =</span> data.nearconvex) <span class="op">+</span>
-<span class="st">     </span><span class="kw">geom_point</span>(<span class="dt">mapping =</span> <span class="kw">aes</span>(year, annual), <span class="dt">color =</span> <span class="st">&quot;red&quot;</span>) <span class="op">+</span>
-<span class="st">     </span><span class="kw">geom_line</span>(<span class="dt">mapping =</span> <span class="kw">aes</span>(year, est), <span class="dt">color =</span> <span class="st">&quot;blue&quot;</span>) <span class="op">+</span>
-<span class="st">     </span><span class="kw">geom_ribbon</span>(<span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> year, <span class="dt">ymin =</span> lower,<span class="dt">ymax =</span> upper),<span class="dt">alpha=</span><span class="fl">0.3</span>) <span class="op">+</span>
-<span class="st">     </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Year&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Temperature Anomalies&quot;</span>)
-)</code></pre>
+<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb77-1" title="1">(plot.nearconvex &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="dt">data =</span> data.nearconvex) <span class="op">+</span></a>
+<a class="sourceLine" id="cb77-2" title="2"><span class="st">     </span><span class="kw">geom_point</span>(<span class="dt">mapping =</span> <span class="kw">aes</span>(year, annual), <span class="dt">color =</span> <span class="st">&quot;red&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb77-3" title="3"><span class="st">     </span><span class="kw">geom_line</span>(<span class="dt">mapping =</span> <span class="kw">aes</span>(year, est), <span class="dt">color =</span> <span class="st">&quot;blue&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb77-4" title="4"><span class="st">     </span><span class="kw">geom_ribbon</span>(<span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> year, <span class="dt">ymin =</span> lower,<span class="dt">ymax =</span> upper),<span class="dt">alpha=</span><span class="fl">0.3</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb77-5" title="5"><span class="st">     </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Year&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Temperature Anomalies&quot;</span>)</a>
+<a class="sourceLine" id="cb77-6" title="6">)</a></code></pre></div>
 </div>
 </div>
 </div>
@@ -502,11 +490,13 @@ staircase pattern has been smoothed out.</p>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
 <script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
 <script>
 gitbook.require(["gitbook"], function(gitbook) {
 gitbook.start({
@@ -514,12 +504,11 @@ gitbook.start({
 "github": false,
 "facebook": true,
 "twitter": true,
-"google": false,
 "linkedin": false,
 "weibo": false,
 "instapaper": false,
 "vk": false,
-"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
 },
 "fontsettings": {
 "theme": "white",
@@ -531,6 +520,10 @@ gitbook.start({
 "text": null
 },
 "history": {
+"link": null,
+"text": null
+},
+"view": {
 "link": null,
 "text": null
 },
@@ -549,8 +542,9 @@ gitbook.start({
     script.type = "text/javascript";
     var src = "true";
     if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
-    if (location.protocol !== "file:" && /^https?:/.test(src))
-      src = src.replace(/^https?:/, '');
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
     script.src = src;
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
