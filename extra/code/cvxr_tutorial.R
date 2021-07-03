@@ -436,6 +436,8 @@ print_matrix(round(coef_net, 3),
 ## ------------------------------------------------------------------------
 library(glmnet)
 data(QuickStartExample)
+x <- QuickStartExample$x
+y <- QuickStartExample$y
 catn <- function(...) cat(..., "\n")
 objective_value <- function(y, x, coefs, lambda, alpha) {
     n <- nrow(x)

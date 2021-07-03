@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<html lang="" xml:lang="">
 <head>
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 16 Portfolio Estimation | Disciplined Convex Optimization in R</title>
   <meta name="description" content="Chapter 16 Portfolio Estimation | Disciplined Convex Optimization in R" />
-  <meta name="generator" content="bookdown 0.16 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 16 Portfolio Estimation | Disciplined Convex Optimization in R" />
   <meta property="og:type" content="book" />
@@ -24,7 +24,7 @@
 <meta name="author" content="Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd" />
 
 
-<meta name="date" content="2020-02-05" />
+<meta name="date" content="2021-07-02" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,6 +33,7 @@
   
 <link rel="prev" href="sparse-inverse-covariance-estimation.html"/>
 <link rel="next" href="using-other-solvers.html"/>
+<script src="libs/header-attrs-2.9/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -50,7 +51,10 @@
 
 
 
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 <script>
   // Added visibility option for solution (naras@stat)
   $(document).ready(function () {
@@ -77,26 +81,29 @@
 </script>
 
 
+
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -105,9 +112,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -140,6 +147,29 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
 <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
 
@@ -156,39 +186,48 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="./">Disciplined Convex Optimization in R</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
+<ul>
 <li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#convex-problems-in-statistics-machine-learning"><i class="fa fa-check"></i><b>1.1</b> Convex Problems in Statistics, Machine Learning</a></li>
 <li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#non-convex-problems"><i class="fa fa-check"></i><b>1.2</b> Non-convex Problems</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="getting-started.html"><a href="getting-started.html"><i class="fa fa-check"></i><b>2</b> Getting Started</a><ul>
-<li class="chapter" data-level="2.1" data-path="getting-started.html"><a href="getting-started.html#solver-prerequisites"><i class="fa fa-check"></i><b>2.1</b> Solver Prerequisites</a><ul>
+<li class="chapter" data-level="2" data-path="getting-started.html"><a href="getting-started.html"><i class="fa fa-check"></i><b>2</b> Getting Started</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="getting-started.html"><a href="getting-started.html#solver-prerequisites"><i class="fa fa-check"></i><b>2.1</b> Solver Prerequisites</a>
+<ul>
 <li class="chapter" data-level="2.1.1" data-path="getting-started.html"><a href="getting-started.html#mosek"><i class="fa fa-check"></i><b>2.1.1</b> MOSEK</a></li>
 <li class="chapter" data-level="2.1.2" data-path="getting-started.html"><a href="getting-started.html#gurobi"><i class="fa fa-check"></i><b>2.1.2</b> GUROBI</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="types-of-convex-optimization-problems.html"><a href="types-of-convex-optimization-problems.html"><i class="fa fa-check"></i><b>3</b> Types of Convex Optimization Problems</a><ul>
+<li class="chapter" data-level="3" data-path="types-of-convex-optimization-problems.html"><a href="types-of-convex-optimization-problems.html"><i class="fa fa-check"></i><b>3</b> Types of Convex Optimization Problems</a>
+<ul>
 <li class="chapter" data-level="3.1" data-path="types-of-convex-optimization-problems.html"><a href="types-of-convex-optimization-problems.html#linear-programs"><i class="fa fa-check"></i><b>3.1</b> Linear Programs</a></li>
 <li class="chapter" data-level="3.2" data-path="types-of-convex-optimization-problems.html"><a href="types-of-convex-optimization-problems.html#quadratic-programs"><i class="fa fa-check"></i><b>3.2</b> Quadratic Programs</a></li>
 <li class="chapter" data-level="3.3" data-path="types-of-convex-optimization-problems.html"><a href="types-of-convex-optimization-problems.html#cone-programs"><i class="fa fa-check"></i><b>3.3</b> Cone Programs</a></li>
 <li class="chapter" data-level="3.4" data-path="types-of-convex-optimization-problems.html"><a href="types-of-convex-optimization-problems.html#integer-and-mixed-integer-programs"><i class="fa fa-check"></i><b>3.4</b> Integer and Mixed Integer Programs</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="solving-convex-problems.html"><a href="solving-convex-problems.html"><i class="fa fa-check"></i><b>4</b> Solving Convex Problems</a><ul>
+<li class="chapter" data-level="4" data-path="solving-convex-problems.html"><a href="solving-convex-problems.html"><i class="fa fa-check"></i><b>4</b> Solving Convex Problems</a>
+<ul>
 <li class="chapter" data-level="4.1" data-path="solving-convex-problems.html"><a href="solving-convex-problems.html#verifying-convexity"><i class="fa fa-check"></i><b>4.1</b> Verifying Convexity</a></li>
 <li class="chapter" data-level="4.2" data-path="solving-convex-problems.html"><a href="solving-convex-problems.html#domain-specific-languages-for-convex-optimization"><i class="fa fa-check"></i><b>4.2</b> Domain Specific Languages for Convex Optimization</a></li>
 <li class="chapter" data-level="4.3" data-path="solving-convex-problems.html"><a href="solving-convex-problems.html#references"><i class="fa fa-check"></i><b>4.3</b> References</a></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="disciplined-convex-programming.html"><a href="disciplined-convex-programming.html"><i class="fa fa-check"></i><b>5</b> Disciplined Convex Programming</a><ul>
+<li class="chapter" data-level="5" data-path="disciplined-convex-programming.html"><a href="disciplined-convex-programming.html"><i class="fa fa-check"></i><b>5</b> Disciplined Convex Programming</a>
+<ul>
 <li class="chapter" data-level="5.1" data-path="disciplined-convex-programming.html"><a href="disciplined-convex-programming.html#basic-convex-functions"><i class="fa fa-check"></i><b>5.1</b> Basic Convex Functions</a></li>
 <li class="chapter" data-level="5.2" data-path="disciplined-convex-programming.html"><a href="disciplined-convex-programming.html#calculus-rules"><i class="fa fa-check"></i><b>5.2</b> Calculus Rules</a></li>
 <li class="chapter" data-level="5.3" data-path="disciplined-convex-programming.html"><a href="disciplined-convex-programming.html#examples"><i class="fa fa-check"></i><b>5.3</b> Examples</a></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html"><i class="fa fa-check"></i><b>6</b> A Simple Regression Example</a><ul>
+<li class="chapter" data-level="6" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html"><i class="fa fa-check"></i><b>6</b> A Simple Regression Example</a>
+<ul>
 <li class="chapter" data-level="6.1" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#goals"><i class="fa fa-check"></i><b>6.1</b> Goals</a></li>
 <li class="chapter" data-level="6.2" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#ordinary-least-squares-regression"><i class="fa fa-check"></i><b>6.2</b> Ordinary Least-Squares Regression</a></li>
-<li class="chapter" data-level="6.3" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#the-cvxr-formulation"><i class="fa fa-check"></i><b>6.3</b> The <code>CVXR</code> Formulation</a><ul>
+<li class="chapter" data-level="6.3" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#the-cvxr-formulation"><i class="fa fa-check"></i><b>6.3</b> The <code>CVXR</code> Formulation</a>
+<ul>
 <li class="chapter" data-level="6.3.1" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#exercise"><i class="fa fa-check"></i><b>6.3.1</b> Exercise</a></li>
 </ul></li>
-<li class="chapter" data-level="6.4" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#adding-constraints"><i class="fa fa-check"></i><b>6.4</b> Adding Constraints</a><ul>
+<li class="chapter" data-level="6.4" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#adding-constraints"><i class="fa fa-check"></i><b>6.4</b> Adding Constraints</a>
+<ul>
 <li class="chapter" data-level="6.4.1" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#exercise-1"><i class="fa fa-check"></i><b>6.4.1</b> Exercise</a></li>
 <li class="chapter" data-level="6.4.2" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#exercise-2"><i class="fa fa-check"></i><b>6.4.2</b> Exercise</a></li>
 <li class="chapter" data-level="6.4.3" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#exercise-3"><i class="fa fa-check"></i><b>6.4.3</b> Exercise</a></li>
@@ -196,50 +235,62 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="6.5" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#summary"><i class="fa fa-check"></i><b>6.5</b> Summary</a></li>
 </ul></li>
-<li class="chapter" data-level="7" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html"><i class="fa fa-check"></i><b>7</b> How <code>CVXR</code> Works</a><ul>
+<li class="chapter" data-level="7" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html"><i class="fa fa-check"></i><b>7</b> How <code>CVXR</code> Works</a>
+<ul>
 <li class="chapter" data-level="7.1" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html#variables"><i class="fa fa-check"></i><b>7.1</b> Variables</a></li>
 <li class="chapter" data-level="7.2" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html#objectives-constraints-and-problems"><i class="fa fa-check"></i><b>7.2</b> Objectives, Constraints, and Problems</a></li>
 <li class="chapter" data-level="7.3" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html#solving-the-problem"><i class="fa fa-check"></i><b>7.3</b> Solving the Problem</a></li>
 <li class="chapter" data-level="7.4" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html#solver-options"><i class="fa fa-check"></i><b>7.4</b> Solver Options</a></li>
 </ul></li>
-<li class="chapter" data-level="8" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>8</b> Logistic Regression</a><ul>
+<li class="chapter" data-level="8" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>8</b> Logistic Regression</a>
+<ul>
 <li class="chapter" data-level="8.1" data-path="logistic-regression.html"><a href="logistic-regression.html#goals-1"><i class="fa fa-check"></i><b>8.1</b> Goals</a></li>
 <li class="chapter" data-level="8.2" data-path="logistic-regression.html"><a href="logistic-regression.html#logistic-regression-problem"><i class="fa fa-check"></i><b>8.2</b> Logistic Regression Problem</a></li>
 <li class="chapter" data-level="8.3" data-path="logistic-regression.html"><a href="logistic-regression.html#example"><i class="fa fa-check"></i><b>8.3</b> Example</a></li>
-<li class="chapter" data-level="8.4" data-path="logistic-regression.html"><a href="logistic-regression.html#exercise-5"><i class="fa fa-check"></i><b>8.4</b> Exercise</a><ul>
+<li class="chapter" data-level="8.4" data-path="logistic-regression.html"><a href="logistic-regression.html#exercise-5"><i class="fa fa-check"></i><b>8.4</b> Exercise</a>
+<ul>
 <li class="chapter" data-level="8.4.1" data-path="logistic-regression.html"><a href="logistic-regression.html#solution-5"><i class="fa fa-check"></i><b>8.4.1</b> Solution</a></li>
 </ul></li>
 <li class="chapter" data-level="8.5" data-path="logistic-regression.html"><a href="logistic-regression.html#references-1"><i class="fa fa-check"></i><b>8.5</b> References</a></li>
 </ul></li>
-<li class="chapter" data-level="9" data-path="isotonic-regression.html"><a href="isotonic-regression.html"><i class="fa fa-check"></i><b>9</b> Isotonic Regression</a><ul>
+<li class="chapter" data-level="9" data-path="isotonic-regression.html"><a href="isotonic-regression.html"><i class="fa fa-check"></i><b>9</b> Isotonic Regression</a>
+<ul>
 <li class="chapter" data-level="9.1" data-path="isotonic-regression.html"><a href="isotonic-regression.html#goals-2"><i class="fa fa-check"></i><b>9.1</b> Goals</a></li>
-<li class="chapter" data-level="9.2" data-path="isotonic-regression.html"><a href="isotonic-regression.html#pituitary-data-example"><i class="fa fa-check"></i><b>9.2</b> Pituitary Data Example</a><ul>
+<li class="chapter" data-level="9.2" data-path="isotonic-regression.html"><a href="isotonic-regression.html#pituitary-data-example"><i class="fa fa-check"></i><b>9.2</b> Pituitary Data Example</a>
+<ul>
 <li class="chapter" data-level="9.2.1" data-path="isotonic-regression.html"><a href="isotonic-regression.html#exercise-6"><i class="fa fa-check"></i><b>9.2.1</b> Exercise</a></li>
 </ul></li>
-<li class="chapter" data-level="9.3" data-path="isotonic-regression.html"><a href="isotonic-regression.html#handling-ties"><i class="fa fa-check"></i><b>9.3</b> Handling Ties</a><ul>
+<li class="chapter" data-level="9.3" data-path="isotonic-regression.html"><a href="isotonic-regression.html#handling-ties"><i class="fa fa-check"></i><b>9.3</b> Handling Ties</a>
+<ul>
 <li class="chapter" data-level="9.3.1" data-path="isotonic-regression.html"><a href="isotonic-regression.html#exercise-7"><i class="fa fa-check"></i><b>9.3.1</b> Exercise</a></li>
 <li class="chapter" data-level="9.3.2" data-path="isotonic-regression.html"><a href="isotonic-regression.html#exercise-8"><i class="fa fa-check"></i><b>9.3.2</b> Exercise</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="10" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html"><i class="fa fa-check"></i><b>10</b> Lasso and Elastic Net</a><ul>
+<li class="chapter" data-level="10" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html"><i class="fa fa-check"></i><b>10</b> Lasso and Elastic Net</a>
+<ul>
 <li class="chapter" data-level="10.1" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html#goals-3"><i class="fa fa-check"></i><b>10.1</b> Goals</a></li>
-<li class="chapter" data-level="10.2" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html#regularized-regression"><i class="fa fa-check"></i><b>10.2</b> Regularized Regression</a><ul>
+<li class="chapter" data-level="10.2" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html#regularized-regression"><i class="fa fa-check"></i><b>10.2</b> Regularized Regression</a>
+<ul>
 <li class="chapter" data-level="10.2.1" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html#exercise-9"><i class="fa fa-check"></i><b>10.2.1</b> Exercise</a></li>
 <li class="chapter" data-level="10.2.2" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html#exercise-10"><i class="fa fa-check"></i><b>10.2.2</b> Exercise</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="11" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html"><i class="fa fa-check"></i><b>11</b> Nearly Isotonic Fits</a><ul>
+<li class="chapter" data-level="11" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html"><i class="fa fa-check"></i><b>11</b> Nearly Isotonic Fits</a>
+<ul>
 <li class="chapter" data-level="11.1" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html#goals-4"><i class="fa fa-check"></i><b>11.1</b> Goals</a></li>
-<li class="chapter" data-level="11.2" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html#global-warming-example"><i class="fa fa-check"></i><b>11.2</b> Global Warming Example</a><ul>
+<li class="chapter" data-level="11.2" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html#global-warming-example"><i class="fa fa-check"></i><b>11.2</b> Global Warming Example</a>
+<ul>
 <li class="chapter" data-level="11.2.1" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html#exercise-11"><i class="fa fa-check"></i><b>11.2.1</b> Exercise</a></li>
 </ul></li>
 <li class="chapter" data-level="11.3" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html#references-2"><i class="fa fa-check"></i><b>11.3</b> References</a></li>
 </ul></li>
 <li class="chapter" data-level="12" data-path="speed-considerations.html"><a href="speed-considerations.html"><i class="fa fa-check"></i><b>12</b> Speed Considerations</a></li>
-<li class="chapter" data-level="13" data-path="pliable-lasso.html"><a href="pliable-lasso.html"><i class="fa fa-check"></i><b>13</b> Pliable Lasso</a><ul>
+<li class="chapter" data-level="13" data-path="pliable-lasso.html"><a href="pliable-lasso.html"><i class="fa fa-check"></i><b>13</b> Pliable Lasso</a>
+<ul>
 <li class="chapter" data-level="13.1" data-path="pliable-lasso.html"><a href="pliable-lasso.html#goals-5"><i class="fa fa-check"></i><b>13.1</b> Goals</a></li>
 <li class="chapter" data-level="13.2" data-path="pliable-lasso.html"><a href="pliable-lasso.html#pliable-lasso-problem"><i class="fa fa-check"></i><b>13.2</b> Pliable Lasso Problem</a></li>
-<li class="chapter" data-level="13.3" data-path="pliable-lasso.html"><a href="pliable-lasso.html#example-1"><i class="fa fa-check"></i><b>13.3</b> Example</a><ul>
+<li class="chapter" data-level="13.3" data-path="pliable-lasso.html"><a href="pliable-lasso.html#example-1"><i class="fa fa-check"></i><b>13.3</b> Example</a>
+<ul>
 <li class="chapter" data-level="13.3.1" data-path="pliable-lasso.html"><a href="pliable-lasso.html#parameters"><i class="fa fa-check"></i><b>13.3.1</b> Parameters</a></li>
 <li class="chapter" data-level="13.3.2" data-path="pliable-lasso.html"><a href="pliable-lasso.html#penalty-terms"><i class="fa fa-check"></i><b>13.3.2</b> Penalty Terms</a></li>
 <li class="chapter" data-level="13.3.3" data-path="pliable-lasso.html"><a href="pliable-lasso.html#fitted-value"><i class="fa fa-check"></i><b>13.3.3</b> Fitted Value</a></li>
@@ -252,10 +303,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="13.6" data-path="pliable-lasso.html"><a href="pliable-lasso.html#final-comments"><i class="fa fa-check"></i><b>13.6</b> Final Comments</a></li>
 <li class="chapter" data-level="13.7" data-path="pliable-lasso.html"><a href="pliable-lasso.html#references-3"><i class="fa fa-check"></i><b>13.7</b> References</a></li>
 </ul></li>
-<li class="chapter" data-level="14" data-path="survey-calibration.html"><a href="survey-calibration.html"><i class="fa fa-check"></i><b>14</b> Survey Calibration</a><ul>
+<li class="chapter" data-level="14" data-path="survey-calibration.html"><a href="survey-calibration.html"><i class="fa fa-check"></i><b>14</b> Survey Calibration</a>
+<ul>
 <li class="chapter" data-level="14.1" data-path="survey-calibration.html"><a href="survey-calibration.html#goals-6"><i class="fa fa-check"></i><b>14.1</b> Goals</a></li>
 <li class="chapter" data-level="14.2" data-path="survey-calibration.html"><a href="survey-calibration.html#survey-calibration-problem"><i class="fa fa-check"></i><b>14.2</b> Survey Calibration Problem</a></li>
-<li class="chapter" data-level="14.3" data-path="survey-calibration.html"><a href="survey-calibration.html#raking"><i class="fa fa-check"></i><b>14.3</b> Raking</a><ul>
+<li class="chapter" data-level="14.3" data-path="survey-calibration.html"><a href="survey-calibration.html#raking"><i class="fa fa-check"></i><b>14.3</b> Raking</a>
+<ul>
 <li class="chapter" data-level="14.3.1" data-path="survey-calibration.html"><a href="survey-calibration.html#exercise-12"><i class="fa fa-check"></i><b>14.3.1</b> Exercise</a></li>
 <li class="chapter" data-level="14.3.2" data-path="survey-calibration.html"><a href="survey-calibration.html#exercise-13"><i class="fa fa-check"></i><b>14.3.2</b> Exercise</a></li>
 <li class="chapter" data-level="14.3.3" data-path="survey-calibration.html"><a href="survey-calibration.html#solution-13"><i class="fa fa-check"></i><b>14.3.3</b> Solution</a></li>
@@ -264,24 +317,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="14.4" data-path="survey-calibration.html"><a href="survey-calibration.html#references-4"><i class="fa fa-check"></i><b>14.4</b> References</a></li>
 </ul></li>
-<li class="chapter" data-level="15" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html"><i class="fa fa-check"></i><b>15</b> Sparse Inverse Covariance Estimation</a><ul>
+<li class="chapter" data-level="15" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html"><i class="fa fa-check"></i><b>15</b> Sparse Inverse Covariance Estimation</a>
+<ul>
 <li class="chapter" data-level="15.1" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#goals-7"><i class="fa fa-check"></i><b>15.1</b> Goals</a></li>
 <li class="chapter" data-level="15.2" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#sparse-inverse-covariance-problem"><i class="fa fa-check"></i><b>15.2</b> Sparse Inverse Covariance Problem</a></li>
 <li class="chapter" data-level="15.3" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#example-2"><i class="fa fa-check"></i><b>15.3</b> Example</a></li>
 <li class="chapter" data-level="15.4" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#results-1"><i class="fa fa-check"></i><b>15.4</b> Results</a></li>
 <li class="chapter" data-level="15.5" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#references-5"><i class="fa fa-check"></i><b>15.5</b> References</a></li>
 </ul></li>
-<li class="chapter" data-level="16" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html"><i class="fa fa-check"></i><b>16</b> Portfolio Estimation</a><ul>
+<li class="chapter" data-level="16" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html"><i class="fa fa-check"></i><b>16</b> Portfolio Estimation</a>
+<ul>
 <li class="chapter" data-level="16.1" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#goals-8"><i class="fa fa-check"></i><b>16.1</b> Goals</a></li>
 <li class="chapter" data-level="16.2" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#markowitz-portfolio-problem"><i class="fa fa-check"></i><b>16.2</b> Markowitz Portfolio Problem</a></li>
 <li class="chapter" data-level="16.3" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#example-3"><i class="fa fa-check"></i><b>16.3</b> Example</a></li>
 <li class="chapter" data-level="16.4" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#discussion"><i class="fa fa-check"></i><b>16.4</b> Discussion</a></li>
 <li class="chapter" data-level="16.5" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#references-6"><i class="fa fa-check"></i><b>16.5</b> References</a></li>
 </ul></li>
-<li class="chapter" data-level="17" data-path="using-other-solvers.html"><a href="using-other-solvers.html"><i class="fa fa-check"></i><b>17</b> Using Other Solvers</a><ul>
+<li class="chapter" data-level="17" data-path="using-other-solvers.html"><a href="using-other-solvers.html"><i class="fa fa-check"></i><b>17</b> Using Other Solvers</a>
+<ul>
 <li class="chapter" data-level="17.1" data-path="using-other-solvers.html"><a href="using-other-solvers.html#goals-9"><i class="fa fa-check"></i><b>17.1</b> Goals</a></li>
 <li class="chapter" data-level="17.2" data-path="using-other-solvers.html"><a href="using-other-solvers.html#default-solvers"><i class="fa fa-check"></i><b>17.2</b> Default Solvers</a></li>
-<li class="chapter" data-level="17.3" data-path="using-other-solvers.html"><a href="using-other-solvers.html#commercial-solvers"><i class="fa fa-check"></i><b>17.3</b> Commercial Solvers</a><ul>
+<li class="chapter" data-level="17.3" data-path="using-other-solvers.html"><a href="using-other-solvers.html#commercial-solvers"><i class="fa fa-check"></i><b>17.3</b> Commercial Solvers</a>
+<ul>
 <li class="chapter" data-level="17.3.1" data-path="using-other-solvers.html"><a href="using-other-solvers.html#installing-mosek"><i class="fa fa-check"></i><b>17.3.1</b> Installing <code>MOSEK</code></a></li>
 <li class="chapter" data-level="17.3.2" data-path="using-other-solvers.html"><a href="using-other-solvers.html#installing-gurobi"><i class="fa fa-check"></i><b>17.3.2</b> Installing <code>GUROBI</code></a></li>
 <li class="chapter" data-level="17.3.3" data-path="using-other-solvers.html"><a href="using-other-solvers.html#gotchas"><i class="fa fa-check"></i><b>17.3.3</b> Gotchas</a></li>
@@ -290,9 +347,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="17.4" data-path="using-other-solvers.html"><a href="using-other-solvers.html#solver-peculiarities"><i class="fa fa-check"></i><b>17.4</b> Solver Peculiarities</a></li>
 <li class="chapter" data-level="17.5" data-path="using-other-solvers.html"><a href="using-other-solvers.html#references-7"><i class="fa fa-check"></i><b>17.5</b> References</a></li>
 </ul></li>
-<li class="chapter" data-level="18" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html"><i class="fa fa-check"></i><b>18</b> The Structure of Atoms</a><ul>
+<li class="chapter" data-level="18" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html"><i class="fa fa-check"></i><b>18</b> The Structure of Atoms</a>
+<ul>
 <li class="chapter" data-level="18.1" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#definition"><i class="fa fa-check"></i><b>18.1</b> Definition</a></li>
-<li class="chapter" data-level="18.2" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#atom-properties"><i class="fa fa-check"></i><b>18.2</b> Atom Properties</a><ul>
+<li class="chapter" data-level="18.2" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#atom-properties"><i class="fa fa-check"></i><b>18.2</b> Atom Properties</a>
+<ul>
 <li class="chapter" data-level="18.2.1" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#mathematical-basics"><i class="fa fa-check"></i><b>18.2.1</b> Mathematical Basics</a></li>
 <li class="chapter" data-level="18.2.2" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#dimension-sign-and-curvature"><i class="fa fa-check"></i><b>18.2.2</b> Dimension, Sign, and Curvature</a></li>
 <li class="chapter" data-level="18.2.3" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#additional-characteristics"><i class="fa fa-check"></i><b>18.2.3</b> Additional Characteristics</a></li>
@@ -300,7 +359,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="18.3" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#canonicalization"><i class="fa fa-check"></i><b>18.3</b> Canonicalization</a></li>
 <li class="chapter" data-level="18.4" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#putting-it-all-together"><i class="fa fa-check"></i><b>18.4</b> Putting It All Together</a></li>
 </ul></li>
-<li class="chapter" data-level="19" data-path="future-enhancements.html"><a href="future-enhancements.html"><i class="fa fa-check"></i><b>19</b> Future Enhancements</a><ul>
+<li class="chapter" data-level="19" data-path="future-enhancements.html"><a href="future-enhancements.html"><i class="fa fa-check"></i><b>19</b> Future Enhancements</a>
+<ul>
 <li class="chapter" data-level="19.1" data-path="future-enhancements.html"><a href="future-enhancements.html#version-1.0"><i class="fa fa-check"></i><b>19.1</b> Version 1.0</a></li>
 <li class="chapter" data-level="19.2" data-path="future-enhancements.html"><a href="future-enhancements.html#internal-changes"><i class="fa fa-check"></i><b>19.2</b> Internal Changes</a></li>
 </ul></li>
@@ -326,17 +386,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="portfolio-estimation" class="section level1">
+<div id="portfolio-estimation" class="section level1" number="16">
 <h1><span class="header-section-number">Chapter 16</span> Portfolio Estimation</h1>
-<div id="goals-8" class="section level2">
+<div id="goals-8" class="section level2" number="16.1">
 <h2><span class="header-section-number">16.1</span> Goals</h2>
 <ul>
 <li>Demonstrate <code>CVXR</code> on a financial example</li>
 </ul>
 </div>
-<div id="markowitz-portfolio-problem" class="section level2">
+<div id="markowitz-portfolio-problem" class="section level2" number="16.2">
 <h2><span class="header-section-number">16.2</span> Markowitz Portfolio Problem</h2>
-<p>The Markowitz portfolio problem <span class="citation">(Markowitz <a href="#ref-Markowitz:1952" role="doc-biblioref">1952</a>; Roy <a href="#ref-Roy:1952" role="doc-biblioref">1952</a>; Lobo, Fazel, and Boyd <a href="#ref-LoboFazelBoyd:2007" role="doc-biblioref">2007</a>)</span> is well known in finance. We will solve this
+<p>The Markowitz portfolio problem <span class="citation">(<a href="#ref-Markowitz:1952" role="doc-biblioref">Markowitz 1952</a>; <a href="#ref-Roy:1952" role="doc-biblioref">Roy 1952</a>; <a href="#ref-LoboFazelBoyd:2007" role="doc-biblioref">Lobo, Fazel, and Boyd 2007</a>)</span> is well known in finance. We will solve this
 problem under various constraints.</p>
 <p>We have <span class="math inline">\(n\)</span> assets or stocks in our portfolio and must determine the
 amount of money to invest in each. Let <span class="math inline">\(w_i\)</span> denote the fraction of
@@ -358,111 +418,112 @@ long portfolios, so our problem is
 where the objective is the risk-adjusted return and <span class="math inline">\(\gamma &gt; 0\)</span> is a
 risk aversion parameter.</p>
 </div>
-<div id="example-3" class="section level2">
+<div id="example-3" class="section level2" number="16.3">
 <h2><span class="header-section-number">16.3</span> Example</h2>
 <p>We construct the risk-return trade-off curve for <span class="math inline">\(n = 10\)</span> assets and
 <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\Sigma^{1/2}\)</span> drawn from a standard normal
 distribution.</p>
-<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb108-1" title="1"><span class="co">## Problem data</span></a>
-<a class="sourceLine" id="cb108-2" title="2"><span class="kw">set.seed</span>(<span class="dv">10</span>)</a>
-<a class="sourceLine" id="cb108-3" title="3">n &lt;-<span class="st"> </span><span class="dv">10</span></a>
-<a class="sourceLine" id="cb108-4" title="4">SAMPLES &lt;-<span class="st"> </span><span class="dv">100</span></a>
-<a class="sourceLine" id="cb108-5" title="5">mu &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">abs</span>(<span class="kw">rnorm</span>(n)), <span class="dt">nrow =</span> n)</a>
-<a class="sourceLine" id="cb108-6" title="6">Sigma &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rnorm</span>(n<span class="op">^</span><span class="dv">2</span>), <span class="dt">nrow =</span> n, <span class="dt">ncol =</span> n)</a>
-<a class="sourceLine" id="cb108-7" title="7">Sigma &lt;-<span class="st"> </span><span class="kw">t</span>(Sigma) <span class="op">%*%</span><span class="st"> </span>Sigma</a>
-<a class="sourceLine" id="cb108-8" title="8"></a>
-<a class="sourceLine" id="cb108-9" title="9"><span class="co">## Form problem</span></a>
-<a class="sourceLine" id="cb108-10" title="10">w &lt;-<span class="st"> </span><span class="kw">Variable</span>(n)</a>
-<a class="sourceLine" id="cb108-11" title="11">ret &lt;-<span class="st"> </span><span class="kw">t</span>(mu) <span class="op">%*%</span><span class="st"> </span>w</a>
-<a class="sourceLine" id="cb108-12" title="12">risk &lt;-<span class="st"> </span><span class="kw">quad_form</span>(w, Sigma)</a>
-<a class="sourceLine" id="cb108-13" title="13">constraints &lt;-<span class="st"> </span><span class="kw">list</span>(w <span class="op">&gt;=</span><span class="st"> </span><span class="dv">0</span>, <span class="kw">sum</span>(w) <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb108-14" title="14"></a>
-<a class="sourceLine" id="cb108-15" title="15"><span class="co">## Risk aversion parameters</span></a>
-<a class="sourceLine" id="cb108-16" title="16">gammas &lt;-<span class="st"> </span><span class="dv">10</span><span class="op">^</span><span class="kw">seq</span>(<span class="op">-</span><span class="dv">2</span>, <span class="dv">3</span>, <span class="dt">length.out =</span> SAMPLES)</a>
-<a class="sourceLine" id="cb108-17" title="17">ret_data &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>, SAMPLES)</a>
-<a class="sourceLine" id="cb108-18" title="18">risk_data &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>, SAMPLES)</a>
-<a class="sourceLine" id="cb108-19" title="19">w_data &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, <span class="dt">nrow =</span> SAMPLES, <span class="dt">ncol =</span> n)</a>
-<a class="sourceLine" id="cb108-20" title="20"></a>
-<a class="sourceLine" id="cb108-21" title="21"><span class="co">## Compute trade-off curve</span></a>
-<a class="sourceLine" id="cb108-22" title="22"><span class="cf">for</span>(i <span class="cf">in</span> <span class="kw">seq_along</span>(gammas)) {</a>
-<a class="sourceLine" id="cb108-23" title="23">    gamma &lt;-<span class="st"> </span>gammas[i]</a>
-<a class="sourceLine" id="cb108-24" title="24">    objective &lt;-<span class="st"> </span>ret <span class="op">-</span><span class="st"> </span>gamma <span class="op">*</span><span class="st"> </span>risk</a>
-<a class="sourceLine" id="cb108-25" title="25">    prob &lt;-<span class="st"> </span><span class="kw">Problem</span>(<span class="kw">Maximize</span>(objective), constraints)</a>
-<a class="sourceLine" id="cb108-26" title="26">    result &lt;-<span class="st"> </span><span class="kw">solve</span>(prob)</a>
-<a class="sourceLine" id="cb108-27" title="27">    </a>
-<a class="sourceLine" id="cb108-28" title="28">    <span class="co">## Evaluate risk/return for current solution</span></a>
-<a class="sourceLine" id="cb108-29" title="29">    risk_data[i] &lt;-<span class="st"> </span>result<span class="op">$</span><span class="kw">getValue</span>(<span class="kw">sqrt</span>(risk))</a>
-<a class="sourceLine" id="cb108-30" title="30">    ret_data[i] &lt;-<span class="st"> </span>result<span class="op">$</span><span class="kw">getValue</span>(ret)</a>
-<a class="sourceLine" id="cb108-31" title="31">    w_data[i,] &lt;-<span class="st"> </span>result<span class="op">$</span><span class="kw">getValue</span>(w)</a>
-<a class="sourceLine" id="cb108-32" title="32">}</a></code></pre></div>
+<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="portfolio-estimation.html#cb113-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Problem data</span></span>
+<span id="cb113-2"><a href="portfolio-estimation.html#cb113-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">10</span>)</span>
+<span id="cb113-3"><a href="portfolio-estimation.html#cb113-3" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb113-4"><a href="portfolio-estimation.html#cb113-4" aria-hidden="true" tabindex="-1"></a>SAMPLES <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb113-5"><a href="portfolio-estimation.html#cb113-5" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">abs</span>(<span class="fu">rnorm</span>(n)), <span class="at">nrow =</span> n)</span>
+<span id="cb113-6"><a href="portfolio-estimation.html#cb113-6" aria-hidden="true" tabindex="-1"></a>Sigma <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(n<span class="sc">^</span><span class="dv">2</span>), <span class="at">nrow =</span> n, <span class="at">ncol =</span> n)</span>
+<span id="cb113-7"><a href="portfolio-estimation.html#cb113-7" aria-hidden="true" tabindex="-1"></a>Sigma <span class="ot">&lt;-</span> <span class="fu">t</span>(Sigma) <span class="sc">%*%</span> Sigma</span>
+<span id="cb113-8"><a href="portfolio-estimation.html#cb113-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb113-9"><a href="portfolio-estimation.html#cb113-9" aria-hidden="true" tabindex="-1"></a><span class="do">## Form problem</span></span>
+<span id="cb113-10"><a href="portfolio-estimation.html#cb113-10" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">Variable</span>(n)</span>
+<span id="cb113-11"><a href="portfolio-estimation.html#cb113-11" aria-hidden="true" tabindex="-1"></a>ret <span class="ot">&lt;-</span> <span class="fu">t</span>(mu) <span class="sc">%*%</span> w</span>
+<span id="cb113-12"><a href="portfolio-estimation.html#cb113-12" aria-hidden="true" tabindex="-1"></a>risk <span class="ot">&lt;-</span> <span class="fu">quad_form</span>(w, Sigma)</span>
+<span id="cb113-13"><a href="portfolio-estimation.html#cb113-13" aria-hidden="true" tabindex="-1"></a>constraints <span class="ot">&lt;-</span> <span class="fu">list</span>(w <span class="sc">&gt;=</span> <span class="dv">0</span>, <span class="fu">sum</span>(w) <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb113-14"><a href="portfolio-estimation.html#cb113-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb113-15"><a href="portfolio-estimation.html#cb113-15" aria-hidden="true" tabindex="-1"></a><span class="do">## Risk aversion parameters</span></span>
+<span id="cb113-16"><a href="portfolio-estimation.html#cb113-16" aria-hidden="true" tabindex="-1"></a>gammas <span class="ot">&lt;-</span> <span class="dv">10</span><span class="sc">^</span><span class="fu">seq</span>(<span class="sc">-</span><span class="dv">2</span>, <span class="dv">3</span>, <span class="at">length.out =</span> SAMPLES)</span>
+<span id="cb113-17"><a href="portfolio-estimation.html#cb113-17" aria-hidden="true" tabindex="-1"></a>ret_data <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, SAMPLES)</span>
+<span id="cb113-18"><a href="portfolio-estimation.html#cb113-18" aria-hidden="true" tabindex="-1"></a>risk_data <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, SAMPLES)</span>
+<span id="cb113-19"><a href="portfolio-estimation.html#cb113-19" aria-hidden="true" tabindex="-1"></a>w_data <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> SAMPLES, <span class="at">ncol =</span> n)</span>
+<span id="cb113-20"><a href="portfolio-estimation.html#cb113-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb113-21"><a href="portfolio-estimation.html#cb113-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Compute trade-off curve</span></span>
+<span id="cb113-22"><a href="portfolio-estimation.html#cb113-22" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="fu">seq_along</span>(gammas)) {</span>
+<span id="cb113-23"><a href="portfolio-estimation.html#cb113-23" aria-hidden="true" tabindex="-1"></a>    gamma <span class="ot">&lt;-</span> gammas[i]</span>
+<span id="cb113-24"><a href="portfolio-estimation.html#cb113-24" aria-hidden="true" tabindex="-1"></a>    objective <span class="ot">&lt;-</span> ret <span class="sc">-</span> gamma <span class="sc">*</span> risk</span>
+<span id="cb113-25"><a href="portfolio-estimation.html#cb113-25" aria-hidden="true" tabindex="-1"></a>    prob <span class="ot">&lt;-</span> <span class="fu">Problem</span>(<span class="fu">Maximize</span>(objective), constraints)</span>
+<span id="cb113-26"><a href="portfolio-estimation.html#cb113-26" aria-hidden="true" tabindex="-1"></a>    result <span class="ot">&lt;-</span> <span class="fu">solve</span>(prob)</span>
+<span id="cb113-27"><a href="portfolio-estimation.html#cb113-27" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb113-28"><a href="portfolio-estimation.html#cb113-28" aria-hidden="true" tabindex="-1"></a>    <span class="do">## Evaluate risk/return for current solution</span></span>
+<span id="cb113-29"><a href="portfolio-estimation.html#cb113-29" aria-hidden="true" tabindex="-1"></a>    risk_data[i] <span class="ot">&lt;-</span> result<span class="sc">$</span><span class="fu">getValue</span>(<span class="fu">sqrt</span>(risk))</span>
+<span id="cb113-30"><a href="portfolio-estimation.html#cb113-30" aria-hidden="true" tabindex="-1"></a>    ret_data[i] <span class="ot">&lt;-</span> result<span class="sc">$</span><span class="fu">getValue</span>(ret)</span>
+<span id="cb113-31"><a href="portfolio-estimation.html#cb113-31" aria-hidden="true" tabindex="-1"></a>    w_data[i,] <span class="ot">&lt;-</span> result<span class="sc">$</span><span class="fu">getValue</span>(w)</span>
+<span id="cb113-32"><a href="portfolio-estimation.html#cb113-32" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <p>Note how we obtain the risk and return by <em>directly evaluating</em>
 the value of the separate expressions:</p>
-<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb109-1" title="1">result<span class="op">$</span><span class="kw">getValue</span>(risk)</a>
-<a class="sourceLine" id="cb109-2" title="2">result<span class="op">$</span><span class="kw">getValue</span>(ret)</a></code></pre></div>
+<div class="sourceCode" id="cb114"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb114-1"><a href="portfolio-estimation.html#cb114-1" aria-hidden="true" tabindex="-1"></a>result<span class="sc">$</span><span class="fu">getValue</span>(risk)</span>
+<span id="cb114-2"><a href="portfolio-estimation.html#cb114-2" aria-hidden="true" tabindex="-1"></a>result<span class="sc">$</span><span class="fu">getValue</span>(ret)</span></code></pre></div>
 <p>The trade-off curve is shown below. The <span class="math inline">\(x\)</span>-axis represents the standard
 deviation of the return. Red points indicate the result from investing
 the entire budget in a single asset. As <span class="math inline">\(\gamma\)</span> increases, our
 portfolio becomes more diverse, reducing risk but also yielding a
 lower return.</p>
-<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb110-1" title="1">cbPalette &lt;-<span class="st"> </span><span class="kw">brewer.pal</span>(<span class="dt">n =</span> <span class="dv">10</span>, <span class="dt">name =</span> <span class="st">&quot;Paired&quot;</span>)</a>
-<a class="sourceLine" id="cb110-2" title="2">p1 &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb110-3" title="3"><span class="st">    </span><span class="kw">geom_line</span>(<span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> risk_data, <span class="dt">y =</span> ret_data), <span class="dt">color =</span> <span class="st">&quot;blue&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb110-4" title="4"><span class="st">    </span><span class="kw">geom_point</span>(<span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> <span class="kw">sqrt</span>(<span class="kw">diag</span>(Sigma)), <span class="dt">y =</span> mu), <span class="dt">color =</span> <span class="st">&quot;red&quot;</span>)</a>
-<a class="sourceLine" id="cb110-5" title="5"></a>
-<a class="sourceLine" id="cb110-6" title="6">markers_on &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">30</span>, <span class="dv">40</span>)</a>
-<a class="sourceLine" id="cb110-7" title="7">nstr &lt;-<span class="st"> </span><span class="kw">sprintf</span>(<span class="st">&quot;gamma == %.2f&quot;</span>, gammas[markers_on])</a>
-<a class="sourceLine" id="cb110-8" title="8">df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">markers =</span>  markers_on, <span class="dt">x =</span> risk_data[markers_on],</a>
-<a class="sourceLine" id="cb110-9" title="9">                 <span class="dt">y =</span> ret_data[markers_on], <span class="dt">labels =</span> nstr)</a>
-<a class="sourceLine" id="cb110-10" title="10"></a>
-<a class="sourceLine" id="cb110-11" title="11">p1 <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>(<span class="dt">data =</span> df, <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y), <span class="dt">color =</span> <span class="st">&quot;black&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb110-12" title="12"><span class="st">    </span><span class="kw">annotate</span>(<span class="st">&quot;text&quot;</span>, <span class="dt">x =</span> df<span class="op">$</span>x <span class="op">+</span><span class="st"> </span><span class="fl">0.2</span>, <span class="dt">y =</span> df<span class="op">$</span>y <span class="op">-</span><span class="st"> </span><span class="fl">0.05</span>, <span class="dt">label =</span> df<span class="op">$</span>labels, <span class="dt">parse =</span> <span class="ot">TRUE</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb110-13" title="13"><span class="st">    </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Risk (Standard Deviation)&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Return&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="portfolio-estimation.html#cb115-1" aria-hidden="true" tabindex="-1"></a>cbPalette <span class="ot">&lt;-</span> <span class="fu">brewer.pal</span>(<span class="at">n =</span> <span class="dv">10</span>, <span class="at">name =</span> <span class="st">&quot;Paired&quot;</span>)</span>
+<span id="cb115-2"><a href="portfolio-estimation.html#cb115-2" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb115-3"><a href="portfolio-estimation.html#cb115-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> risk_data, <span class="at">y =</span> ret_data), <span class="at">color =</span> <span class="st">&quot;blue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb115-4"><a href="portfolio-estimation.html#cb115-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">sqrt</span>(<span class="fu">diag</span>(Sigma)), <span class="at">y =</span> mu), <span class="at">color =</span> <span class="st">&quot;red&quot;</span>)</span>
+<span id="cb115-5"><a href="portfolio-estimation.html#cb115-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb115-6"><a href="portfolio-estimation.html#cb115-6" aria-hidden="true" tabindex="-1"></a>markers_on <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">30</span>, <span class="dv">40</span>)</span>
+<span id="cb115-7"><a href="portfolio-estimation.html#cb115-7" aria-hidden="true" tabindex="-1"></a>nstr <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(<span class="st">&quot;gamma == %.2f&quot;</span>, gammas[markers_on])</span>
+<span id="cb115-8"><a href="portfolio-estimation.html#cb115-8" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">markers =</span>  markers_on, <span class="at">x =</span> risk_data[markers_on],</span>
+<span id="cb115-9"><a href="portfolio-estimation.html#cb115-9" aria-hidden="true" tabindex="-1"></a>                 <span class="at">y =</span> ret_data[markers_on], <span class="at">labels =</span> nstr)</span>
+<span id="cb115-10"><a href="portfolio-estimation.html#cb115-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb115-11"><a href="portfolio-estimation.html#cb115-11" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">data =</span> df, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">color =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span></span>
+<span id="cb115-12"><a href="portfolio-estimation.html#cb115-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">annotate</span>(<span class="st">&quot;text&quot;</span>, <span class="at">x =</span> df<span class="sc">$</span>x <span class="sc">+</span> <span class="fl">0.2</span>, <span class="at">y =</span> df<span class="sc">$</span>y <span class="sc">-</span> <span class="fl">0.05</span>, <span class="at">label =</span> df<span class="sc">$</span>labels, <span class="at">parse =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb115-13"><a href="portfolio-estimation.html#cb115-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Risk (Standard Deviation)&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Return&quot;</span>)</span></code></pre></div>
 <p><img src="cvxr_tutorial_files/figure-html/unnamed-chunk-122-1.png" width="672" /></p>
 <p>We can also plot the fraction of budget invested in each asset.</p>
-<div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb111-1" title="1">w_df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">paste0</span>(<span class="st">&quot;grp&quot;</span>, <span class="kw">seq_len</span>(<span class="kw">ncol</span>(w_data))),</a>
-<a class="sourceLine" id="cb111-2" title="2">                   <span class="kw">t</span>(w_data[markers_on,]))</a>
-<a class="sourceLine" id="cb111-3" title="3"><span class="kw">names</span>(w_df) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;grp&quot;</span>, <span class="kw">sprintf</span>(<span class="st">&quot;gamma == %.2f&quot;</span>, gammas[markers_on]))</a>
-<a class="sourceLine" id="cb111-4" title="4">tidyW &lt;-<span class="st"> </span><span class="kw">gather</span>(w_df, <span class="dt">key =</span> <span class="st">&quot;gamma&quot;</span>, <span class="dt">value =</span> <span class="st">&quot;fraction&quot;</span>, <span class="kw">names</span>(w_df)[<span class="op">-</span><span class="dv">1</span>], <span class="dt">factor_key =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb111-5" title="5"><span class="kw">ggplot</span>(<span class="dt">data =</span> tidyW, <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> gamma, <span class="dt">y =</span> fraction)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb111-6" title="6"><span class="st">    </span><span class="kw">geom_bar</span>(<span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">fill =</span> grp), <span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb111-7" title="7"><span class="st">    </span><span class="kw">scale_x_discrete</span>(<span class="dt">labels =</span> <span class="kw">parse</span>(<span class="dt">text =</span> <span class="kw">levels</span>(tidyW<span class="op">$</span>gamma))) <span class="op">+</span></a>
-<a class="sourceLine" id="cb111-8" title="8"><span class="st">    </span><span class="kw">scale_fill_manual</span>(<span class="dt">values =</span> cbPalette) <span class="op">+</span></a>
-<a class="sourceLine" id="cb111-9" title="9"><span class="st">    </span><span class="kw">guides</span>(<span class="dt">fill =</span> <span class="ot">FALSE</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb111-10" title="10"><span class="st">    </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Risk Aversion&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Fraction of Budget&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="portfolio-estimation.html#cb116-1" aria-hidden="true" tabindex="-1"></a>w_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">paste0</span>(<span class="st">&quot;grp&quot;</span>, <span class="fu">seq_len</span>(<span class="fu">ncol</span>(w_data))),</span>
+<span id="cb116-2"><a href="portfolio-estimation.html#cb116-2" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">t</span>(w_data[markers_on,]))</span>
+<span id="cb116-3"><a href="portfolio-estimation.html#cb116-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(w_df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;grp&quot;</span>, <span class="fu">sprintf</span>(<span class="st">&quot;gamma == %.2f&quot;</span>, gammas[markers_on]))</span>
+<span id="cb116-4"><a href="portfolio-estimation.html#cb116-4" aria-hidden="true" tabindex="-1"></a>tidyW <span class="ot">&lt;-</span> <span class="fu">gather</span>(w_df, <span class="at">key =</span> <span class="st">&quot;gamma&quot;</span>, <span class="at">value =</span> <span class="st">&quot;fraction&quot;</span>, <span class="fu">names</span>(w_df)[<span class="sc">-</span><span class="dv">1</span>], <span class="at">factor_key =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb116-5"><a href="portfolio-estimation.html#cb116-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> tidyW, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> gamma, <span class="at">y =</span> fraction)) <span class="sc">+</span></span>
+<span id="cb116-6"><a href="portfolio-estimation.html#cb116-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">fill =</span> grp), <span class="at">stat =</span> <span class="st">&quot;identity&quot;</span>) <span class="sc">+</span></span>
+<span id="cb116-7"><a href="portfolio-estimation.html#cb116-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_x_discrete</span>(<span class="at">labels =</span> <span class="fu">parse</span>(<span class="at">text =</span> <span class="fu">levels</span>(tidyW<span class="sc">$</span>gamma))) <span class="sc">+</span></span>
+<span id="cb116-8"><a href="portfolio-estimation.html#cb116-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> cbPalette) <span class="sc">+</span></span>
+<span id="cb116-9"><a href="portfolio-estimation.html#cb116-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">guides</span>(<span class="at">fill =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb116-10"><a href="portfolio-estimation.html#cb116-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Risk Aversion&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Fraction of Budget&quot;</span>)</span></code></pre></div>
+<pre><code>## Warning: `guides(&lt;scale&gt; = FALSE)` is deprecated. Please use `guides(&lt;scale&gt; = &quot;none&quot;)` instead.</code></pre>
 <p><img src="cvxr_tutorial_files/figure-html/unnamed-chunk-123-1.png" width="672" /></p>
 </div>
-<div id="discussion" class="section level2">
+<div id="discussion" class="section level2" number="16.4">
 <h2><span class="header-section-number">16.4</span> Discussion</h2>
 <p>Many variations on the classical portfolio problem exist. For
 instance, we could allow long and short positions, but impose a
 leverage limit <span class="math inline">\(\|w\|_1 \leq L^{max}\)</span> by changing</p>
-<div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb112-1" title="1">constr &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">p_norm</span>(w,<span class="dv">1</span>) <span class="op">&lt;=</span><span class="st"> </span>Lmax, <span class="kw">sum</span>(w) <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="portfolio-estimation.html#cb118-1" aria-hidden="true" tabindex="-1"></a>constr <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="fu">p_norm</span>(w,<span class="dv">1</span>) <span class="sc">&lt;=</span> Lmax, <span class="fu">sum</span>(w) <span class="sc">==</span> <span class="dv">1</span>)</span></code></pre></div>
 <p>An alternative is to set a lower bound on the return and minimize just
 the risk. To account for transaction costs, we could add a term to the
 objective that penalizes deviations of <span class="math inline">\(w\)</span> from the previous
 portfolio. These extensions and more are described in
-<span class="citation">Boyd et al. (<a href="#ref-BoydBusseti:2017" role="doc-biblioref">2017</a>)</span>. The key takeaway is that all of these convex
+<span class="citation"><a href="#ref-BoydBusseti:2017" role="doc-biblioref">Boyd et al.</a> (<a href="#ref-BoydBusseti:2017" role="doc-biblioref">2017</a>)</span>. The key takeaway is that all of these convex
 problems can be easily solved in <code>CVXR</code> with just a few alterations
 to the code above.</p>
 </div>
-<div id="references-6" class="section level2">
+<div id="references-6" class="section level2" number="16.5">
 <h2><span class="header-section-number">16.5</span> References</h2>
 
 </div>
 </div>
 <h3>References</h3>
-<div id="refs" class="references">
-<div id="ref-BoydBusseti:2017">
-<p>Boyd, S., E. Busseti, S. Diamond, R. N. Kahn, K. Koh, P. Nystrup, and J. Speth. 2017. “Multi-Period Trading via Convex Optimization.” <em>Foundations and Trends in Optimization</em>.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-BoydBusseti:2017" class="csl-entry">
+Boyd, S., E. Busseti, S. Diamond, R. N. Kahn, K. Koh, P. Nystrup, and J. Speth. 2017. <span>“Multi-Period Trading via Convex Optimization.”</span> <em>Foundations and Trends in Optimization</em>.
 </div>
-<div id="ref-LoboFazelBoyd:2007">
-<p>Lobo, M. S., M. Fazel, and S. Boyd. 2007. “Portfolio Optimization with Linear and Fixed Transaction Costs.” <em>Annals of Operations Research</em> 152 (1): 341–65.</p>
+<div id="ref-LoboFazelBoyd:2007" class="csl-entry">
+Lobo, M. S., M. Fazel, and S. Boyd. 2007. <span>“Portfolio Optimization with Linear and Fixed Transaction Costs.”</span> <em>Annals of Operations Research</em> 152 (1): 341–65.
 </div>
-<div id="ref-Markowitz:1952">
-<p>Markowitz, H. M. 1952. “Portfolio Selection.” <em>Journal of Finance</em> 7 (1): 77–91.</p>
+<div id="ref-Markowitz:1952" class="csl-entry">
+Markowitz, H. M. 1952. <span>“Portfolio Selection.”</span> <em>Journal of Finance</em> 7 (1): 77–91.
 </div>
-<div id="ref-Roy:1952">
-<p>Roy, A. D. 1952. “Safety First and the Holding of Assets.” <em>Econometrica</em> 20 (3): 431–49.</p>
+<div id="ref-Roy:1952" class="csl-entry">
+Roy, A. D. 1952. <span>“Safety First and the Holding of Assets.”</span> <em>Econometrica</em> 20 (3): 431–49.
 </div>
 </div>
             </section>
@@ -494,6 +555,7 @@ gitbook.start({
 "weibo": false,
 "instapaper": false,
 "vk": false,
+"whatsapp": false,
 "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
 },
 "fontsettings": {
