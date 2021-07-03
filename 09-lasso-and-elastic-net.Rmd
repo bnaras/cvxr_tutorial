@@ -132,6 +132,8 @@ _I'm attempting to match some simple results in R using `glmnet` and
 ```{r}
 library(glmnet)
 data(QuickStartExample)
+x <- QuickStartExample$x
+y <- QuickStartExample$y
 catn <- function(...) cat(..., "\n")
 objective_value <- function(y, x, coefs, lambda, alpha) {
     n <- nrow(x)
