@@ -632,75 +632,6 @@ neariso_fit_stat <- function(data, index, lambda) {
 ## )
 
 
-## ----prereqs, message = FALSE, echo = FALSE------------------------------
-library(profvis)
-
-
-## ------------------------------------------------------------------------
-data(cdiac)
-y <- cdiac$annual
-m <- length(y)
-lambda <- 0.44
-beta <- Variable(m)
-obj <- 0.5 * sum((y - beta)^2) + lambda * sum(pos(diff(beta)))
-prob <- Problem(Minimize(obj))
-soln <- solve(prob)
-betaHat <- soln$getValue(beta)
-
-
-## ------------------------------------------------------------------------
-data(cdiac)
-y <- cdiac$annual
-profvis({
-    beta <- Variable(m)
-    obj <- Minimize(0.5 * sum((y - beta)^2) + lambda * sum(pos(diff(beta))))
-    prob <- Problem(obj)
-    soln <- solve(prob)
-    betaHat <- soln$getValue(beta)
-})
-
-
-## ------------------------------------------------------------------------
-prob_data <- get_problem_data(prob, solver = "ECOS")
-
-
-## ---- eval = FALSE-------------------------------------------------------
-## soln <- solve(prob, verbose = TRUE)
-
-
-## ------------------------------------------------------------------------
-solver_output <- ECOSolveR::ECOS_csolve(c = prob_data[["c"]],
-                                        G = prob_data[["G"]],
-                                        h = prob_data[["h"]],
-                                        dims = prob_data[["dims"]],
-                                        A = prob_data[["A"]],
-                                        b = prob_data[["b"]])
-
-
-## ------------------------------------------------------------------------
-direct_soln <- unpack_results(prob, "ECOS", solver_output)
-
-
-## ------------------------------------------------------------------------
-profvis({
-    beta <- Variable(m)
-    obj <- Minimize(0.5 * sum((y - beta)^2) + lambda * sum(pos(diff(beta))))
-    prob <- Problem(obj)
-    prob_data <- get_problem_data(prob, solver = "ECOS")
-    solver_output <- ECOSolveR::ECOS_csolve(c = prob_data[["c"]],
-                                            G = prob_data[["G"]],
-                                            h = prob_data[["h"]],
-                                            dims = prob_data[["dims"]],
-                                            A = prob_data[["A"]],
-                                            b = prob_data[["b"]])
-    direct_soln <- unpack_results(prob, "ECOS", solver_output)
-})
-
-
-## ------------------------------------------------------------------------
-identical(betaHat, direct_soln$getValue(beta))
-
-
 ## ------------------------------------------------------------------------
 ## Simulation data.
 set.seed(123)
@@ -1080,7 +1011,7 @@ Q <- cov(x_sample)    ## Sample covariance matrix
 
 ## ------------------------------------------------------------------------
 alphas <- c(10, 8, 6, 4, 1)
-S <- Semidef(n)    ## Variable constrained to positive semidefinite cone
+S <- Variable(n, n, PSD = TRUE)    ## Variable constrained to positive semidefinite cone
 obj <- Maximize(log_det(S) - matrix_trace(S %*% Q))
 
 S.est <- lapply(alphas,

@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<html lang="" xml:lang="">
 <head>
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 14 Survey Calibration | Disciplined Convex Optimization in R</title>
   <meta name="description" content="Chapter 14 Survey Calibration | Disciplined Convex Optimization in R" />
-  <meta name="generator" content="bookdown 0.16 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 14 Survey Calibration | Disciplined Convex Optimization in R" />
   <meta property="og:type" content="book" />
@@ -24,7 +24,7 @@
 <meta name="author" content="Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd" />
 
 
-<meta name="date" content="2020-02-05" />
+<meta name="date" content="2021-07-18" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,6 +33,7 @@
   
 <link rel="prev" href="pliable-lasso.html"/>
 <link rel="next" href="sparse-inverse-covariance-estimation.html"/>
+<script src="libs/header-attrs-2.9/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -50,7 +51,10 @@
 
 
 
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 <script>
   // Added visibility option for solution (naras@stat)
   $(document).ready(function () {
@@ -77,26 +81,29 @@
 </script>
 
 
+
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -105,9 +112,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -140,6 +147,29 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
 <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
 
@@ -156,39 +186,48 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="./">Disciplined Convex Optimization in R</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
+<ul>
 <li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#convex-problems-in-statistics-machine-learning"><i class="fa fa-check"></i><b>1.1</b> Convex Problems in Statistics, Machine Learning</a></li>
 <li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#non-convex-problems"><i class="fa fa-check"></i><b>1.2</b> Non-convex Problems</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="getting-started.html"><a href="getting-started.html"><i class="fa fa-check"></i><b>2</b> Getting Started</a><ul>
-<li class="chapter" data-level="2.1" data-path="getting-started.html"><a href="getting-started.html#solver-prerequisites"><i class="fa fa-check"></i><b>2.1</b> Solver Prerequisites</a><ul>
+<li class="chapter" data-level="2" data-path="getting-started.html"><a href="getting-started.html"><i class="fa fa-check"></i><b>2</b> Getting Started</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="getting-started.html"><a href="getting-started.html#solver-prerequisites"><i class="fa fa-check"></i><b>2.1</b> Solver Prerequisites</a>
+<ul>
 <li class="chapter" data-level="2.1.1" data-path="getting-started.html"><a href="getting-started.html#mosek"><i class="fa fa-check"></i><b>2.1.1</b> MOSEK</a></li>
 <li class="chapter" data-level="2.1.2" data-path="getting-started.html"><a href="getting-started.html#gurobi"><i class="fa fa-check"></i><b>2.1.2</b> GUROBI</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="types-of-convex-optimization-problems.html"><a href="types-of-convex-optimization-problems.html"><i class="fa fa-check"></i><b>3</b> Types of Convex Optimization Problems</a><ul>
+<li class="chapter" data-level="3" data-path="types-of-convex-optimization-problems.html"><a href="types-of-convex-optimization-problems.html"><i class="fa fa-check"></i><b>3</b> Types of Convex Optimization Problems</a>
+<ul>
 <li class="chapter" data-level="3.1" data-path="types-of-convex-optimization-problems.html"><a href="types-of-convex-optimization-problems.html#linear-programs"><i class="fa fa-check"></i><b>3.1</b> Linear Programs</a></li>
 <li class="chapter" data-level="3.2" data-path="types-of-convex-optimization-problems.html"><a href="types-of-convex-optimization-problems.html#quadratic-programs"><i class="fa fa-check"></i><b>3.2</b> Quadratic Programs</a></li>
 <li class="chapter" data-level="3.3" data-path="types-of-convex-optimization-problems.html"><a href="types-of-convex-optimization-problems.html#cone-programs"><i class="fa fa-check"></i><b>3.3</b> Cone Programs</a></li>
 <li class="chapter" data-level="3.4" data-path="types-of-convex-optimization-problems.html"><a href="types-of-convex-optimization-problems.html#integer-and-mixed-integer-programs"><i class="fa fa-check"></i><b>3.4</b> Integer and Mixed Integer Programs</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="solving-convex-problems.html"><a href="solving-convex-problems.html"><i class="fa fa-check"></i><b>4</b> Solving Convex Problems</a><ul>
+<li class="chapter" data-level="4" data-path="solving-convex-problems.html"><a href="solving-convex-problems.html"><i class="fa fa-check"></i><b>4</b> Solving Convex Problems</a>
+<ul>
 <li class="chapter" data-level="4.1" data-path="solving-convex-problems.html"><a href="solving-convex-problems.html#verifying-convexity"><i class="fa fa-check"></i><b>4.1</b> Verifying Convexity</a></li>
 <li class="chapter" data-level="4.2" data-path="solving-convex-problems.html"><a href="solving-convex-problems.html#domain-specific-languages-for-convex-optimization"><i class="fa fa-check"></i><b>4.2</b> Domain Specific Languages for Convex Optimization</a></li>
 <li class="chapter" data-level="4.3" data-path="solving-convex-problems.html"><a href="solving-convex-problems.html#references"><i class="fa fa-check"></i><b>4.3</b> References</a></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="disciplined-convex-programming.html"><a href="disciplined-convex-programming.html"><i class="fa fa-check"></i><b>5</b> Disciplined Convex Programming</a><ul>
+<li class="chapter" data-level="5" data-path="disciplined-convex-programming.html"><a href="disciplined-convex-programming.html"><i class="fa fa-check"></i><b>5</b> Disciplined Convex Programming</a>
+<ul>
 <li class="chapter" data-level="5.1" data-path="disciplined-convex-programming.html"><a href="disciplined-convex-programming.html#basic-convex-functions"><i class="fa fa-check"></i><b>5.1</b> Basic Convex Functions</a></li>
 <li class="chapter" data-level="5.2" data-path="disciplined-convex-programming.html"><a href="disciplined-convex-programming.html#calculus-rules"><i class="fa fa-check"></i><b>5.2</b> Calculus Rules</a></li>
 <li class="chapter" data-level="5.3" data-path="disciplined-convex-programming.html"><a href="disciplined-convex-programming.html#examples"><i class="fa fa-check"></i><b>5.3</b> Examples</a></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html"><i class="fa fa-check"></i><b>6</b> A Simple Regression Example</a><ul>
+<li class="chapter" data-level="6" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html"><i class="fa fa-check"></i><b>6</b> A Simple Regression Example</a>
+<ul>
 <li class="chapter" data-level="6.1" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#goals"><i class="fa fa-check"></i><b>6.1</b> Goals</a></li>
 <li class="chapter" data-level="6.2" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#ordinary-least-squares-regression"><i class="fa fa-check"></i><b>6.2</b> Ordinary Least-Squares Regression</a></li>
-<li class="chapter" data-level="6.3" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#the-cvxr-formulation"><i class="fa fa-check"></i><b>6.3</b> The <code>CVXR</code> Formulation</a><ul>
+<li class="chapter" data-level="6.3" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#the-cvxr-formulation"><i class="fa fa-check"></i><b>6.3</b> The <code>CVXR</code> Formulation</a>
+<ul>
 <li class="chapter" data-level="6.3.1" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#exercise"><i class="fa fa-check"></i><b>6.3.1</b> Exercise</a></li>
 </ul></li>
-<li class="chapter" data-level="6.4" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#adding-constraints"><i class="fa fa-check"></i><b>6.4</b> Adding Constraints</a><ul>
+<li class="chapter" data-level="6.4" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#adding-constraints"><i class="fa fa-check"></i><b>6.4</b> Adding Constraints</a>
+<ul>
 <li class="chapter" data-level="6.4.1" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#exercise-1"><i class="fa fa-check"></i><b>6.4.1</b> Exercise</a></li>
 <li class="chapter" data-level="6.4.2" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#exercise-2"><i class="fa fa-check"></i><b>6.4.2</b> Exercise</a></li>
 <li class="chapter" data-level="6.4.3" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#exercise-3"><i class="fa fa-check"></i><b>6.4.3</b> Exercise</a></li>
@@ -196,50 +235,62 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="6.5" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#summary"><i class="fa fa-check"></i><b>6.5</b> Summary</a></li>
 </ul></li>
-<li class="chapter" data-level="7" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html"><i class="fa fa-check"></i><b>7</b> How <code>CVXR</code> Works</a><ul>
+<li class="chapter" data-level="7" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html"><i class="fa fa-check"></i><b>7</b> How <code>CVXR</code> Works</a>
+<ul>
 <li class="chapter" data-level="7.1" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html#variables"><i class="fa fa-check"></i><b>7.1</b> Variables</a></li>
 <li class="chapter" data-level="7.2" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html#objectives-constraints-and-problems"><i class="fa fa-check"></i><b>7.2</b> Objectives, Constraints, and Problems</a></li>
 <li class="chapter" data-level="7.3" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html#solving-the-problem"><i class="fa fa-check"></i><b>7.3</b> Solving the Problem</a></li>
 <li class="chapter" data-level="7.4" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html#solver-options"><i class="fa fa-check"></i><b>7.4</b> Solver Options</a></li>
 </ul></li>
-<li class="chapter" data-level="8" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>8</b> Logistic Regression</a><ul>
+<li class="chapter" data-level="8" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>8</b> Logistic Regression</a>
+<ul>
 <li class="chapter" data-level="8.1" data-path="logistic-regression.html"><a href="logistic-regression.html#goals-1"><i class="fa fa-check"></i><b>8.1</b> Goals</a></li>
 <li class="chapter" data-level="8.2" data-path="logistic-regression.html"><a href="logistic-regression.html#logistic-regression-problem"><i class="fa fa-check"></i><b>8.2</b> Logistic Regression Problem</a></li>
 <li class="chapter" data-level="8.3" data-path="logistic-regression.html"><a href="logistic-regression.html#example"><i class="fa fa-check"></i><b>8.3</b> Example</a></li>
-<li class="chapter" data-level="8.4" data-path="logistic-regression.html"><a href="logistic-regression.html#exercise-5"><i class="fa fa-check"></i><b>8.4</b> Exercise</a><ul>
+<li class="chapter" data-level="8.4" data-path="logistic-regression.html"><a href="logistic-regression.html#exercise-5"><i class="fa fa-check"></i><b>8.4</b> Exercise</a>
+<ul>
 <li class="chapter" data-level="8.4.1" data-path="logistic-regression.html"><a href="logistic-regression.html#solution-5"><i class="fa fa-check"></i><b>8.4.1</b> Solution</a></li>
 </ul></li>
 <li class="chapter" data-level="8.5" data-path="logistic-regression.html"><a href="logistic-regression.html#references-1"><i class="fa fa-check"></i><b>8.5</b> References</a></li>
 </ul></li>
-<li class="chapter" data-level="9" data-path="isotonic-regression.html"><a href="isotonic-regression.html"><i class="fa fa-check"></i><b>9</b> Isotonic Regression</a><ul>
+<li class="chapter" data-level="9" data-path="isotonic-regression.html"><a href="isotonic-regression.html"><i class="fa fa-check"></i><b>9</b> Isotonic Regression</a>
+<ul>
 <li class="chapter" data-level="9.1" data-path="isotonic-regression.html"><a href="isotonic-regression.html#goals-2"><i class="fa fa-check"></i><b>9.1</b> Goals</a></li>
-<li class="chapter" data-level="9.2" data-path="isotonic-regression.html"><a href="isotonic-regression.html#pituitary-data-example"><i class="fa fa-check"></i><b>9.2</b> Pituitary Data Example</a><ul>
+<li class="chapter" data-level="9.2" data-path="isotonic-regression.html"><a href="isotonic-regression.html#pituitary-data-example"><i class="fa fa-check"></i><b>9.2</b> Pituitary Data Example</a>
+<ul>
 <li class="chapter" data-level="9.2.1" data-path="isotonic-regression.html"><a href="isotonic-regression.html#exercise-6"><i class="fa fa-check"></i><b>9.2.1</b> Exercise</a></li>
 </ul></li>
-<li class="chapter" data-level="9.3" data-path="isotonic-regression.html"><a href="isotonic-regression.html#handling-ties"><i class="fa fa-check"></i><b>9.3</b> Handling Ties</a><ul>
+<li class="chapter" data-level="9.3" data-path="isotonic-regression.html"><a href="isotonic-regression.html#handling-ties"><i class="fa fa-check"></i><b>9.3</b> Handling Ties</a>
+<ul>
 <li class="chapter" data-level="9.3.1" data-path="isotonic-regression.html"><a href="isotonic-regression.html#exercise-7"><i class="fa fa-check"></i><b>9.3.1</b> Exercise</a></li>
 <li class="chapter" data-level="9.3.2" data-path="isotonic-regression.html"><a href="isotonic-regression.html#exercise-8"><i class="fa fa-check"></i><b>9.3.2</b> Exercise</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="10" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html"><i class="fa fa-check"></i><b>10</b> Lasso and Elastic Net</a><ul>
+<li class="chapter" data-level="10" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html"><i class="fa fa-check"></i><b>10</b> Lasso and Elastic Net</a>
+<ul>
 <li class="chapter" data-level="10.1" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html#goals-3"><i class="fa fa-check"></i><b>10.1</b> Goals</a></li>
-<li class="chapter" data-level="10.2" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html#regularized-regression"><i class="fa fa-check"></i><b>10.2</b> Regularized Regression</a><ul>
+<li class="chapter" data-level="10.2" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html#regularized-regression"><i class="fa fa-check"></i><b>10.2</b> Regularized Regression</a>
+<ul>
 <li class="chapter" data-level="10.2.1" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html#exercise-9"><i class="fa fa-check"></i><b>10.2.1</b> Exercise</a></li>
 <li class="chapter" data-level="10.2.2" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html#exercise-10"><i class="fa fa-check"></i><b>10.2.2</b> Exercise</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="11" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html"><i class="fa fa-check"></i><b>11</b> Nearly Isotonic Fits</a><ul>
+<li class="chapter" data-level="11" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html"><i class="fa fa-check"></i><b>11</b> Nearly Isotonic Fits</a>
+<ul>
 <li class="chapter" data-level="11.1" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html#goals-4"><i class="fa fa-check"></i><b>11.1</b> Goals</a></li>
-<li class="chapter" data-level="11.2" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html#global-warming-example"><i class="fa fa-check"></i><b>11.2</b> Global Warming Example</a><ul>
+<li class="chapter" data-level="11.2" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html#global-warming-example"><i class="fa fa-check"></i><b>11.2</b> Global Warming Example</a>
+<ul>
 <li class="chapter" data-level="11.2.1" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html#exercise-11"><i class="fa fa-check"></i><b>11.2.1</b> Exercise</a></li>
 </ul></li>
 <li class="chapter" data-level="11.3" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html#references-2"><i class="fa fa-check"></i><b>11.3</b> References</a></li>
 </ul></li>
 <li class="chapter" data-level="12" data-path="speed-considerations.html"><a href="speed-considerations.html"><i class="fa fa-check"></i><b>12</b> Speed Considerations</a></li>
-<li class="chapter" data-level="13" data-path="pliable-lasso.html"><a href="pliable-lasso.html"><i class="fa fa-check"></i><b>13</b> Pliable Lasso</a><ul>
+<li class="chapter" data-level="13" data-path="pliable-lasso.html"><a href="pliable-lasso.html"><i class="fa fa-check"></i><b>13</b> Pliable Lasso</a>
+<ul>
 <li class="chapter" data-level="13.1" data-path="pliable-lasso.html"><a href="pliable-lasso.html#goals-5"><i class="fa fa-check"></i><b>13.1</b> Goals</a></li>
 <li class="chapter" data-level="13.2" data-path="pliable-lasso.html"><a href="pliable-lasso.html#pliable-lasso-problem"><i class="fa fa-check"></i><b>13.2</b> Pliable Lasso Problem</a></li>
-<li class="chapter" data-level="13.3" data-path="pliable-lasso.html"><a href="pliable-lasso.html#example-1"><i class="fa fa-check"></i><b>13.3</b> Example</a><ul>
+<li class="chapter" data-level="13.3" data-path="pliable-lasso.html"><a href="pliable-lasso.html#example-1"><i class="fa fa-check"></i><b>13.3</b> Example</a>
+<ul>
 <li class="chapter" data-level="13.3.1" data-path="pliable-lasso.html"><a href="pliable-lasso.html#parameters"><i class="fa fa-check"></i><b>13.3.1</b> Parameters</a></li>
 <li class="chapter" data-level="13.3.2" data-path="pliable-lasso.html"><a href="pliable-lasso.html#penalty-terms"><i class="fa fa-check"></i><b>13.3.2</b> Penalty Terms</a></li>
 <li class="chapter" data-level="13.3.3" data-path="pliable-lasso.html"><a href="pliable-lasso.html#fitted-value"><i class="fa fa-check"></i><b>13.3.3</b> Fitted Value</a></li>
@@ -252,10 +303,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="13.6" data-path="pliable-lasso.html"><a href="pliable-lasso.html#final-comments"><i class="fa fa-check"></i><b>13.6</b> Final Comments</a></li>
 <li class="chapter" data-level="13.7" data-path="pliable-lasso.html"><a href="pliable-lasso.html#references-3"><i class="fa fa-check"></i><b>13.7</b> References</a></li>
 </ul></li>
-<li class="chapter" data-level="14" data-path="survey-calibration.html"><a href="survey-calibration.html"><i class="fa fa-check"></i><b>14</b> Survey Calibration</a><ul>
+<li class="chapter" data-level="14" data-path="survey-calibration.html"><a href="survey-calibration.html"><i class="fa fa-check"></i><b>14</b> Survey Calibration</a>
+<ul>
 <li class="chapter" data-level="14.1" data-path="survey-calibration.html"><a href="survey-calibration.html#goals-6"><i class="fa fa-check"></i><b>14.1</b> Goals</a></li>
 <li class="chapter" data-level="14.2" data-path="survey-calibration.html"><a href="survey-calibration.html#survey-calibration-problem"><i class="fa fa-check"></i><b>14.2</b> Survey Calibration Problem</a></li>
-<li class="chapter" data-level="14.3" data-path="survey-calibration.html"><a href="survey-calibration.html#raking"><i class="fa fa-check"></i><b>14.3</b> Raking</a><ul>
+<li class="chapter" data-level="14.3" data-path="survey-calibration.html"><a href="survey-calibration.html#raking"><i class="fa fa-check"></i><b>14.3</b> Raking</a>
+<ul>
 <li class="chapter" data-level="14.3.1" data-path="survey-calibration.html"><a href="survey-calibration.html#exercise-12"><i class="fa fa-check"></i><b>14.3.1</b> Exercise</a></li>
 <li class="chapter" data-level="14.3.2" data-path="survey-calibration.html"><a href="survey-calibration.html#exercise-13"><i class="fa fa-check"></i><b>14.3.2</b> Exercise</a></li>
 <li class="chapter" data-level="14.3.3" data-path="survey-calibration.html"><a href="survey-calibration.html#solution-13"><i class="fa fa-check"></i><b>14.3.3</b> Solution</a></li>
@@ -264,24 +317,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="14.4" data-path="survey-calibration.html"><a href="survey-calibration.html#references-4"><i class="fa fa-check"></i><b>14.4</b> References</a></li>
 </ul></li>
-<li class="chapter" data-level="15" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html"><i class="fa fa-check"></i><b>15</b> Sparse Inverse Covariance Estimation</a><ul>
+<li class="chapter" data-level="15" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html"><i class="fa fa-check"></i><b>15</b> Sparse Inverse Covariance Estimation</a>
+<ul>
 <li class="chapter" data-level="15.1" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#goals-7"><i class="fa fa-check"></i><b>15.1</b> Goals</a></li>
 <li class="chapter" data-level="15.2" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#sparse-inverse-covariance-problem"><i class="fa fa-check"></i><b>15.2</b> Sparse Inverse Covariance Problem</a></li>
 <li class="chapter" data-level="15.3" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#example-2"><i class="fa fa-check"></i><b>15.3</b> Example</a></li>
 <li class="chapter" data-level="15.4" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#results-1"><i class="fa fa-check"></i><b>15.4</b> Results</a></li>
 <li class="chapter" data-level="15.5" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#references-5"><i class="fa fa-check"></i><b>15.5</b> References</a></li>
 </ul></li>
-<li class="chapter" data-level="16" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html"><i class="fa fa-check"></i><b>16</b> Portfolio Estimation</a><ul>
+<li class="chapter" data-level="16" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html"><i class="fa fa-check"></i><b>16</b> Portfolio Estimation</a>
+<ul>
 <li class="chapter" data-level="16.1" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#goals-8"><i class="fa fa-check"></i><b>16.1</b> Goals</a></li>
 <li class="chapter" data-level="16.2" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#markowitz-portfolio-problem"><i class="fa fa-check"></i><b>16.2</b> Markowitz Portfolio Problem</a></li>
 <li class="chapter" data-level="16.3" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#example-3"><i class="fa fa-check"></i><b>16.3</b> Example</a></li>
 <li class="chapter" data-level="16.4" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#discussion"><i class="fa fa-check"></i><b>16.4</b> Discussion</a></li>
 <li class="chapter" data-level="16.5" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#references-6"><i class="fa fa-check"></i><b>16.5</b> References</a></li>
 </ul></li>
-<li class="chapter" data-level="17" data-path="using-other-solvers.html"><a href="using-other-solvers.html"><i class="fa fa-check"></i><b>17</b> Using Other Solvers</a><ul>
+<li class="chapter" data-level="17" data-path="using-other-solvers.html"><a href="using-other-solvers.html"><i class="fa fa-check"></i><b>17</b> Using Other Solvers</a>
+<ul>
 <li class="chapter" data-level="17.1" data-path="using-other-solvers.html"><a href="using-other-solvers.html#goals-9"><i class="fa fa-check"></i><b>17.1</b> Goals</a></li>
 <li class="chapter" data-level="17.2" data-path="using-other-solvers.html"><a href="using-other-solvers.html#default-solvers"><i class="fa fa-check"></i><b>17.2</b> Default Solvers</a></li>
-<li class="chapter" data-level="17.3" data-path="using-other-solvers.html"><a href="using-other-solvers.html#commercial-solvers"><i class="fa fa-check"></i><b>17.3</b> Commercial Solvers</a><ul>
+<li class="chapter" data-level="17.3" data-path="using-other-solvers.html"><a href="using-other-solvers.html#commercial-solvers"><i class="fa fa-check"></i><b>17.3</b> Commercial Solvers</a>
+<ul>
 <li class="chapter" data-level="17.3.1" data-path="using-other-solvers.html"><a href="using-other-solvers.html#installing-mosek"><i class="fa fa-check"></i><b>17.3.1</b> Installing <code>MOSEK</code></a></li>
 <li class="chapter" data-level="17.3.2" data-path="using-other-solvers.html"><a href="using-other-solvers.html#installing-gurobi"><i class="fa fa-check"></i><b>17.3.2</b> Installing <code>GUROBI</code></a></li>
 <li class="chapter" data-level="17.3.3" data-path="using-other-solvers.html"><a href="using-other-solvers.html#gotchas"><i class="fa fa-check"></i><b>17.3.3</b> Gotchas</a></li>
@@ -290,9 +347,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="17.4" data-path="using-other-solvers.html"><a href="using-other-solvers.html#solver-peculiarities"><i class="fa fa-check"></i><b>17.4</b> Solver Peculiarities</a></li>
 <li class="chapter" data-level="17.5" data-path="using-other-solvers.html"><a href="using-other-solvers.html#references-7"><i class="fa fa-check"></i><b>17.5</b> References</a></li>
 </ul></li>
-<li class="chapter" data-level="18" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html"><i class="fa fa-check"></i><b>18</b> The Structure of Atoms</a><ul>
+<li class="chapter" data-level="18" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html"><i class="fa fa-check"></i><b>18</b> The Structure of Atoms</a>
+<ul>
 <li class="chapter" data-level="18.1" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#definition"><i class="fa fa-check"></i><b>18.1</b> Definition</a></li>
-<li class="chapter" data-level="18.2" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#atom-properties"><i class="fa fa-check"></i><b>18.2</b> Atom Properties</a><ul>
+<li class="chapter" data-level="18.2" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#atom-properties"><i class="fa fa-check"></i><b>18.2</b> Atom Properties</a>
+<ul>
 <li class="chapter" data-level="18.2.1" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#mathematical-basics"><i class="fa fa-check"></i><b>18.2.1</b> Mathematical Basics</a></li>
 <li class="chapter" data-level="18.2.2" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#dimension-sign-and-curvature"><i class="fa fa-check"></i><b>18.2.2</b> Dimension, Sign, and Curvature</a></li>
 <li class="chapter" data-level="18.2.3" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#additional-characteristics"><i class="fa fa-check"></i><b>18.2.3</b> Additional Characteristics</a></li>
@@ -300,7 +359,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="18.3" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#canonicalization"><i class="fa fa-check"></i><b>18.3</b> Canonicalization</a></li>
 <li class="chapter" data-level="18.4" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#putting-it-all-together"><i class="fa fa-check"></i><b>18.4</b> Putting It All Together</a></li>
 </ul></li>
-<li class="chapter" data-level="19" data-path="future-enhancements.html"><a href="future-enhancements.html"><i class="fa fa-check"></i><b>19</b> Future Enhancements</a><ul>
+<li class="chapter" data-level="19" data-path="future-enhancements.html"><a href="future-enhancements.html"><i class="fa fa-check"></i><b>19</b> Future Enhancements</a>
+<ul>
 <li class="chapter" data-level="19.1" data-path="future-enhancements.html"><a href="future-enhancements.html#version-1.0"><i class="fa fa-check"></i><b>19.1</b> Version 1.0</a></li>
 <li class="chapter" data-level="19.2" data-path="future-enhancements.html"><a href="future-enhancements.html#internal-changes"><i class="fa fa-check"></i><b>19.2</b> Internal Changes</a></li>
 </ul></li>
@@ -326,15 +386,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="survey-calibration" class="section level1">
+<div id="survey-calibration" class="section level1" number="14">
 <h1><span class="header-section-number">Chapter 14</span> Survey Calibration</h1>
-<div id="goals-6" class="section level2">
+<div id="goals-6" class="section level2" number="14.1">
 <h2><span class="header-section-number">14.1</span> Goals</h2>
 <ul>
 <li>Demonstrate different methods for calibrating data</li>
 </ul>
 </div>
-<div id="survey-calibration-problem" class="section level2">
+<div id="survey-calibration-problem" class="section level2" number="14.2">
 <h2><span class="header-section-number">14.2</span> Survey Calibration Problem</h2>
 <p>Calibration is a widely used technique in survey sampling. Suppose
 <span class="math inline">\(m\)</span> sampling units in a survey have been assigned initial weights
@@ -344,10 +404,10 @@ improve the initial weights <span class="math inline">\(d_i\)</span> by finding 
 incorporate this auxiliary information while perturbing the initial
 weights as little as possible, , the ratio <span class="math inline">\(g_i = w_i/d_i\)</span> must
 be close to one. Such reweighting improves precision of estimates
-(Chapter 7, <span class="citation">Lumley (<a href="#ref-Lumley:2010" role="doc-biblioref">2010</a>)</span>).</p>
+(Chapter 7, <span class="citation"><a href="#ref-Lumley:2010" role="doc-biblioref">T. S. Lumley</a> (<a href="#ref-Lumley:2010" role="doc-biblioref">2010</a>)</span>).</p>
 <p>Let <span class="math inline">\(X \in {\mathbf R}^{m \times n}\)</span> be the matrix of survey samples, with
 each column corresponding to an auxiliary variable. Reweighting can be
-expressed as the optimization problem (see <span class="citation">Davies, Gillard, and Zhigljavsky (<a href="#ref-Davies:2016" role="doc-biblioref">2016</a>)</span>):</p>
+expressed as the optimization problem (see <span class="citation"><a href="#ref-Davies:2016" role="doc-biblioref">Davies, Gillard, and Zhigljavsky</a> (<a href="#ref-Davies:2016" role="doc-biblioref">2016</a>)</span>):</p>
 <p><span class="math display">\[
     \begin{array}{ll}
         \mbox{minimize} &amp; \sum_{i=1}^m d_i\phi(g_i) \\
@@ -357,13 +417,13 @@ expressed as the optimization problem (see <span class="citation">Davies, Gillar
 <p>with respect to <span class="math inline">\(g \in {\mathbf R}^m\)</span>, where <span class="math inline">\(\phi:{\mathbf R} \rightarrow {\mathbf R}\)</span> is a strictly convex function with <span class="math inline">\(\phi(1) = 0\)</span>, <span class="math inline">\(r \in {\mathbf R}^n\)</span> are the known population totals of the auxiliary variables,
 and <span class="math inline">\(A \in {\mathbf R}^{m \times n}\)</span> is related to <span class="math inline">\(X\)</span> by <span class="math inline">\(A_{ij} = d_iX_{ij}\)</span> for <span class="math inline">\(i = 1,\ldots,m\)</span> and <span class="math inline">\(j = 1,\ldots,n\)</span>.</p>
 </div>
-<div id="raking" class="section level2">
+<div id="raking" class="section level2" number="14.3">
 <h2><span class="header-section-number">14.3</span> Raking</h2>
 <p>A common calibration technique is <em>raking</em>, which uses the penalty
 function <span class="math inline">\(\phi(g_i) = g_i\log(g_i) - g_i + 1\)</span> as the calibration
 metric.</p>
 <p>We illustrate this with the California Academic Performance Index data in
-the <code>survey</code> package (<span class="citation">Lumley (<a href="#ref-lumley:2018" role="doc-biblioref">2018</a>)</span>), which also supplies facilities for
+the <code>survey</code> package (<span class="citation"><a href="#ref-lumley:2018" role="doc-biblioref">T. Lumley</a> (<a href="#ref-lumley:2018" role="doc-biblioref">2018</a>)</span>), which also supplies facilities for
 calibration via the function <code>calibrate</code>. Both the population dataset
 (<code>apipop</code>) and a simple random sample of <span class="math inline">\(m = 200\)</span> (<code>apisrs</code>) are
 provided. Suppose that we wish to reweight the observations in the
@@ -372,29 +432,31 @@ sample using known totals for two variables from the population:
 whether the school met the yearly target or not. This reweighting
 would make the sample more representative of the general population.</p>
 <p>The code below estimates the weights using <code>survey::calibrate</code>.</p>
-<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb93-1" title="1"><span class="kw">data</span>(api)</a>
-<a class="sourceLine" id="cb93-2" title="2">design_api &lt;-<span class="st"> </span><span class="kw">svydesign</span>(<span class="dt">id =</span> <span class="op">~</span>dnum, <span class="dt">weights =</span> <span class="op">~</span>pw, <span class="dt">data =</span> apisrs)</a>
-<a class="sourceLine" id="cb93-3" title="3">formula &lt;-<span class="st"> </span><span class="er">~</span>stype <span class="op">+</span><span class="st"> </span>sch.wide</a>
-<a class="sourceLine" id="cb93-4" title="4">T &lt;-<span class="st"> </span><span class="kw">apply</span>(<span class="kw">model.matrix</span>(<span class="dt">object =</span> formula, <span class="dt">data =</span> apipop),</a>
-<a class="sourceLine" id="cb93-5" title="5">           <span class="dv">2</span>,</a>
-<a class="sourceLine" id="cb93-6" title="6">           sum)</a>
-<a class="sourceLine" id="cb93-7" title="7"></a>
-<a class="sourceLine" id="cb93-8" title="8">cal_api &lt;-<span class="st"> </span><span class="kw">calibrate</span>(design_api, formula, <span class="dt">population =</span> T, <span class="dt">calfun =</span> cal.raking)</a>
-<a class="sourceLine" id="cb93-9" title="9">w_survey &lt;-<span class="st"> </span><span class="kw">weights</span>(cal_api)</a></code></pre></div>
+<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb93-1"><a href="survey-calibration.html#cb93-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(api)</span>
+<span id="cb93-2"><a href="survey-calibration.html#cb93-2" aria-hidden="true" tabindex="-1"></a>design_api <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">id =</span> <span class="sc">~</span>dnum, <span class="at">weights =</span> <span class="sc">~</span>pw, <span class="at">data =</span> apisrs)</span>
+<span id="cb93-3"><a href="survey-calibration.html#cb93-3" aria-hidden="true" tabindex="-1"></a>formula <span class="ot">&lt;-</span> <span class="er">~</span>stype <span class="sc">+</span> sch.wide</span>
+<span id="cb93-4"><a href="survey-calibration.html#cb93-4" aria-hidden="true" tabindex="-1"></a>T <span class="ot">&lt;-</span> <span class="fu">apply</span>(<span class="fu">model.matrix</span>(<span class="at">object =</span> formula, <span class="at">data =</span> apipop),</span>
+<span id="cb93-5"><a href="survey-calibration.html#cb93-5" aria-hidden="true" tabindex="-1"></a>           <span class="dv">2</span>,</span>
+<span id="cb93-6"><a href="survey-calibration.html#cb93-6" aria-hidden="true" tabindex="-1"></a>           sum)</span>
+<span id="cb93-7"><a href="survey-calibration.html#cb93-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-8"><a href="survey-calibration.html#cb93-8" aria-hidden="true" tabindex="-1"></a>cal_api <span class="ot">&lt;-</span> <span class="fu">calibrate</span>(design_api, formula, <span class="at">population =</span> T, <span class="at">calfun =</span> cal.raking)</span>
+<span id="cb93-9"><a href="survey-calibration.html#cb93-9" aria-hidden="true" tabindex="-1"></a>w_survey <span class="ot">&lt;-</span> <span class="fu">weights</span>(cal_api)</span></code></pre></div>
 <p>The <code>CVXR</code> formulation follows.</p>
-<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb94-1" title="1">di &lt;-<span class="st"> </span>apisrs<span class="op">$</span>pw</a>
-<a class="sourceLine" id="cb94-2" title="2">X &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(<span class="dt">object =</span> formula, <span class="dt">data =</span> apisrs)</a>
-<a class="sourceLine" id="cb94-3" title="3">A &lt;-<span class="st"> </span>di <span class="op">*</span><span class="st"> </span>X</a>
-<a class="sourceLine" id="cb94-4" title="4">n &lt;-<span class="st"> </span><span class="kw">nrow</span>(apisrs)</a>
-<a class="sourceLine" id="cb94-5" title="5">g &lt;-<span class="st"> </span><span class="kw">Variable</span>(n)</a>
-<a class="sourceLine" id="cb94-6" title="6">constraints &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">t</span>(A) <span class="op">%*%</span><span class="st"> </span>g <span class="op">==</span><span class="st"> </span>T)</a>
-<a class="sourceLine" id="cb94-7" title="7"></a>
-<a class="sourceLine" id="cb94-8" title="8"><span class="co">## Raking</span></a>
-<a class="sourceLine" id="cb94-9" title="9">Phi_R &lt;-<span class="st"> </span><span class="kw">Minimize</span>(<span class="kw">sum</span>(di <span class="op">*</span><span class="st"> </span>(<span class="op">-</span><span class="kw">entr</span>(g) <span class="op">-</span><span class="st"> </span>g <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)))</a>
-<a class="sourceLine" id="cb94-10" title="10">p &lt;-<span class="st"> </span><span class="kw">Problem</span>(Phi_R, constraints)</a>
-<a class="sourceLine" id="cb94-11" title="11">res &lt;-<span class="st"> </span><span class="kw">solve</span>(p)</a>
-<a class="sourceLine" id="cb94-12" title="12">w_cvxr &lt;-<span class="st"> </span>di <span class="op">*</span><span class="st"> </span>res<span class="op">$</span><span class="kw">getValue</span>(g)</a></code></pre></div>
+<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="survey-calibration.html#cb94-1" aria-hidden="true" tabindex="-1"></a>di <span class="ot">&lt;-</span> apisrs<span class="sc">$</span>pw</span>
+<span id="cb94-2"><a href="survey-calibration.html#cb94-2" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="at">object =</span> formula, <span class="at">data =</span> apisrs)</span>
+<span id="cb94-3"><a href="survey-calibration.html#cb94-3" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> di <span class="sc">*</span> X</span>
+<span id="cb94-4"><a href="survey-calibration.html#cb94-4" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(apisrs)</span>
+<span id="cb94-5"><a href="survey-calibration.html#cb94-5" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">Variable</span>(n)</span>
+<span id="cb94-6"><a href="survey-calibration.html#cb94-6" aria-hidden="true" tabindex="-1"></a>constraints <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="fu">t</span>(A) <span class="sc">%*%</span> g <span class="sc">==</span> T)</span>
+<span id="cb94-7"><a href="survey-calibration.html#cb94-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb94-8"><a href="survey-calibration.html#cb94-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Raking</span></span>
+<span id="cb94-9"><a href="survey-calibration.html#cb94-9" aria-hidden="true" tabindex="-1"></a>Phi_R <span class="ot">&lt;-</span> <span class="fu">Minimize</span>(<span class="fu">sum</span>(di <span class="sc">*</span> (<span class="sc">-</span><span class="fu">entr</span>(g) <span class="sc">-</span> g <span class="sc">+</span> <span class="dv">1</span>)))</span>
+<span id="cb94-10"><a href="survey-calibration.html#cb94-10" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">Problem</span>(Phi_R, constraints)</span>
+<span id="cb94-11"><a href="survey-calibration.html#cb94-11" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">solve</span>(p)</span>
+<span id="cb94-12"><a href="survey-calibration.html#cb94-12" aria-hidden="true" tabindex="-1"></a>w_cvxr <span class="ot">&lt;-</span> di <span class="sc">*</span> res<span class="sc">$</span><span class="fu">getValue</span>(g)</span></code></pre></div>
 <p>The results are identical as shown in the table below.</p>
+<pre><code>## `summarise()` has grouped output by &#39;stype&#39;. You can override using the `.groups` argument.
+## `summarise()` has grouped output by &#39;stype&#39;. You can override using the `.groups` argument.</code></pre>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <caption>
 <span id="tab:unnamed-chunk-99">Table 14.1: </span>Calibration weights from Raking
@@ -544,7 +606,7 @@ Yes
 </tr>
 </tbody>
 </table>
-<div id="exercise-12" class="section level3">
+<div id="exercise-12" class="section level3" number="14.3.1">
 <h3><span class="header-section-number">14.3.1</span> Exercise</h3>
 <p>The quadratic penalty function</p>
 <p><span class="math display">\[
@@ -552,16 +614,18 @@ Yes
 \]</span></p>
 <p>is also sometimes used. Calibrate using <code>CVXR</code> and the <code>SCS</code> solver and compare with the
 <code>survey::cal.linear</code> results, which can be obtained via</p>
-<div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb95-1" title="1">w_survey_q &lt;-<span class="st"> </span><span class="kw">weights</span>(<span class="kw">calibrate</span>(design_api, formula, <span class="dt">population =</span> T, <span class="dt">calfun =</span> cal.linear))</a></code></pre></div>
-<div id="solution-12" class="section level4">
+<div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="survey-calibration.html#cb96-1" aria-hidden="true" tabindex="-1"></a>w_survey_q <span class="ot">&lt;-</span> <span class="fu">weights</span>(<span class="fu">calibrate</span>(design_api, formula, <span class="at">population =</span> T, <span class="at">calfun =</span> cal.linear))</span></code></pre></div>
+<div id="solution-12" class="section level4" number="14.3.1.1">
 <h4><span class="header-section-number">14.3.1.1</span> Solution</h4>
-<div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb96-1" title="1"><span class="co">## Quadratic</span></a>
-<a class="sourceLine" id="cb96-2" title="2">Phi_Q  &lt;-<span class="st"> </span><span class="kw">Minimize</span>(<span class="kw">sum_squares</span>(g <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) <span class="op">/</span><span class="st"> </span><span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb96-3" title="3">p &lt;-<span class="st"> </span><span class="kw">Problem</span>(Phi_Q, constraints)</a>
-<a class="sourceLine" id="cb96-4" title="4">res &lt;-<span class="st"> </span><span class="kw">solve</span>(p, <span class="dt">solver =</span> <span class="st">&quot;SCS&quot;</span>)</a>
-<a class="sourceLine" id="cb96-5" title="5">w_cvxr_q &lt;-<span class="st"> </span>di <span class="op">*</span><span class="st"> </span>res<span class="op">$</span><span class="kw">getValue</span>(g)</a></code></pre></div>
+<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="survey-calibration.html#cb97-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Quadratic</span></span>
+<span id="cb97-2"><a href="survey-calibration.html#cb97-2" aria-hidden="true" tabindex="-1"></a>Phi_Q  <span class="ot">&lt;-</span> <span class="fu">Minimize</span>(<span class="fu">sum_squares</span>(g <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">/</span> <span class="dv">2</span>)</span>
+<span id="cb97-3"><a href="survey-calibration.html#cb97-3" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">Problem</span>(Phi_Q, constraints)</span>
+<span id="cb97-4"><a href="survey-calibration.html#cb97-4" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">solve</span>(p, <span class="at">solver =</span> <span class="st">&quot;SCS&quot;</span>)</span>
+<span id="cb97-5"><a href="survey-calibration.html#cb97-5" aria-hidden="true" tabindex="-1"></a>w_cvxr_q <span class="ot">&lt;-</span> di <span class="sc">*</span> res<span class="sc">$</span><span class="fu">getValue</span>(g)</span></code></pre></div>
 <p>The default <code>ECOS</code> solver produces a different number of unique
 weights. Such differences are not unheard of among solvers.</p>
+<pre><code>## `summarise()` has grouped output by &#39;stype&#39;. You can override using the `.groups` argument.
+## `summarise()` has grouped output by &#39;stype&#39;. You can override using the `.groups` argument.</code></pre>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <caption>
 <span id="tab:unnamed-chunk-102">Table 14.2: </span>Calibration weights from Quadratic metric
@@ -603,7 +667,7 @@ No
 15
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-28.871
+30.063
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
 15
@@ -623,7 +687,7 @@ Yes
 127
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-31.358
+32.653
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
 127
@@ -643,7 +707,7 @@ No
 13
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-28.969
+30.165
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
 13
@@ -663,7 +727,7 @@ Yes
 12
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-31.456
+32.755
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
 12
@@ -683,7 +747,7 @@ No
 9
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-29.002
+30.199
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
 9
@@ -703,7 +767,7 @@ Yes
 24
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-31.489
+32.789
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
 24
@@ -713,7 +777,7 @@ Yes
 </table>
 </div>
 </div>
-<div id="exercise-13" class="section level3">
+<div id="exercise-13" class="section level3" number="14.3.2">
 <h3><span class="header-section-number">14.3.2</span> Exercise</h3>
 <p>Repeat the above exercise with the logistic function</p>
 <p><span class="math display">\[
@@ -721,17 +785,19 @@ Yes
   (u-g)\log\left(\frac{u-g}{u-1}\right) \biggr] \mbox{ for } C = \frac{u-l}{(1-l)(u-1)},
 \]</span></p>
 <p>which requires bounds <span class="math inline">\(l\)</span> and <span class="math inline">\(u\)</span> on the coefficients. Use <span class="math inline">\(l=0.9\)</span> and <span class="math inline">\(u=1.1\)</span>. The results from <code>survey::cal.linear</code> can be obtained with the code below.</p>
-<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb97-1" title="1">u &lt;-<span class="st"> </span><span class="fl">1.10</span>; l &lt;-<span class="st"> </span><span class="fl">0.90</span></a>
-<a class="sourceLine" id="cb97-2" title="2">w_survey_l &lt;-<span class="st"> </span><span class="kw">weights</span>(<span class="kw">calibrate</span>(design_api, formula, <span class="dt">population =</span> T, <span class="dt">calfun =</span> cal.linear,</a>
-<a class="sourceLine" id="cb97-3" title="3">                                <span class="dt">bounds =</span> <span class="kw">c</span>(l, u)))</a></code></pre></div>
+<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb99-1"><a href="survey-calibration.html#cb99-1" aria-hidden="true" tabindex="-1"></a>u <span class="ot">&lt;-</span> <span class="fl">1.10</span>; l <span class="ot">&lt;-</span> <span class="fl">0.90</span></span>
+<span id="cb99-2"><a href="survey-calibration.html#cb99-2" aria-hidden="true" tabindex="-1"></a>w_survey_l <span class="ot">&lt;-</span> <span class="fu">weights</span>(<span class="fu">calibrate</span>(design_api, formula, <span class="at">population =</span> T, <span class="at">calfun =</span> cal.linear,</span>
+<span id="cb99-3"><a href="survey-calibration.html#cb99-3" aria-hidden="true" tabindex="-1"></a>                                <span class="at">bounds =</span> <span class="fu">c</span>(l, u)))</span></code></pre></div>
 </div>
-<div id="solution-13" class="section level3">
+<div id="solution-13" class="section level3" number="14.3.3">
 <h3><span class="header-section-number">14.3.3</span> Solution</h3>
-<div class="sourceCode" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb98-1" title="1">Phi_L &lt;-<span class="st"> </span><span class="kw">Minimize</span>(<span class="kw">sum</span>(<span class="op">-</span><span class="kw">entr</span>((g <span class="op">-</span><span class="st"> </span>l) <span class="op">/</span><span class="st"> </span>(u <span class="op">-</span><span class="st"> </span>l))  <span class="op">-</span></a>
-<a class="sourceLine" id="cb98-2" title="2"><span class="st">                      </span><span class="kw">entr</span>((u <span class="op">-</span><span class="st"> </span>g) <span class="op">/</span><span class="st"> </span>(u <span class="op">-</span><span class="st"> </span>l)))) </a>
-<a class="sourceLine" id="cb98-3" title="3">p &lt;-<span class="st"> </span><span class="kw">Problem</span>(Phi_L, <span class="kw">c</span>(constraints, <span class="kw">list</span>(l <span class="op">&lt;=</span><span class="st"> </span>g, g <span class="op">&lt;=</span><span class="st"> </span>u)))</a>
-<a class="sourceLine" id="cb98-4" title="4">res &lt;-<span class="st"> </span><span class="kw">solve</span>(p)</a>
-<a class="sourceLine" id="cb98-5" title="5">w_cvxr_l &lt;-<span class="st"> </span>di <span class="op">*</span><span class="st"> </span>res<span class="op">$</span><span class="kw">getValue</span>(g)</a></code></pre></div>
+<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="survey-calibration.html#cb100-1" aria-hidden="true" tabindex="-1"></a>Phi_L <span class="ot">&lt;-</span> <span class="fu">Minimize</span>(<span class="fu">sum</span>(<span class="sc">-</span><span class="fu">entr</span>((g <span class="sc">-</span> l) <span class="sc">/</span> (u <span class="sc">-</span> l))  <span class="sc">-</span></span>
+<span id="cb100-2"><a href="survey-calibration.html#cb100-2" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">entr</span>((u <span class="sc">-</span> g) <span class="sc">/</span> (u <span class="sc">-</span> l)))) </span>
+<span id="cb100-3"><a href="survey-calibration.html#cb100-3" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">Problem</span>(Phi_L, <span class="fu">c</span>(constraints, <span class="fu">list</span>(l <span class="sc">&lt;=</span> g, g <span class="sc">&lt;=</span> u)))</span>
+<span id="cb100-4"><a href="survey-calibration.html#cb100-4" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">solve</span>(p)</span>
+<span id="cb100-5"><a href="survey-calibration.html#cb100-5" aria-hidden="true" tabindex="-1"></a>w_cvxr_l <span class="ot">&lt;-</span> di <span class="sc">*</span> res<span class="sc">$</span><span class="fu">getValue</span>(g)</span></code></pre></div>
+<pre><code>## `summarise()` has grouped output by &#39;stype&#39;. You can override using the `.groups` argument.
+## `summarise()` has grouped output by &#39;stype&#39;. You can override using the `.groups` argument.</code></pre>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <caption>
 <span id="tab:unnamed-chunk-105">Table 14.3: </span>Calibration weights from Logit metric
@@ -882,23 +948,25 @@ Yes
 </tbody>
 </table>
 </div>
-<div id="exercise-14" class="section level3">
+<div id="exercise-14" class="section level3" number="14.3.4">
 <h3><span class="header-section-number">14.3.4</span> Exercise</h3>
 <p>Repeat with the Hellinger distance</p>
 <p><span class="math display">\[
   \Phi^{H}(g) = \frac{1}{(1 - g/2)^2}
 \]</span></p>
 <p>and the following results.</p>
-<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb99-1" title="1">hellinger &lt;-<span class="st"> </span><span class="kw">make.calfun</span>(<span class="dt">Fm1 =</span> <span class="cf">function</span>(u, bounds)  ((<span class="dv">1</span> <span class="op">-</span><span class="st"> </span>u <span class="op">/</span><span class="st"> </span><span class="dv">2</span>)<span class="op">^-</span><span class="dv">2</span>) <span class="op">-</span><span class="st"> </span><span class="dv">1</span>,</a>
-<a class="sourceLine" id="cb99-2" title="2">                         <span class="dt">dF=</span> <span class="cf">function</span>(u, bounds) (<span class="dv">1</span> <span class="op">-</span>u <span class="op">/</span><span class="st"> </span><span class="dv">2</span>)<span class="op">^-</span><span class="dv">3</span> ,</a>
-<a class="sourceLine" id="cb99-3" title="3">                         <span class="dt">name =</span> <span class="st">&quot;Hellinger distance&quot;</span>)</a>
-<a class="sourceLine" id="cb99-4" title="4">w_survey_h &lt;-<span class="st"> </span><span class="kw">weights</span>(<span class="kw">calibrate</span>(design_api, formula, <span class="dt">population =</span> T, <span class="dt">calfun =</span> hellinger))</a></code></pre></div>
-<div id="solution-14" class="section level4">
+<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="survey-calibration.html#cb102-1" aria-hidden="true" tabindex="-1"></a>hellinger <span class="ot">&lt;-</span> <span class="fu">make.calfun</span>(<span class="at">Fm1 =</span> <span class="cf">function</span>(u, bounds)  ((<span class="dv">1</span> <span class="sc">-</span> u <span class="sc">/</span> <span class="dv">2</span>)<span class="sc">^-</span><span class="dv">2</span>) <span class="sc">-</span> <span class="dv">1</span>,</span>
+<span id="cb102-2"><a href="survey-calibration.html#cb102-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">dF=</span> <span class="cf">function</span>(u, bounds) (<span class="dv">1</span> <span class="sc">-</span>u <span class="sc">/</span> <span class="dv">2</span>)<span class="sc">^-</span><span class="dv">3</span> ,</span>
+<span id="cb102-3"><a href="survey-calibration.html#cb102-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">name =</span> <span class="st">&quot;Hellinger distance&quot;</span>)</span>
+<span id="cb102-4"><a href="survey-calibration.html#cb102-4" aria-hidden="true" tabindex="-1"></a>w_survey_h <span class="ot">&lt;-</span> <span class="fu">weights</span>(<span class="fu">calibrate</span>(design_api, formula, <span class="at">population =</span> T, <span class="at">calfun =</span> hellinger))</span></code></pre></div>
+<div id="solution-14" class="section level4" number="14.3.4.1">
 <h4><span class="header-section-number">14.3.4.1</span> Solution</h4>
-<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb100-1" title="1">Phi_h &lt;-<span class="st"> </span><span class="kw">Minimize</span>(<span class="kw">sum</span>((<span class="dv">1</span> <span class="op">-</span><span class="st"> </span>g <span class="op">/</span><span class="st"> </span><span class="dv">2</span>)<span class="op">^</span>(<span class="op">-</span><span class="dv">2</span>)))</a>
-<a class="sourceLine" id="cb100-2" title="2">p &lt;-<span class="st"> </span><span class="kw">Problem</span>(Phi_h, constraints)</a>
-<a class="sourceLine" id="cb100-3" title="3">res &lt;-<span class="st"> </span><span class="kw">solve</span>(p)</a>
-<a class="sourceLine" id="cb100-4" title="4">w_cvxr_h &lt;-<span class="st"> </span>di <span class="op">*</span><span class="st"> </span>res<span class="op">$</span><span class="kw">getValue</span>(g)</a></code></pre></div>
+<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="survey-calibration.html#cb103-1" aria-hidden="true" tabindex="-1"></a>Phi_h <span class="ot">&lt;-</span> <span class="fu">Minimize</span>(<span class="fu">sum</span>((<span class="dv">1</span> <span class="sc">-</span> g <span class="sc">/</span> <span class="dv">2</span>)<span class="sc">^</span>(<span class="sc">-</span><span class="dv">2</span>)))</span>
+<span id="cb103-2"><a href="survey-calibration.html#cb103-2" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">Problem</span>(Phi_h, constraints)</span>
+<span id="cb103-3"><a href="survey-calibration.html#cb103-3" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">solve</span>(p)</span>
+<span id="cb103-4"><a href="survey-calibration.html#cb103-4" aria-hidden="true" tabindex="-1"></a>w_cvxr_h <span class="ot">&lt;-</span> di <span class="sc">*</span> res<span class="sc">$</span><span class="fu">getValue</span>(g)</span></code></pre></div>
+<pre><code>## `summarise()` has grouped output by &#39;stype&#39;. You can override using the `.groups` argument.
+## `summarise()` has grouped output by &#39;stype&#39;. You can override using the `.groups` argument.</code></pre>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <caption>
 <span id="tab:unnamed-chunk-108">Table 14.4: </span>Calibration weights from Hellinger distance metric
@@ -1050,21 +1118,23 @@ Yes
 </table>
 </div>
 </div>
-<div id="exercise-15" class="section level3">
+<div id="exercise-15" class="section level3" number="14.3.5">
 <h3><span class="header-section-number">14.3.5</span> Exercise</h3>
 <p>Lastly, use the derivative of the inverse hyperbolic sine</p>
 <p><span class="math display">\[
   \Phi^{S}(g) = \frac{1}{2}(e^g + e^{-g})
 \]</span></p>
 <p>along with the results produced below.</p>
-<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb101-1" title="1">w_survey_s &lt;-<span class="st"> </span><span class="kw">weights</span>(<span class="kw">calibrate</span>(design_api, formula, <span class="dt">population =</span> T, <span class="dt">calfun =</span> cal.sinh,</a>
-<a class="sourceLine" id="cb101-2" title="2">                                <span class="dt">bounds =</span> <span class="kw">c</span>(l, u)))</a></code></pre></div>
-<div id="solution-15" class="section level4">
+<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="survey-calibration.html#cb105-1" aria-hidden="true" tabindex="-1"></a>w_survey_s <span class="ot">&lt;-</span> <span class="fu">weights</span>(<span class="fu">calibrate</span>(design_api, formula, <span class="at">population =</span> T, <span class="at">calfun =</span> cal.sinh,</span>
+<span id="cb105-2"><a href="survey-calibration.html#cb105-2" aria-hidden="true" tabindex="-1"></a>                                <span class="at">bounds =</span> <span class="fu">c</span>(l, u)))</span></code></pre></div>
+<div id="solution-15" class="section level4" number="14.3.5.1">
 <h4><span class="header-section-number">14.3.5.1</span> Solution</h4>
-<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb102-1" title="1">Phi_s &lt;-<span class="st"> </span><span class="kw">Minimize</span>(<span class="kw">sum</span>( <span class="fl">0.5</span> <span class="op">*</span><span class="st"> </span>(<span class="kw">exp</span>(g) <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(<span class="op">-</span>g))))</a>
-<a class="sourceLine" id="cb102-2" title="2">p &lt;-<span class="st"> </span><span class="kw">Problem</span>(Phi_s, <span class="kw">c</span>(constraints, <span class="kw">list</span>(l <span class="op">&lt;=</span><span class="st"> </span>g, g <span class="op">&lt;=</span><span class="st"> </span>u)))</a>
-<a class="sourceLine" id="cb102-3" title="3">res &lt;-<span class="st"> </span><span class="kw">solve</span>(p)</a>
-<a class="sourceLine" id="cb102-4" title="4">w_cvxr_s &lt;-<span class="st"> </span>di <span class="op">*</span><span class="st"> </span>res<span class="op">$</span><span class="kw">getValue</span>(g)</a></code></pre></div>
+<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="survey-calibration.html#cb106-1" aria-hidden="true" tabindex="-1"></a>Phi_s <span class="ot">&lt;-</span> <span class="fu">Minimize</span>(<span class="fu">sum</span>( <span class="fl">0.5</span> <span class="sc">*</span> (<span class="fu">exp</span>(g) <span class="sc">+</span> <span class="fu">exp</span>(<span class="sc">-</span>g))))</span>
+<span id="cb106-2"><a href="survey-calibration.html#cb106-2" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">Problem</span>(Phi_s, <span class="fu">c</span>(constraints, <span class="fu">list</span>(l <span class="sc">&lt;=</span> g, g <span class="sc">&lt;=</span> u)))</span>
+<span id="cb106-3"><a href="survey-calibration.html#cb106-3" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">solve</span>(p)</span>
+<span id="cb106-4"><a href="survey-calibration.html#cb106-4" aria-hidden="true" tabindex="-1"></a>w_cvxr_s <span class="ot">&lt;-</span> di <span class="sc">*</span> res<span class="sc">$</span><span class="fu">getValue</span>(g)</span></code></pre></div>
+<pre><code>## `summarise()` has grouped output by &#39;stype&#39;. You can override using the `.groups` argument.
+## `summarise()` has grouped output by &#39;stype&#39;. You can override using the `.groups` argument.</code></pre>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <caption>
 <span id="tab:unnamed-chunk-111">Table 14.5: </span>Calibration weights from derivative of sinh metric
@@ -1217,21 +1287,21 @@ Yes
 </div>
 </div>
 </div>
-<div id="references-4" class="section level2">
+<div id="references-4" class="section level2" number="14.4">
 <h2><span class="header-section-number">14.4</span> References</h2>
 
 </div>
 </div>
 <h3>References</h3>
-<div id="refs" class="references">
-<div id="ref-Davies:2016">
-<p>Davies, G., J. Gillard, and A. Zhigljavsky. 2016. “Comparative Study of Different Penalty Functions and Algorithms in Survey Calibration.” In <em>Advances in Stochastic and Deterministic Global Optimization</em>, 87–127. Cham: Springer-Verlag. <a href="https://doi.org/10.1007/978-3-319-29975-4_6">https://doi.org/10.1007/978-3-319-29975-4_6</a>.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Davies:2016" class="csl-entry">
+Davies, G., J. Gillard, and A. Zhigljavsky. 2016. <span>“Comparative Study of Different Penalty Functions and Algorithms in Survey Calibration.”</span> In <em>Advances in Stochastic and Deterministic Global Optimization</em>, 87–127. Cham: Springer-Verlag. <a href="https://doi.org/10.1007/978-3-319-29975-4_6">https://doi.org/10.1007/978-3-319-29975-4_6</a>.
 </div>
-<div id="ref-lumley:2018">
-<p>Lumley, Thomas. 2018. “survey: Analysis of Complex Survey Samples.”</p>
+<div id="ref-lumley:2018" class="csl-entry">
+Lumley, Thomas. 2018. <span>“<span class="nocase">survey</span>: Analysis of Complex Survey Samples.”</span>
 </div>
-<div id="ref-Lumley:2010">
-<p>Lumley, Thomas S. 2010. <em>Complex Surveys: A Guide to Analysis Using R</em>. John Wiley &amp; Sons.</p>
+<div id="ref-Lumley:2010" class="csl-entry">
+Lumley, Thomas S. 2010. <em>Complex Surveys: A Guide to Analysis Using r</em>. John Wiley &amp; Sons.
 </div>
 </div>
             </section>
@@ -1263,6 +1333,7 @@ gitbook.start({
 "weibo": false,
 "instapaper": false,
 "vk": false,
+"whatsapp": false,
 "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
 },
 "fontsettings": {

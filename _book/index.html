@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<html lang="" xml:lang="">
 <head>
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Disciplined Convex Optimization in R</title>
   <meta name="description" content="Disciplined Convex Optimization in R" />
-  <meta name="generator" content="bookdown 0.16 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Disciplined Convex Optimization in R" />
   <meta property="og:type" content="book" />
@@ -24,7 +24,7 @@
 <meta name="author" content="Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd" />
 
 
-<meta name="date" content="2020-02-05" />
+<meta name="date" content="2021-07-18" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,6 +33,7 @@
   
 
 <link rel="next" href="getting-started.html"/>
+<script src="libs/header-attrs-2.9/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -50,7 +51,10 @@
 
 
 
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 <script>
   // Added visibility option for solution (naras@stat)
   $(document).ready(function () {
@@ -77,26 +81,29 @@
 </script>
 
 
+
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -105,9 +112,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -140,6 +147,29 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
 <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
 
@@ -156,39 +186,48 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="./">Disciplined Convex Optimization in R</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
+<ul>
 <li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#convex-problems-in-statistics-machine-learning"><i class="fa fa-check"></i><b>1.1</b> Convex Problems in Statistics, Machine Learning</a></li>
 <li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#non-convex-problems"><i class="fa fa-check"></i><b>1.2</b> Non-convex Problems</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="getting-started.html"><a href="getting-started.html"><i class="fa fa-check"></i><b>2</b> Getting Started</a><ul>
-<li class="chapter" data-level="2.1" data-path="getting-started.html"><a href="getting-started.html#solver-prerequisites"><i class="fa fa-check"></i><b>2.1</b> Solver Prerequisites</a><ul>
+<li class="chapter" data-level="2" data-path="getting-started.html"><a href="getting-started.html"><i class="fa fa-check"></i><b>2</b> Getting Started</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="getting-started.html"><a href="getting-started.html#solver-prerequisites"><i class="fa fa-check"></i><b>2.1</b> Solver Prerequisites</a>
+<ul>
 <li class="chapter" data-level="2.1.1" data-path="getting-started.html"><a href="getting-started.html#mosek"><i class="fa fa-check"></i><b>2.1.1</b> MOSEK</a></li>
 <li class="chapter" data-level="2.1.2" data-path="getting-started.html"><a href="getting-started.html#gurobi"><i class="fa fa-check"></i><b>2.1.2</b> GUROBI</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="types-of-convex-optimization-problems.html"><a href="types-of-convex-optimization-problems.html"><i class="fa fa-check"></i><b>3</b> Types of Convex Optimization Problems</a><ul>
+<li class="chapter" data-level="3" data-path="types-of-convex-optimization-problems.html"><a href="types-of-convex-optimization-problems.html"><i class="fa fa-check"></i><b>3</b> Types of Convex Optimization Problems</a>
+<ul>
 <li class="chapter" data-level="3.1" data-path="types-of-convex-optimization-problems.html"><a href="types-of-convex-optimization-problems.html#linear-programs"><i class="fa fa-check"></i><b>3.1</b> Linear Programs</a></li>
 <li class="chapter" data-level="3.2" data-path="types-of-convex-optimization-problems.html"><a href="types-of-convex-optimization-problems.html#quadratic-programs"><i class="fa fa-check"></i><b>3.2</b> Quadratic Programs</a></li>
 <li class="chapter" data-level="3.3" data-path="types-of-convex-optimization-problems.html"><a href="types-of-convex-optimization-problems.html#cone-programs"><i class="fa fa-check"></i><b>3.3</b> Cone Programs</a></li>
 <li class="chapter" data-level="3.4" data-path="types-of-convex-optimization-problems.html"><a href="types-of-convex-optimization-problems.html#integer-and-mixed-integer-programs"><i class="fa fa-check"></i><b>3.4</b> Integer and Mixed Integer Programs</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="solving-convex-problems.html"><a href="solving-convex-problems.html"><i class="fa fa-check"></i><b>4</b> Solving Convex Problems</a><ul>
+<li class="chapter" data-level="4" data-path="solving-convex-problems.html"><a href="solving-convex-problems.html"><i class="fa fa-check"></i><b>4</b> Solving Convex Problems</a>
+<ul>
 <li class="chapter" data-level="4.1" data-path="solving-convex-problems.html"><a href="solving-convex-problems.html#verifying-convexity"><i class="fa fa-check"></i><b>4.1</b> Verifying Convexity</a></li>
 <li class="chapter" data-level="4.2" data-path="solving-convex-problems.html"><a href="solving-convex-problems.html#domain-specific-languages-for-convex-optimization"><i class="fa fa-check"></i><b>4.2</b> Domain Specific Languages for Convex Optimization</a></li>
 <li class="chapter" data-level="4.3" data-path="solving-convex-problems.html"><a href="solving-convex-problems.html#references"><i class="fa fa-check"></i><b>4.3</b> References</a></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="disciplined-convex-programming.html"><a href="disciplined-convex-programming.html"><i class="fa fa-check"></i><b>5</b> Disciplined Convex Programming</a><ul>
+<li class="chapter" data-level="5" data-path="disciplined-convex-programming.html"><a href="disciplined-convex-programming.html"><i class="fa fa-check"></i><b>5</b> Disciplined Convex Programming</a>
+<ul>
 <li class="chapter" data-level="5.1" data-path="disciplined-convex-programming.html"><a href="disciplined-convex-programming.html#basic-convex-functions"><i class="fa fa-check"></i><b>5.1</b> Basic Convex Functions</a></li>
 <li class="chapter" data-level="5.2" data-path="disciplined-convex-programming.html"><a href="disciplined-convex-programming.html#calculus-rules"><i class="fa fa-check"></i><b>5.2</b> Calculus Rules</a></li>
 <li class="chapter" data-level="5.3" data-path="disciplined-convex-programming.html"><a href="disciplined-convex-programming.html#examples"><i class="fa fa-check"></i><b>5.3</b> Examples</a></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html"><i class="fa fa-check"></i><b>6</b> A Simple Regression Example</a><ul>
+<li class="chapter" data-level="6" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html"><i class="fa fa-check"></i><b>6</b> A Simple Regression Example</a>
+<ul>
 <li class="chapter" data-level="6.1" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#goals"><i class="fa fa-check"></i><b>6.1</b> Goals</a></li>
 <li class="chapter" data-level="6.2" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#ordinary-least-squares-regression"><i class="fa fa-check"></i><b>6.2</b> Ordinary Least-Squares Regression</a></li>
-<li class="chapter" data-level="6.3" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#the-cvxr-formulation"><i class="fa fa-check"></i><b>6.3</b> The <code>CVXR</code> Formulation</a><ul>
+<li class="chapter" data-level="6.3" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#the-cvxr-formulation"><i class="fa fa-check"></i><b>6.3</b> The <code>CVXR</code> Formulation</a>
+<ul>
 <li class="chapter" data-level="6.3.1" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#exercise"><i class="fa fa-check"></i><b>6.3.1</b> Exercise</a></li>
 </ul></li>
-<li class="chapter" data-level="6.4" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#adding-constraints"><i class="fa fa-check"></i><b>6.4</b> Adding Constraints</a><ul>
+<li class="chapter" data-level="6.4" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#adding-constraints"><i class="fa fa-check"></i><b>6.4</b> Adding Constraints</a>
+<ul>
 <li class="chapter" data-level="6.4.1" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#exercise-1"><i class="fa fa-check"></i><b>6.4.1</b> Exercise</a></li>
 <li class="chapter" data-level="6.4.2" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#exercise-2"><i class="fa fa-check"></i><b>6.4.2</b> Exercise</a></li>
 <li class="chapter" data-level="6.4.3" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#exercise-3"><i class="fa fa-check"></i><b>6.4.3</b> Exercise</a></li>
@@ -196,50 +235,62 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="6.5" data-path="a-simple-regression-example.html"><a href="a-simple-regression-example.html#summary"><i class="fa fa-check"></i><b>6.5</b> Summary</a></li>
 </ul></li>
-<li class="chapter" data-level="7" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html"><i class="fa fa-check"></i><b>7</b> How <code>CVXR</code> Works</a><ul>
+<li class="chapter" data-level="7" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html"><i class="fa fa-check"></i><b>7</b> How <code>CVXR</code> Works</a>
+<ul>
 <li class="chapter" data-level="7.1" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html#variables"><i class="fa fa-check"></i><b>7.1</b> Variables</a></li>
 <li class="chapter" data-level="7.2" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html#objectives-constraints-and-problems"><i class="fa fa-check"></i><b>7.2</b> Objectives, Constraints, and Problems</a></li>
 <li class="chapter" data-level="7.3" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html#solving-the-problem"><i class="fa fa-check"></i><b>7.3</b> Solving the Problem</a></li>
 <li class="chapter" data-level="7.4" data-path="how-cvxr-works.html"><a href="how-cvxr-works.html#solver-options"><i class="fa fa-check"></i><b>7.4</b> Solver Options</a></li>
 </ul></li>
-<li class="chapter" data-level="8" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>8</b> Logistic Regression</a><ul>
+<li class="chapter" data-level="8" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>8</b> Logistic Regression</a>
+<ul>
 <li class="chapter" data-level="8.1" data-path="logistic-regression.html"><a href="logistic-regression.html#goals-1"><i class="fa fa-check"></i><b>8.1</b> Goals</a></li>
 <li class="chapter" data-level="8.2" data-path="logistic-regression.html"><a href="logistic-regression.html#logistic-regression-problem"><i class="fa fa-check"></i><b>8.2</b> Logistic Regression Problem</a></li>
 <li class="chapter" data-level="8.3" data-path="logistic-regression.html"><a href="logistic-regression.html#example"><i class="fa fa-check"></i><b>8.3</b> Example</a></li>
-<li class="chapter" data-level="8.4" data-path="logistic-regression.html"><a href="logistic-regression.html#exercise-5"><i class="fa fa-check"></i><b>8.4</b> Exercise</a><ul>
+<li class="chapter" data-level="8.4" data-path="logistic-regression.html"><a href="logistic-regression.html#exercise-5"><i class="fa fa-check"></i><b>8.4</b> Exercise</a>
+<ul>
 <li class="chapter" data-level="8.4.1" data-path="logistic-regression.html"><a href="logistic-regression.html#solution-5"><i class="fa fa-check"></i><b>8.4.1</b> Solution</a></li>
 </ul></li>
 <li class="chapter" data-level="8.5" data-path="logistic-regression.html"><a href="logistic-regression.html#references-1"><i class="fa fa-check"></i><b>8.5</b> References</a></li>
 </ul></li>
-<li class="chapter" data-level="9" data-path="isotonic-regression.html"><a href="isotonic-regression.html"><i class="fa fa-check"></i><b>9</b> Isotonic Regression</a><ul>
+<li class="chapter" data-level="9" data-path="isotonic-regression.html"><a href="isotonic-regression.html"><i class="fa fa-check"></i><b>9</b> Isotonic Regression</a>
+<ul>
 <li class="chapter" data-level="9.1" data-path="isotonic-regression.html"><a href="isotonic-regression.html#goals-2"><i class="fa fa-check"></i><b>9.1</b> Goals</a></li>
-<li class="chapter" data-level="9.2" data-path="isotonic-regression.html"><a href="isotonic-regression.html#pituitary-data-example"><i class="fa fa-check"></i><b>9.2</b> Pituitary Data Example</a><ul>
+<li class="chapter" data-level="9.2" data-path="isotonic-regression.html"><a href="isotonic-regression.html#pituitary-data-example"><i class="fa fa-check"></i><b>9.2</b> Pituitary Data Example</a>
+<ul>
 <li class="chapter" data-level="9.2.1" data-path="isotonic-regression.html"><a href="isotonic-regression.html#exercise-6"><i class="fa fa-check"></i><b>9.2.1</b> Exercise</a></li>
 </ul></li>
-<li class="chapter" data-level="9.3" data-path="isotonic-regression.html"><a href="isotonic-regression.html#handling-ties"><i class="fa fa-check"></i><b>9.3</b> Handling Ties</a><ul>
+<li class="chapter" data-level="9.3" data-path="isotonic-regression.html"><a href="isotonic-regression.html#handling-ties"><i class="fa fa-check"></i><b>9.3</b> Handling Ties</a>
+<ul>
 <li class="chapter" data-level="9.3.1" data-path="isotonic-regression.html"><a href="isotonic-regression.html#exercise-7"><i class="fa fa-check"></i><b>9.3.1</b> Exercise</a></li>
 <li class="chapter" data-level="9.3.2" data-path="isotonic-regression.html"><a href="isotonic-regression.html#exercise-8"><i class="fa fa-check"></i><b>9.3.2</b> Exercise</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="10" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html"><i class="fa fa-check"></i><b>10</b> Lasso and Elastic Net</a><ul>
+<li class="chapter" data-level="10" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html"><i class="fa fa-check"></i><b>10</b> Lasso and Elastic Net</a>
+<ul>
 <li class="chapter" data-level="10.1" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html#goals-3"><i class="fa fa-check"></i><b>10.1</b> Goals</a></li>
-<li class="chapter" data-level="10.2" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html#regularized-regression"><i class="fa fa-check"></i><b>10.2</b> Regularized Regression</a><ul>
+<li class="chapter" data-level="10.2" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html#regularized-regression"><i class="fa fa-check"></i><b>10.2</b> Regularized Regression</a>
+<ul>
 <li class="chapter" data-level="10.2.1" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html#exercise-9"><i class="fa fa-check"></i><b>10.2.1</b> Exercise</a></li>
 <li class="chapter" data-level="10.2.2" data-path="lasso-and-elastic-net.html"><a href="lasso-and-elastic-net.html#exercise-10"><i class="fa fa-check"></i><b>10.2.2</b> Exercise</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="11" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html"><i class="fa fa-check"></i><b>11</b> Nearly Isotonic Fits</a><ul>
+<li class="chapter" data-level="11" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html"><i class="fa fa-check"></i><b>11</b> Nearly Isotonic Fits</a>
+<ul>
 <li class="chapter" data-level="11.1" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html#goals-4"><i class="fa fa-check"></i><b>11.1</b> Goals</a></li>
-<li class="chapter" data-level="11.2" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html#global-warming-example"><i class="fa fa-check"></i><b>11.2</b> Global Warming Example</a><ul>
+<li class="chapter" data-level="11.2" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html#global-warming-example"><i class="fa fa-check"></i><b>11.2</b> Global Warming Example</a>
+<ul>
 <li class="chapter" data-level="11.2.1" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html#exercise-11"><i class="fa fa-check"></i><b>11.2.1</b> Exercise</a></li>
 </ul></li>
 <li class="chapter" data-level="11.3" data-path="nearly-isotonic-fits.html"><a href="nearly-isotonic-fits.html#references-2"><i class="fa fa-check"></i><b>11.3</b> References</a></li>
 </ul></li>
 <li class="chapter" data-level="12" data-path="speed-considerations.html"><a href="speed-considerations.html"><i class="fa fa-check"></i><b>12</b> Speed Considerations</a></li>
-<li class="chapter" data-level="13" data-path="pliable-lasso.html"><a href="pliable-lasso.html"><i class="fa fa-check"></i><b>13</b> Pliable Lasso</a><ul>
+<li class="chapter" data-level="13" data-path="pliable-lasso.html"><a href="pliable-lasso.html"><i class="fa fa-check"></i><b>13</b> Pliable Lasso</a>
+<ul>
 <li class="chapter" data-level="13.1" data-path="pliable-lasso.html"><a href="pliable-lasso.html#goals-5"><i class="fa fa-check"></i><b>13.1</b> Goals</a></li>
 <li class="chapter" data-level="13.2" data-path="pliable-lasso.html"><a href="pliable-lasso.html#pliable-lasso-problem"><i class="fa fa-check"></i><b>13.2</b> Pliable Lasso Problem</a></li>
-<li class="chapter" data-level="13.3" data-path="pliable-lasso.html"><a href="pliable-lasso.html#example-1"><i class="fa fa-check"></i><b>13.3</b> Example</a><ul>
+<li class="chapter" data-level="13.3" data-path="pliable-lasso.html"><a href="pliable-lasso.html#example-1"><i class="fa fa-check"></i><b>13.3</b> Example</a>
+<ul>
 <li class="chapter" data-level="13.3.1" data-path="pliable-lasso.html"><a href="pliable-lasso.html#parameters"><i class="fa fa-check"></i><b>13.3.1</b> Parameters</a></li>
 <li class="chapter" data-level="13.3.2" data-path="pliable-lasso.html"><a href="pliable-lasso.html#penalty-terms"><i class="fa fa-check"></i><b>13.3.2</b> Penalty Terms</a></li>
 <li class="chapter" data-level="13.3.3" data-path="pliable-lasso.html"><a href="pliable-lasso.html#fitted-value"><i class="fa fa-check"></i><b>13.3.3</b> Fitted Value</a></li>
@@ -252,10 +303,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="13.6" data-path="pliable-lasso.html"><a href="pliable-lasso.html#final-comments"><i class="fa fa-check"></i><b>13.6</b> Final Comments</a></li>
 <li class="chapter" data-level="13.7" data-path="pliable-lasso.html"><a href="pliable-lasso.html#references-3"><i class="fa fa-check"></i><b>13.7</b> References</a></li>
 </ul></li>
-<li class="chapter" data-level="14" data-path="survey-calibration.html"><a href="survey-calibration.html"><i class="fa fa-check"></i><b>14</b> Survey Calibration</a><ul>
+<li class="chapter" data-level="14" data-path="survey-calibration.html"><a href="survey-calibration.html"><i class="fa fa-check"></i><b>14</b> Survey Calibration</a>
+<ul>
 <li class="chapter" data-level="14.1" data-path="survey-calibration.html"><a href="survey-calibration.html#goals-6"><i class="fa fa-check"></i><b>14.1</b> Goals</a></li>
 <li class="chapter" data-level="14.2" data-path="survey-calibration.html"><a href="survey-calibration.html#survey-calibration-problem"><i class="fa fa-check"></i><b>14.2</b> Survey Calibration Problem</a></li>
-<li class="chapter" data-level="14.3" data-path="survey-calibration.html"><a href="survey-calibration.html#raking"><i class="fa fa-check"></i><b>14.3</b> Raking</a><ul>
+<li class="chapter" data-level="14.3" data-path="survey-calibration.html"><a href="survey-calibration.html#raking"><i class="fa fa-check"></i><b>14.3</b> Raking</a>
+<ul>
 <li class="chapter" data-level="14.3.1" data-path="survey-calibration.html"><a href="survey-calibration.html#exercise-12"><i class="fa fa-check"></i><b>14.3.1</b> Exercise</a></li>
 <li class="chapter" data-level="14.3.2" data-path="survey-calibration.html"><a href="survey-calibration.html#exercise-13"><i class="fa fa-check"></i><b>14.3.2</b> Exercise</a></li>
 <li class="chapter" data-level="14.3.3" data-path="survey-calibration.html"><a href="survey-calibration.html#solution-13"><i class="fa fa-check"></i><b>14.3.3</b> Solution</a></li>
@@ -264,24 +317,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="14.4" data-path="survey-calibration.html"><a href="survey-calibration.html#references-4"><i class="fa fa-check"></i><b>14.4</b> References</a></li>
 </ul></li>
-<li class="chapter" data-level="15" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html"><i class="fa fa-check"></i><b>15</b> Sparse Inverse Covariance Estimation</a><ul>
+<li class="chapter" data-level="15" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html"><i class="fa fa-check"></i><b>15</b> Sparse Inverse Covariance Estimation</a>
+<ul>
 <li class="chapter" data-level="15.1" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#goals-7"><i class="fa fa-check"></i><b>15.1</b> Goals</a></li>
 <li class="chapter" data-level="15.2" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#sparse-inverse-covariance-problem"><i class="fa fa-check"></i><b>15.2</b> Sparse Inverse Covariance Problem</a></li>
 <li class="chapter" data-level="15.3" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#example-2"><i class="fa fa-check"></i><b>15.3</b> Example</a></li>
 <li class="chapter" data-level="15.4" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#results-1"><i class="fa fa-check"></i><b>15.4</b> Results</a></li>
 <li class="chapter" data-level="15.5" data-path="sparse-inverse-covariance-estimation.html"><a href="sparse-inverse-covariance-estimation.html#references-5"><i class="fa fa-check"></i><b>15.5</b> References</a></li>
 </ul></li>
-<li class="chapter" data-level="16" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html"><i class="fa fa-check"></i><b>16</b> Portfolio Estimation</a><ul>
+<li class="chapter" data-level="16" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html"><i class="fa fa-check"></i><b>16</b> Portfolio Estimation</a>
+<ul>
 <li class="chapter" data-level="16.1" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#goals-8"><i class="fa fa-check"></i><b>16.1</b> Goals</a></li>
 <li class="chapter" data-level="16.2" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#markowitz-portfolio-problem"><i class="fa fa-check"></i><b>16.2</b> Markowitz Portfolio Problem</a></li>
 <li class="chapter" data-level="16.3" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#example-3"><i class="fa fa-check"></i><b>16.3</b> Example</a></li>
 <li class="chapter" data-level="16.4" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#discussion"><i class="fa fa-check"></i><b>16.4</b> Discussion</a></li>
 <li class="chapter" data-level="16.5" data-path="portfolio-estimation.html"><a href="portfolio-estimation.html#references-6"><i class="fa fa-check"></i><b>16.5</b> References</a></li>
 </ul></li>
-<li class="chapter" data-level="17" data-path="using-other-solvers.html"><a href="using-other-solvers.html"><i class="fa fa-check"></i><b>17</b> Using Other Solvers</a><ul>
+<li class="chapter" data-level="17" data-path="using-other-solvers.html"><a href="using-other-solvers.html"><i class="fa fa-check"></i><b>17</b> Using Other Solvers</a>
+<ul>
 <li class="chapter" data-level="17.1" data-path="using-other-solvers.html"><a href="using-other-solvers.html#goals-9"><i class="fa fa-check"></i><b>17.1</b> Goals</a></li>
 <li class="chapter" data-level="17.2" data-path="using-other-solvers.html"><a href="using-other-solvers.html#default-solvers"><i class="fa fa-check"></i><b>17.2</b> Default Solvers</a></li>
-<li class="chapter" data-level="17.3" data-path="using-other-solvers.html"><a href="using-other-solvers.html#commercial-solvers"><i class="fa fa-check"></i><b>17.3</b> Commercial Solvers</a><ul>
+<li class="chapter" data-level="17.3" data-path="using-other-solvers.html"><a href="using-other-solvers.html#commercial-solvers"><i class="fa fa-check"></i><b>17.3</b> Commercial Solvers</a>
+<ul>
 <li class="chapter" data-level="17.3.1" data-path="using-other-solvers.html"><a href="using-other-solvers.html#installing-mosek"><i class="fa fa-check"></i><b>17.3.1</b> Installing <code>MOSEK</code></a></li>
 <li class="chapter" data-level="17.3.2" data-path="using-other-solvers.html"><a href="using-other-solvers.html#installing-gurobi"><i class="fa fa-check"></i><b>17.3.2</b> Installing <code>GUROBI</code></a></li>
 <li class="chapter" data-level="17.3.3" data-path="using-other-solvers.html"><a href="using-other-solvers.html#gotchas"><i class="fa fa-check"></i><b>17.3.3</b> Gotchas</a></li>
@@ -290,9 +347,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="17.4" data-path="using-other-solvers.html"><a href="using-other-solvers.html#solver-peculiarities"><i class="fa fa-check"></i><b>17.4</b> Solver Peculiarities</a></li>
 <li class="chapter" data-level="17.5" data-path="using-other-solvers.html"><a href="using-other-solvers.html#references-7"><i class="fa fa-check"></i><b>17.5</b> References</a></li>
 </ul></li>
-<li class="chapter" data-level="18" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html"><i class="fa fa-check"></i><b>18</b> The Structure of Atoms</a><ul>
+<li class="chapter" data-level="18" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html"><i class="fa fa-check"></i><b>18</b> The Structure of Atoms</a>
+<ul>
 <li class="chapter" data-level="18.1" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#definition"><i class="fa fa-check"></i><b>18.1</b> Definition</a></li>
-<li class="chapter" data-level="18.2" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#atom-properties"><i class="fa fa-check"></i><b>18.2</b> Atom Properties</a><ul>
+<li class="chapter" data-level="18.2" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#atom-properties"><i class="fa fa-check"></i><b>18.2</b> Atom Properties</a>
+<ul>
 <li class="chapter" data-level="18.2.1" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#mathematical-basics"><i class="fa fa-check"></i><b>18.2.1</b> Mathematical Basics</a></li>
 <li class="chapter" data-level="18.2.2" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#dimension-sign-and-curvature"><i class="fa fa-check"></i><b>18.2.2</b> Dimension, Sign, and Curvature</a></li>
 <li class="chapter" data-level="18.2.3" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#additional-characteristics"><i class="fa fa-check"></i><b>18.2.3</b> Additional Characteristics</a></li>
@@ -300,7 +359,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="18.3" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#canonicalization"><i class="fa fa-check"></i><b>18.3</b> Canonicalization</a></li>
 <li class="chapter" data-level="18.4" data-path="the-structure-of-atoms.html"><a href="the-structure-of-atoms.html#putting-it-all-together"><i class="fa fa-check"></i><b>18.4</b> Putting It All Together</a></li>
 </ul></li>
-<li class="chapter" data-level="19" data-path="future-enhancements.html"><a href="future-enhancements.html"><i class="fa fa-check"></i><b>19</b> Future Enhancements</a><ul>
+<li class="chapter" data-level="19" data-path="future-enhancements.html"><a href="future-enhancements.html"><i class="fa fa-check"></i><b>19</b> Future Enhancements</a>
+<ul>
 <li class="chapter" data-level="19.1" data-path="future-enhancements.html"><a href="future-enhancements.html#version-1.0"><i class="fa fa-check"></i><b>19.1</b> Version 1.0</a></li>
 <li class="chapter" data-level="19.2" data-path="future-enhancements.html"><a href="future-enhancements.html#internal-changes"><i class="fa fa-check"></i><b>19.2</b> Internal Changes</a></li>
 </ul></li>
@@ -329,9 +389,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="header">
 <h1 class="title">Disciplined Convex Optimization in R</h1>
 <p class="author"><em>Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd</em></p>
-<p class="date"><em>2020-02-05</em></p>
+<p class="date" style="margin-top: 1.5em;"><em>2021-07-18</em></p>
 </div>
-<div id="introduction" class="section level1">
+<div id="introduction" class="section level1" number="1">
 <h1><span class="header-section-number">Chapter 1</span> Introduction</h1>
 <p>Optimization problems are at the heart of statistical inference and
 machine learning, where a scalar
@@ -382,7 +442,7 @@ solution, it is automatically the global optimal solution.</p></li>
 </ul>
 <p>There are a host of applications of this problem in many fields,
 including machine learning and statistics.</p>
-<div id="convex-problems-in-statistics-machine-learning" class="section level2">
+<div id="convex-problems-in-statistics-machine-learning" class="section level2" number="1.1">
 <h2><span class="header-section-number">1.1</span> Convex Problems in Statistics, Machine Learning</h2>
 <ul>
 <li>Maximum likelihood estimation with constraints</li>
@@ -396,7 +456,7 @@ including machine learning and statistics.</p>
 </ul>
 <p>New methods are being invented every year!</p>
 </div>
-<div id="non-convex-problems" class="section level2">
+<div id="non-convex-problems" class="section level2" number="1.2">
 <h2><span class="header-section-number">1.2</span> Non-convex Problems</h2>
 <p>A non-convex optimization problem is any problem where the objective
 or any of the constraints are non-convex. Not every problem is convex,
@@ -438,6 +498,7 @@ gitbook.start({
 "weibo": false,
 "instapaper": false,
 "vk": false,
+"whatsapp": false,
 "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
 },
 "fontsettings": {

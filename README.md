@@ -2,7 +2,7 @@
 # `CVXR` Tutorial 
 
 This is the bookdown for the [`CVXR`
-tutorial](http://ecssc2021.com.au/session/cpd131/) at 
+workshop](http://ecssc2021.com.au/session/cpd131/) at 
 [ECSSC 2021](http://ecssc2021.com.au/).
 
 ## Preparatory Steps
