@@ -24,7 +24,7 @@
 <meta name="author" content="Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd" />
 
 
-<meta name="date" content="2021-07-02" />
+<meta name="date" content="2021-07-18" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -423,7 +423,7 @@ implemented in R packages.</p>
 ## [1] FALSE
 ## 
 ## $GLPK
-## [1] FALSE</code></pre>
+## [1] TRUE</code></pre>
 <p>Once the packages are installed, a call to <code>installed_solvers</code> will
 display the solvers that <code>CVXR</code> has detected.</p>
 </div>
@@ -485,7 +485,7 @@ appropriate <code>PATH</code> variable solves the problem.</p>
 <div id="example-session" class="section level3" number="17.3.4">
 <h3><span class="header-section-number">17.3.4</span> Example Session</h3>
 <div class="sourceCode" id="cb123"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb123-1"><a href="using-other-solvers.html#cb123-1" aria-hidden="true" tabindex="-1"></a><span class="fu">installed_solvers</span>()</span></code></pre></div>
-<pre><code>## [1] &quot;ECOS&quot;    &quot;ECOS_BB&quot; &quot;SCS&quot;     &quot;OSQP&quot;</code></pre>
+<pre><code>## [1] &quot;ECOS&quot;    &quot;ECOS_BB&quot; &quot;GLPK_MI&quot; &quot;GLPK&quot;    &quot;SCS&quot;     &quot;MOSEK&quot;   &quot;OSQP&quot;</code></pre>
 </div>
 </div>
 <div id="solver-peculiarities" class="section level2" number="17.4">
@@ -515,7 +515,7 @@ problem</a>.</p>
 <span id="cb125-18"><a href="using-other-solvers.html#cb125-18" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">solve</span>(prob)</span></code></pre></div>
 <p>The solution status is no longer optimal.</p>
 <div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="using-other-solvers.html#cb126-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Solution status is&quot;</span>, result<span class="sc">$</span>status)</span></code></pre></div>
-<pre><code>## Solution status is optimal_inaccurate</code></pre>
+<pre><code>## Solution status is optimal</code></pre>
 <p>In such cases, using a different solver may give more accurate
 results. Let us try <code>MOSEK</code>.</p>
 <div class="sourceCode" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb128-1"><a href="using-other-solvers.html#cb128-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="st">&quot;MOSEK&quot;</span> <span class="sc">%in%</span> <span class="fu">installed_solvers</span>()) {</span>
@@ -524,7 +524,7 @@ results. Let us try <code>MOSEK</code>.</p>
 <span id="cb128-4"><a href="using-other-solvers.html#cb128-4" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
 <span id="cb128-5"><a href="using-other-solvers.html#cb128-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">&quot;Solution not available as MOSEK is not installed!&quot;</span>)</span>
 <span id="cb128-6"><a href="using-other-solvers.html#cb128-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
-<pre><code>## Solution not available as MOSEK is not installed!</code></pre>
+<pre><code>## Solution status is optimal</code></pre>
 <p>This returns an optimal solution.</p>
 <p>Here again, even commercial solvers differ; <code>GUROBI</code>, for example,
 does not completely solve the problem and in fact throws an error.</p>

@@ -24,7 +24,7 @@
 <meta name="author" content="Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd" />
 
 
-<meta name="date" content="2021-07-02" />
+<meta name="date" content="2021-07-18" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -462,7 +462,7 @@ GLM
 <span class="math inline">\(\beta_{0}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--0.1260003
+-0.1260091
 </td>
 <td style="text-align:right;">
 -0.1260003
@@ -473,7 +473,7 @@ GLM
 <span class="math inline">\(\beta_{1}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--0.0730737
+-0.0730788
 </td>
 <td style="text-align:right;">
 -0.0730737
@@ -484,7 +484,7 @@ GLM
 <span class="math inline">\(\beta_{2}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
--0.0423013
+-0.0423043
 </td>
 <td style="text-align:right;">
 -0.0423013
@@ -495,7 +495,7 @@ GLM
 <span class="math inline">\(\beta_{3}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.0110851
+0.0110857
 </td>
 <td style="text-align:right;">
 0.0110851
@@ -506,7 +506,7 @@ GLM
 <span class="math inline">\(\beta_{4}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.0093589
+0.0093595
 </td>
 <td style="text-align:right;">
 0.0093589
@@ -517,7 +517,7 @@ GLM
 <span class="math inline">\(\beta_{5}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.0103131
+0.0103137
 </td>
 <td style="text-align:right;">
 0.0103131
@@ -528,7 +528,7 @@ GLM
 <span class="math inline">\(\beta_{6}\)</span>
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-0.1354407
+0.1354496
 </td>
 <td style="text-align:right;">
 0.1354407
@@ -554,7 +554,7 @@ solutions to the optimization problem.</p>
 <p>We can also satisfy ourselves that the fitted values match the <code>glm</code>
 estimate, by computing the sum of squared differences.</p>
 <div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="logistic-regression.html#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>((fitted_values <span class="sc">-</span> glmfit<span class="sc">$</span>fitted.values))<span class="sc">^</span><span class="dv">2</span></span></code></pre></div>
-<pre><code>## [1] 1.294239e-14</code></pre>
+<pre><code>## [1] 1.779124e-06</code></pre>
 <p>Similarly, the log-odds, <span class="math inline">\(X\hat{\beta}\)</span> , where <span class="math inline">\(\hat{\beta}\)</span> is the
 logistic regression estimate, can be computed as follows.</p>
 <div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="logistic-regression.html#cb39-1" aria-hidden="true" tabindex="-1"></a>log_odds <span class="ot">&lt;-</span> result<span class="sc">$</span><span class="fu">getValue</span>(X <span class="sc">%*%</span> beta)</span></code></pre></div>
