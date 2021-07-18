@@ -2,8 +2,8 @@
 # `CVXR` Tutorial 
 
 This is the bookdown for the [`CVXR`
-tutorial](http://www.user2019.fr/tutorials/) at [useR!
-2019](http://www.user2019.fr).
+tutorial](http://ecssc2021.com.au/session/cpd131/) at 
+[ECSSC 2021](http://ecssc2021.com.au/).
 
 ## Preparatory Steps
 
@@ -17,4 +17,4 @@ tutorial](http://www.user2019.fr/tutorials/) at [useR!
 If you want a single markdown file with all the code, you will find it
 in the `extra/code` folder.
 
-We are happy to see you at _useR! 2019_, Toulouse!
+We are happy to see you at _ECSSC 2021_, Australia!
