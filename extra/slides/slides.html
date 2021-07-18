@@ -306,7 +306,7 @@ Source: <a href="https://www.solver.com" class="uri">https://www.solver.com</a>
 <li><a href="https://cvxr.rbind.io">CVXR</a> implemented in R</li>
 </ul>
 <p>Such DSLs may result in code that is slightly slower, but they are extremely flexible and enable fast prototyping of novel methods.</p>
-<p>The last one, <code>CVXR</code>, is our focus and is described in a paper <span class="citation">(<a href="#ref-fu:naras:boyd:2019" role="doc-biblioref">Fu, B. Narasimhan, and Boyd 2019</a>)</span> that is due to appear in the <a href="https://www.jstatsoft.org">Journal of Statistical Software</a> any day now.</p>
+<p>The last one, <code>CVXR</code>, is our focus and is described in a paper <span class="citation">(<a href="#ref-fu:naras:boyd:2019" role="doc-biblioref">Fu, B. Narasimhan, and Boyd 2020</a>)</span> that appears in the <a href="https://www.jstatsoft.org">Journal of Statistical Software</a>.</p>
 <!--chapter:end:03-solving-convex-problems.Rmd-->
 </div>
 <div id="disciplined-convex-programming" class="slide section level1">
@@ -2074,15 +2074,15 @@ A\beta \leq 0
 ##           warm start: on, polish: on, time_limit: off
 ## 
 ## iter  objective    pri res    dua res    rho        time
-##    1   0.0000e+00   3.23e+01   2.20e+04   1.00e-01   1.14e-04s
-##   50   3.4135e+01   2.51e-07   2.97e-07   1.20e-02   2.12e-04s
-## plsh   3.4135e+01   5.80e-15   1.12e-14  ---------   2.75e-04s
+##    1   0.0000e+00   3.23e+01   2.20e+04   1.00e-01   1.18e-04s
+##   50   3.4135e+01   2.51e-07   2.97e-07   1.20e-02   2.11e-04s
+## plsh   3.4135e+01   5.80e-15   1.12e-14  ---------   2.67e-04s
 ## 
 ## status:               solved
 ## solution polish:      successful
 ## number of iterations: 50
 ## optimal objective:    34.1346
-## run time:             2.75e-04s
+## run time:             2.67e-04s
 ## optimal rho estimate: 4.33e-03</code></pre>
 <h2 id="solver-options">Solver Options</h2>
 <p>Solver options are unique to the chosen solver, so any arguments to <code>CVXR::solve</code> besides the three documented above are simply passed along to the solver. The reference for the specific solver must be consulted to set these options.</p>
@@ -6121,13 +6121,13 @@ Friedman, J., T. Hastie, and R. Tibshirani. 2008. <span>“Sparse Inverse Covari
 ———. 2010. <span>“Regularization Paths for Generalized Linear Models via Coordinate Descent.”</span> <em>Journal of Statistical Software</em> 33 (1): 1–22.
 </div>
 <div id="ref-fu:naras:boyd:2019" class="csl-entry">
-Fu, A., B. Narasimhan, and Stephen Boyd. 2019. <span>“CVXR: An r Package for Disciplined Convex Optimization.”</span> <em>Journal of Statistical Software (to Appear)</em>.
+Fu, A., B. Narasimhan, and Stephen Boyd. 2020. <span>“CVXR: An <span>R</span> Package for Disciplined Convex Optimization.”</span> <em>Journal of Statistical Software (to Appear)</em> 94 (14): 1–34. <a href="https://doi.org/10.18637/jss.v094.i14">https://doi.org/10.18637/jss.v094.i14</a>.
 </div>
 <div id="ref-elasticnet" class="csl-entry">
 H. Zou, T. Hastie. 2005. <span>“Regularization and Variable Selection via the Elastic–Net.”</span> <em>Journal of the Royal Statistical Society B (Methodological)</em> 67 (2): 301–20.
 </div>
 <div id="ref-james2013" class="csl-entry">
-James, Gareth, Daniela Witten, Trevor Hastie, and Robert Tibshirani. 2013. <em>An Introduction to Statistical Learning: With Applications in r</em>. Springer Texts in Statistics. Springer New York. <a href="https://doi.org/10.1007/978-1-4614-7138-7">https://doi.org/10.1007/978-1-4614-7138-7</a>.
+James, Gareth, Daniela Witten, Trevor Hastie, and Robert Tibshirani. 2013. <em>An Introduction to Statistical Learning: With Applications in <span>R</span></em>. Springer Texts in Statistics. Springer New York. <a href="https://doi.org/10.1007/978-1-4614-7138-7">https://doi.org/10.1007/978-1-4614-7138-7</a>.
 </div>
 <div id="ref-LoboFazelBoyd:2007" class="csl-entry">
 Lobo, M. S., M. Fazel, and S. Boyd. 2007. <span>“Portfolio Optimization with Linear and Fixed Transaction Costs.”</span> <em>Annals of Operations Research</em> 152 (1): 341–65.

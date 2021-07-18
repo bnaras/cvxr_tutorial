@@ -282,8 +282,8 @@ Such DSLs may result in code that is slightly slower, but they are
 extremely flexible and enable fast prototyping of novel methods.
 
 The last one, `CVXR`, is our focus and is described in a paper
-[@fu:naras:boyd:2019] that is due to appear in the [Journal of Statistical
-Software](https://www.jstatsoft.org) any day now.
+[@fu:naras:boyd:2019] that appears in the [Journal of Statistical
+Software](https://www.jstatsoft.org).
 
 
 <!--chapter:end:03-solving-convex-problems.Rmd-->
