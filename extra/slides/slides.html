@@ -251,10 +251,10 @@ Source: <a href="https://www.solver.com" class="uri">https://www.solver.com</a>
 </ol>
 <h3 id="gurobi">GUROBI</h3>
 <ol style="list-style-type: decimal">
-<li><p>Download <a href="http://www.gurobi.com/downloads/gurobi-optimizer">GUROBI optimizer version 8.1.1</a>. You will have to register for an account and accept the license agreement.</p></li>
+<li><p>Download <a href="http://www.gurobi.com/downloads/gurobi-optimizer">GUROBI optimizer version 9.1.2</a>. You will have to register for an account and accept the license agreement.</p></li>
 <li><p>Obtain an <a href="http://www.gurobi.com/downloads/licenses/license-center">evaluation or academic licence</a>.</p></li>
-<li><p>Install the GUROBI R package using <a href="http://www.gurobi.com/documentation/8.1/quickstart_mac/r_installing_the_r_package.html">these instructions</a>.</p></li>
-<li><p>Ensure that you can run any one of the <a href="http://www.gurobi.com/documentation/8.1/examples/r_examples.html">R examples</a>.</p></li>
+<li><p>Install the GUROBI R package using <a href="https://www.gurobi.com/documentation/9.1/refman/ins_the_r_package.html">these instructions</a>.</p></li>
+<li><p>Ensure that you can run any one of the <a href="https://www.gurobi.com/documentation/9.1/examples/r_examples.html">R examples</a>.</p></li>
 </ol>
 <!--chapter:end:01-getting-started.Rmd-->
 </div>
@@ -2075,14 +2075,14 @@ A\beta \leq 0
 ## 
 ## iter  objective    pri res    dua res    rho        time
 ##    1   0.0000e+00   3.23e+01   2.20e+04   1.00e-01   1.18e-04s
-##   50   3.4135e+01   2.51e-07   2.97e-07   1.20e-02   2.11e-04s
-## plsh   3.4135e+01   5.80e-15   1.12e-14  ---------   2.67e-04s
+##   50   3.4135e+01   2.51e-07   2.97e-07   1.20e-02   2.10e-04s
+## plsh   3.4135e+01   5.80e-15   1.12e-14  ---------   2.65e-04s
 ## 
 ## status:               solved
 ## solution polish:      successful
 ## number of iterations: 50
 ## optimal objective:    34.1346
-## run time:             2.67e-04s
+## run time:             2.65e-04s
 ## optimal rho estimate: 4.33e-03</code></pre>
 <h2 id="solver-options">Solver Options</h2>
 <p>Solver options are unique to the chosen solver, so any arguments to <code>CVXR::solve</code> besides the three documented above are simply passed along to the solver. The reference for the specific solver must be consulted to set these options.</p>
@@ -5871,7 +5871,8 @@ Yes
 <p>To be concrete, one problem we found was that the <code>MOSEK</code> solver was not recognized as available in this rendered document, even though the command line interface showed it to be present. Ensuring an appropriate <code>PATH</code> variable solves the problem.</p>
 <h3 id="example-session">Example Session</h3>
 <div class="sourceCode" id="cb123"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb123-1"><a href="#cb123-1" aria-hidden="true" tabindex="-1"></a><span class="fu">installed_solvers</span>()</span></code></pre></div>
-<pre><code>## [1] &quot;ECOS&quot;    &quot;ECOS_BB&quot; &quot;GLPK_MI&quot; &quot;GLPK&quot;    &quot;SCS&quot;     &quot;MOSEK&quot;   &quot;OSQP&quot;</code></pre>
+<pre><code>## [1] &quot;ECOS&quot;    &quot;ECOS_BB&quot; &quot;GLPK_MI&quot; &quot;GLPK&quot;    &quot;SCS&quot;     &quot;GUROBI&quot;  &quot;MOSEK&quot;  
+## [8] &quot;OSQP&quot;</code></pre>
 </div>
 <div class="slide section level1">
 

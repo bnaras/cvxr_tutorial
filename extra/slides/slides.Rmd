@@ -168,16 +168,16 @@ to install the `Rmosek` package.
 ### GUROBI
 
 1. Download [GUROBI optimizer version
-8.1.1](http://www.gurobi.com/downloads/gurobi-optimizer). You will
+9.1.2](http://www.gurobi.com/downloads/gurobi-optimizer). You will
 have to register for an account and accept the license agreement.
 
 2. Obtain an [evaluation or academic licence](http://www.gurobi.com/downloads/licenses/license-center).
 
 3. Install the GUROBI R package using [these
-instructions](http://www.gurobi.com/documentation/8.1/quickstart_mac/r_installing_the_r_package.html).
+instructions](https://www.gurobi.com/documentation/9.1/refman/ins_the_r_package.html).
 
 4. Ensure that you can run any one of the [R
-examples](http://www.gurobi.com/documentation/8.1/examples/r_examples.html).
+examples](https://www.gurobi.com/documentation/9.1/examples/r_examples.html).
 
 
 <!--chapter:end:01-getting-started.Rmd-->
