@@ -144,15 +144,15 @@ S.est <- lapply(alphas,
                 })
 ```
 
-In the code above, the `Variable` constructor restricts `S` to the
-positive semidefinite cone. We use `CVXR` functions 
-for the log-determinant and trace in the objective. The expression `matrix_trace(S %*%
-Q)` is equivalent to `sum(diag(S %*% Q))}, but the former is preferred
-because it is more efficient than making nested function calls.
+In the code above, the `PSD = TRUE` argument to the `Variable` constructor restricts 
+`S` to the positive semidefinite cone. We use `CVXR` functions for the log-determinant 
+and trace in the objective. The expression `matrix_trace(S %*% Q)` is equivalent to 
+`sum(diag(S %*% Q))}`, but the former is preferred because it is more efficient than 
+making nested function calls.
 
 However, a standalone atom does not exist for the determinant, so we
 cannot replace `log_det(S)` with `log(det(S))` since `det` is
-undefined for a positive semidefinite object in `CVXR`.
+undefined for a `Variable` object.
 
 ## Results
 
@@ -162,7 +162,7 @@ the dark squares in the images below. The sparsity of our inverse
 covariance estimate decreases for higher $\alpha$, so that when
 $\alpha = 1$, most of the off-diagonal entries are zero, while if
 $\alpha = 10$, over half the matrix is dense. At $\alpha = 4$, we
-achieve the true percentage of non-zeros.
+achieve the approximate true percentage of non-zeros.
 
 ```{r, echo = FALSE, fig.width=6, fig.height=6}
 ## Plotting function

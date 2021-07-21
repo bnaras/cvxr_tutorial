@@ -24,7 +24,7 @@
 <meta name="author" content="Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd" />
 
 
-<meta name="date" content="2021-07-18" />
+<meta name="date" content="2021-07-21" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -361,7 +361,7 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="19" data-path="future-enhancements.html"><a href="future-enhancements.html"><i class="fa fa-check"></i><b>19</b> Future Enhancements</a>
 <ul>
-<li class="chapter" data-level="19.1" data-path="future-enhancements.html"><a href="future-enhancements.html#version-1.0"><i class="fa fa-check"></i><b>19.1</b> Version 1.0</a></li>
+<li class="chapter" data-level="19.1" data-path="future-enhancements.html"><a href="future-enhancements.html#version-1.1"><i class="fa fa-check"></i><b>19.1</b> Version 1.1</a></li>
 <li class="chapter" data-level="19.2" data-path="future-enhancements.html"><a href="future-enhancements.html#internal-changes"><i class="fa fa-check"></i><b>19.2</b> Internal Changes</a></li>
 </ul></li>
 <li class="chapter" data-level="20" data-path="references-8.html"><a href="references-8.html"><i class="fa fa-check"></i><b>20</b> References</a></li>
@@ -447,13 +447,14 @@ symmetric.</p>
 <span id="cb111-15"><a href="sparse-inverse-covariance-estimation.html#cb111-15" aria-hidden="true" tabindex="-1"></a>                    Sres[<span class="fu">abs</span>(Sres) <span class="sc">&lt;=</span> <span class="fl">1e-4</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
 <span id="cb111-16"><a href="sparse-inverse-covariance-estimation.html#cb111-16" aria-hidden="true" tabindex="-1"></a>                    Sres</span>
 <span id="cb111-17"><a href="sparse-inverse-covariance-estimation.html#cb111-17" aria-hidden="true" tabindex="-1"></a>                })</span></code></pre></div>
-<p>In the code above, the <code>Variable</code> constructor restricts <code>S</code> to the
-positive semidefinite cone. We use <code>CVXR</code> functions
-for the log-determinant and trace in the objective. The expression <code>matrix_trace(S %*% Q)</code> is equivalent to `sum(diag(S %*% Q))}, but the former is preferred
-because it is more efficient than making nested function calls.</p>
+<p>In the code above, the <code>PSD = TRUE</code> argument to the <code>Variable</code> constructor restricts
+<code>S</code> to the positive semidefinite cone. We use <code>CVXR</code> functions for the log-determinant
+and trace in the objective. The expression <code>matrix_trace(S %*% Q)</code> is equivalent to
+<code>sum(diag(S %*% Q))}</code>, but the former is preferred because it is more efficient than
+making nested function calls.</p>
 <p>However, a standalone atom does not exist for the determinant, so we
 cannot replace <code>log_det(S)</code> with <code>log(det(S))</code> since <code>det</code> is
-undefined for a positive semidefinite object in <code>CVXR</code>.</p>
+undefined for a <code>Variable</code> object.</p>
 </div>
 <div id="results-1" class="section level2" number="15.4">
 <h2><span class="header-section-number">15.4</span> Results</h2>
@@ -462,7 +463,7 @@ the dark squares in the images below. The sparsity of our inverse
 covariance estimate decreases for higher <span class="math inline">\(\alpha\)</span>, so that when
 <span class="math inline">\(\alpha = 1\)</span>, most of the off-diagonal entries are zero, while if
 <span class="math inline">\(\alpha = 10\)</span>, over half the matrix is dense. At <span class="math inline">\(\alpha = 4\)</span>, we
-achieve the true percentage of non-zeros.</p>
+achieve the approximate true percentage of non-zeros.</p>
 <div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="sparse-inverse-covariance-estimation.html#cb112-1" aria-hidden="true" tabindex="-1"></a><span class="fu">do.call</span>(multiplot, <span class="at">args =</span> <span class="fu">c</span>(<span class="fu">list</span>(<span class="fu">plotSpMat</span>(Strue)),</span>
 <span id="cb112-2"><a href="sparse-inverse-covariance-estimation.html#cb112-2" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">mapply</span>(plotSpMat, S.est, alphas, <span class="at">SIMPLIFY =</span> <span class="cn">FALSE</span>),</span>
 <span id="cb112-3"><a href="sparse-inverse-covariance-estimation.html#cb112-3" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">list</span>(<span class="at">layout =</span> <span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="at">nrow =</span> <span class="dv">2</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))))</span></code></pre></div>

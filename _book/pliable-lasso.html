@@ -24,7 +24,7 @@
 <meta name="author" content="Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd" />
 
 
-<meta name="date" content="2021-07-18" />
+<meta name="date" content="2021-07-21" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -361,7 +361,7 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="19" data-path="future-enhancements.html"><a href="future-enhancements.html"><i class="fa fa-check"></i><b>19</b> Future Enhancements</a>
 <ul>
-<li class="chapter" data-level="19.1" data-path="future-enhancements.html"><a href="future-enhancements.html#version-1.0"><i class="fa fa-check"></i><b>19.1</b> Version 1.0</a></li>
+<li class="chapter" data-level="19.1" data-path="future-enhancements.html"><a href="future-enhancements.html#version-1.1"><i class="fa fa-check"></i><b>19.1</b> Version 1.1</a></li>
 <li class="chapter" data-level="19.2" data-path="future-enhancements.html"><a href="future-enhancements.html#internal-changes"><i class="fa fa-check"></i><b>19.2</b> Internal Changes</a></li>
 </ul></li>
 <li class="chapter" data-level="20" data-path="references-8.html"><a href="references-8.html"><i class="fa fa-check"></i><b>20</b> References</a></li>
@@ -424,10 +424,10 @@ J(\beta_0, \theta_0, \beta, \Theta) =
 are tuning parameters. As <span class="math inline">\(\alpha \rightarrow 1\)</span> (but <span class="math inline">\(&lt;1\)</span>), the
 solution approaches the lasso solution. The default value used in the paper is
 <span class="math inline">\(\alpha = 0.5.\)</span></p>
-<p>An R package for the pliable lasso is forthcoming from the
-authors. Nevertheless, the pliable lasso is an excellent example to
-highlight the prototyping capabilities of <code>CVXR</code> for research. Along
-the way, we also introduce some new atoms that are needed in this example.</p>
+<p>An R package for the pliable lasso is currently archived on <a href="https://CRAN.R-project.org/package=pliable">CRAN</a>.
+Nevertheless, the pliable lasso is an excellent example to highlight the prototyping
+capabilities of <code>CVXR</code> for research. Along the way, we also introduce some new atoms
+that are needed in this example.</p>
 </div>
 <div id="example-1" class="section level2" number="13.3">
 <h2><span class="header-section-number">13.3</span> Example</h2>
@@ -648,7 +648,7 @@ zero.</p>
 </tbody>
 </table>
 <p>For this value of <span class="math inline">\(\lambda\)</span>, the nonzero <span class="math inline">\((\beta_1, \beta_2, \beta_3,\beta_4)\)</span> are picked up along
-with a few others like <span class="math inline">\((\beta_{20}, \beta_{34},\beta_{39})\)</span>.</p>
+with an additional <span class="math inline">\(\beta_{20}\)</span>.</p>
 <p>The values for <span class="math inline">\(\theta_0\)</span> are given below.</p>
 <div class="sourceCode" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb91-1"><a href="pliable-lasso.html#cb91-1" aria-hidden="true" tabindex="-1"></a>est.table <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(result<span class="sc">$</span>theta0_hat, <span class="at">nrow =</span> <span class="dv">1</span>))</span>
 <span id="cb91-2"><a href="pliable-lasso.html#cb91-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(est.table) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;$</span><span class="sc">\\</span><span class="st">theta_{0,&quot;</span>, <span class="dv">1</span><span class="sc">:</span>K, <span class="st">&quot;}$&quot;</span>)</span>
@@ -789,10 +789,8 @@ the nonzero values for this result.</p>
 <h2><span class="header-section-number">13.6</span> Final Comments</h2>
 <p>Typically, one would run the fits for various values of <span class="math inline">\(\lambda\)</span>,
 choose one based on cross-validation, and assess the prediction against
-a test set. Here, even a single fit takes a while, but techniques
-discussed previously can be used to speed up the
-computations. However, the potential of <code>CVXR</code> in prototyping novel
-methods is clear.</p>
+a test set. Here, even a single fit takes a while. However, the potential
+of <code>CVXR</code> in prototyping novel methods is clear.</p>
 </div>
 <div id="references-3" class="section level2" number="13.7">
 <h2><span class="header-section-number">13.7</span> References</h2>

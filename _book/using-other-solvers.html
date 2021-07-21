@@ -24,7 +24,7 @@
 <meta name="author" content="Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd" />
 
 
-<meta name="date" content="2021-07-18" />
+<meta name="date" content="2021-07-21" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -361,7 +361,7 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="19" data-path="future-enhancements.html"><a href="future-enhancements.html"><i class="fa fa-check"></i><b>19</b> Future Enhancements</a>
 <ul>
-<li class="chapter" data-level="19.1" data-path="future-enhancements.html"><a href="future-enhancements.html#version-1.0"><i class="fa fa-check"></i><b>19.1</b> Version 1.0</a></li>
+<li class="chapter" data-level="19.1" data-path="future-enhancements.html"><a href="future-enhancements.html#version-1.1"><i class="fa fa-check"></i><b>19.1</b> Version 1.1</a></li>
 <li class="chapter" data-level="19.2" data-path="future-enhancements.html"><a href="future-enhancements.html#internal-changes"><i class="fa fa-check"></i><b>19.2</b> Internal Changes</a></li>
 </ul></li>
 <li class="chapter" data-level="20" data-path="references-8.html"><a href="references-8.html"><i class="fa fa-check"></i><b>20</b> References</a></li>
@@ -397,7 +397,7 @@ div.csl-indent {
 </div>
 <div id="default-solvers" class="section level2" number="17.2">
 <h2><span class="header-section-number">17.2</span> Default Solvers</h2>
-<p>The default installation of <code>CVXR</code> comes with two (imported) open
+<p>The default installation of <code>CVXR</code> comes with three (imported) open
 source solvers:</p>
 <ul>
 <li><a href="https://github.com/embotech/ecos">ECOS</a> and its mixed integer
@@ -405,6 +405,8 @@ cousin <code>ECOS_BB</code> via the CRAN package
 <a href="https://cloud.r-project.org/package=ECOSolveR">ECOSolveR</a></li>
 <li><a href="https://github.com/cvxgrp/scs">SCS</a> via the CRAN package
 <a href="https://cloud.r-project.org/package=scs">scs</a>.</li>
+<li><a href="https://osqp.org/">OSQP</a> via the CRAN package
+<a href="https://CRAN.R-project.org/package=osqp">osqp</a>.</li>
 </ul>
 <p><code>CVXR</code> can also make use of several other open source solvers
 implemented in R packages.</p>
@@ -416,11 +418,11 @@ implemented in R packages.</p>
 <a href="https://cloud.r-project.org/package=Rglpk"><code>Rglpk</code></a> package.</li>
 </ul>
 <p>Since these are optional, you must install the packages yourself.</p>
-<div class="sourceCode" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="using-other-solvers.html#cb119-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(<span class="fu">list</span>(<span class="at">LPSOLVE =</span> <span class="st">&quot;lpSolveAPI&quot;</span>,</span>
-<span id="cb119-2"><a href="using-other-solvers.html#cb119-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">GLPK =</span> <span class="st">&quot;Rglpk&quot;</span>),</span>
-<span id="cb119-3"><a href="using-other-solvers.html#cb119-3" aria-hidden="true" tabindex="-1"></a>       <span class="cf">function</span>(x) x <span class="sc">%in%</span> <span class="fu">installed.packages</span>()[, <span class="dv">1</span>])</span></code></pre></div>
+<div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="using-other-solvers.html#cb118-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(<span class="fu">list</span>(<span class="at">LPSOLVE =</span> <span class="st">&quot;lpSolveAPI&quot;</span>,</span>
+<span id="cb118-2"><a href="using-other-solvers.html#cb118-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">GLPK =</span> <span class="st">&quot;Rglpk&quot;</span>),</span>
+<span id="cb118-3"><a href="using-other-solvers.html#cb118-3" aria-hidden="true" tabindex="-1"></a>       <span class="cf">function</span>(x) x <span class="sc">%in%</span> <span class="fu">installed.packages</span>()[, <span class="dv">1</span>])</span></code></pre></div>
 <pre><code>## $LPSOLVE
-## [1] FALSE
+## [1] TRUE
 ## 
 ## $GLPK
 ## [1] TRUE</code></pre>
@@ -431,32 +433,22 @@ display the solvers that <code>CVXR</code> has detected.</p>
 <h2><span class="header-section-number">17.3</span> Commercial Solvers</h2>
 <p>A few commercial solvers are also currently supported: <a href="https://www.mosek.com">MOSEK</a> and
 <a href="https://www.gurobi.com">GUROBI</a>.</p>
-<p>At the moment, <code>CVXR</code> calls vendor Python solver packages via
-<a href="https://cran.r-project.org/package=reticulate"><code>reticulate</code></a>, <em>not R
-packages</em>. Future versions will provide support directly using
-<a href="https://web.stanford.edu/~boyd/papers/cvxpy_rewriting.html"><em>problem
-reductions</em></a>,
-implemented in <a href="https://www.cvxpy.org/"><code>CVXPY</code> version 1.0</a>.</p>
-<p>Thus, one needs two prerequisites to use these commercial solvers:</p>
-<ul>
-<li>A Python installation in addition to R</li>
-<li>The
-<a href="https://cran.r-project.org/package=reticulate"><code>reticulate</code></a> R
-package.</li>
-</ul>
-<p>We also recommend that you ensure <code>reticulate</code> is installed
-correctly and working. For example <code>reticulate::py_eval('1+1')</code> should return
-<code>2</code>.</p>
+<p><code>CVXR</code> version 1.0 directly calls these solvers via their associated R packages
+using <a href="https://web.stanford.edu/~boyd/papers/cvxpy_rewriting.html"><em>problem reductions</em></a>.
+(Previous <code>CVXR</code> versions required Python and the
+<a href="https://cran.r-project.org/package=reticulate"><code>reticulate</code></a> package).</p>
 <div id="installing-mosek" class="section level3" number="17.3.1">
 <h3><span class="header-section-number">17.3.1</span> Installing <code>MOSEK</code></h3>
 <p><a href="https://www.mosek.com">MOSEK</a> provides an academic version that is
 free of charge. As noted in the downloads page, Anaconda users can
 install merely via:</p>
-<div class="sourceCode" id="cb121"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb121-1"><a href="using-other-solvers.html#cb121-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> install <span class="at">-c</span> mosek mosek</span></code></pre></div>
+<div class="sourceCode" id="cb120"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb120-1"><a href="using-other-solvers.html#cb120-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> install <span class="at">-c</span> mosek mosek</span></code></pre></div>
 <p>Others can use the <code>pip</code> command:</p>
-<div class="sourceCode" id="cb122"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb122-1"><a href="using-other-solvers.html#cb122-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">-f</span> https://download.mosek.com/stable/wheel/index.html Mosek</span></code></pre></div>
+<div class="sourceCode" id="cb121"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb121-1"><a href="using-other-solvers.html#cb121-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">-f</span> https://download.mosek.com/stable/wheel/index.html Mosek</span></code></pre></div>
 <p>In addition, the license for the product has to be activated per
-instructions on the <code>Sales</code> section of the MOSEK web page.</p>
+instructions on the <code>Sales</code> section of the MOSEK web page. The
+<a href="https://docs.mosek.com/9.2/rmosek/install-interface.html">Rmosek</a>
+R package must be installed separately.</p>
 <p>Once activated, you can check that <code>CVXR</code> recognizes the solver;
 <code>installed_solvers()</code> should list <code>MOSEK</code>. Otherwise, rinse and repeat
 until success.</p>
@@ -466,7 +458,9 @@ until success.</p>
 <p><a href="https://www.gurobi.com">GUROBI</a> also provides an academic version
 that is free of charge. You must register to receive the license.</p>
 <p>Once registered, install the <em>Gurobi Optimizer</em> software and activate
-your license as necessary.</p>
+your license as necessary.
+The <a href="https://www.gurobi.com/documentation/9.1/refman/ins_the_r_package.html">gurobi</a>
+R package must be installed separately.</p>
 <p>After activation, you can check that <code>CVXR::installed_solvers()</code> lists
 <code>GUROBI</code>. Otherwise, rinse and repeat until success.</p>
 </div>
@@ -476,7 +470,7 @@ your license as necessary.</p>
 to account for the fact that there may be interactions when using
 RStudio and rendering documents. In particular, Anaconda may include
 its own version of pandoc and other tools that may conflict with what
-Rstudio needs to work properly.</p>
+RStudio needs to work properly.</p>
 <p>To be concrete, one problem we found was that the <code>MOSEK</code> solver was
 not recognized as available in this rendered document, even
 though the command line interface showed it to be present. Ensuring an
@@ -484,46 +478,46 @@ appropriate <code>PATH</code> variable solves the problem.</p>
 </div>
 <div id="example-session" class="section level3" number="17.3.4">
 <h3><span class="header-section-number">17.3.4</span> Example Session</h3>
-<div class="sourceCode" id="cb123"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb123-1"><a href="using-other-solvers.html#cb123-1" aria-hidden="true" tabindex="-1"></a><span class="fu">installed_solvers</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb122-1"><a href="using-other-solvers.html#cb122-1" aria-hidden="true" tabindex="-1"></a><span class="fu">installed_solvers</span>()</span></code></pre></div>
 <pre><code>## [1] &quot;ECOS&quot;    &quot;ECOS_BB&quot; &quot;GLPK_MI&quot; &quot;GLPK&quot;    &quot;SCS&quot;     &quot;GUROBI&quot;  &quot;MOSEK&quot;   &quot;OSQP&quot;</code></pre>
 </div>
 </div>
 <div id="solver-peculiarities" class="section level2" number="17.4">
 <h2><span class="header-section-number">17.4</span> Solver Peculiarities</h2>
-<p>The default solver in <code>CVXR</code> is <code>ECOS</code>. However, it is not always the
-best solver to use. As an example, let us consider again the <a href="/cvxr_examples/cvxr_catenary/">catenary
-problem</a>.</p>
+<p>The most commonly used solver in <code>CVXR</code> is <code>ECOS</code>. However, it is not
+always the best solver for a problem. As an example, let us consider again
+the <a href="/cvxr_examples/cvxr_catenary/">catenary problem</a>.</p>
 <p>We will change the problem slightly to use a finer discretization from
 101 to 501 points.</p>
-<div class="sourceCode" id="cb125"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb125-1"><a href="using-other-solvers.html#cb125-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Problem data</span></span>
-<span id="cb125-2"><a href="using-other-solvers.html#cb125-2" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="dv">501</span></span>
-<span id="cb125-3"><a href="using-other-solvers.html#cb125-3" aria-hidden="true" tabindex="-1"></a>L <span class="ot">&lt;-</span> <span class="dv">2</span></span>
-<span id="cb125-4"><a href="using-other-solvers.html#cb125-4" aria-hidden="true" tabindex="-1"></a>h <span class="ot">&lt;-</span> L <span class="sc">/</span> (m <span class="sc">-</span> <span class="dv">1</span>)</span>
-<span id="cb125-5"><a href="using-other-solvers.html#cb125-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb125-6"><a href="using-other-solvers.html#cb125-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Form objective</span></span>
-<span id="cb125-7"><a href="using-other-solvers.html#cb125-7" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">Variable</span>(m)</span>
-<span id="cb125-8"><a href="using-other-solvers.html#cb125-8" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">Variable</span>(m)</span>
-<span id="cb125-9"><a href="using-other-solvers.html#cb125-9" aria-hidden="true" tabindex="-1"></a>objective <span class="ot">&lt;-</span> <span class="fu">Minimize</span>(<span class="fu">sum</span>(y))</span>
-<span id="cb125-10"><a href="using-other-solvers.html#cb125-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb125-11"><a href="using-other-solvers.html#cb125-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Form constraints</span></span>
-<span id="cb125-12"><a href="using-other-solvers.html#cb125-12" aria-hidden="true" tabindex="-1"></a>constraints <span class="ot">&lt;-</span> <span class="fu">list</span>(x[<span class="dv">1</span>] <span class="sc">==</span> <span class="dv">0</span>, y[<span class="dv">1</span>] <span class="sc">==</span> <span class="dv">1</span>,</span>
-<span id="cb125-13"><a href="using-other-solvers.html#cb125-13" aria-hidden="true" tabindex="-1"></a>                    x[m] <span class="sc">==</span> <span class="dv">1</span>, y[m] <span class="sc">==</span> <span class="dv">1</span>,</span>
-<span id="cb125-14"><a href="using-other-solvers.html#cb125-14" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">diff</span>(x)<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> <span class="fu">diff</span>(y)<span class="sc">^</span><span class="dv">2</span> <span class="sc">&lt;=</span> h<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb125-15"><a href="using-other-solvers.html#cb125-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb125-16"><a href="using-other-solvers.html#cb125-16" aria-hidden="true" tabindex="-1"></a><span class="do">## Solve the catenary problem</span></span>
-<span id="cb125-17"><a href="using-other-solvers.html#cb125-17" aria-hidden="true" tabindex="-1"></a>prob <span class="ot">&lt;-</span> <span class="fu">Problem</span>(objective, constraints)</span>
-<span id="cb125-18"><a href="using-other-solvers.html#cb125-18" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">solve</span>(prob)</span></code></pre></div>
+<div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb124-1"><a href="using-other-solvers.html#cb124-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Problem data</span></span>
+<span id="cb124-2"><a href="using-other-solvers.html#cb124-2" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="dv">501</span></span>
+<span id="cb124-3"><a href="using-other-solvers.html#cb124-3" aria-hidden="true" tabindex="-1"></a>L <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb124-4"><a href="using-other-solvers.html#cb124-4" aria-hidden="true" tabindex="-1"></a>h <span class="ot">&lt;-</span> L <span class="sc">/</span> (m <span class="sc">-</span> <span class="dv">1</span>)</span>
+<span id="cb124-5"><a href="using-other-solvers.html#cb124-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb124-6"><a href="using-other-solvers.html#cb124-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Form objective</span></span>
+<span id="cb124-7"><a href="using-other-solvers.html#cb124-7" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">Variable</span>(m)</span>
+<span id="cb124-8"><a href="using-other-solvers.html#cb124-8" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">Variable</span>(m)</span>
+<span id="cb124-9"><a href="using-other-solvers.html#cb124-9" aria-hidden="true" tabindex="-1"></a>objective <span class="ot">&lt;-</span> <span class="fu">Minimize</span>(<span class="fu">sum</span>(y))</span>
+<span id="cb124-10"><a href="using-other-solvers.html#cb124-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb124-11"><a href="using-other-solvers.html#cb124-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Form constraints</span></span>
+<span id="cb124-12"><a href="using-other-solvers.html#cb124-12" aria-hidden="true" tabindex="-1"></a>constraints <span class="ot">&lt;-</span> <span class="fu">list</span>(x[<span class="dv">1</span>] <span class="sc">==</span> <span class="dv">0</span>, y[<span class="dv">1</span>] <span class="sc">==</span> <span class="dv">1</span>,</span>
+<span id="cb124-13"><a href="using-other-solvers.html#cb124-13" aria-hidden="true" tabindex="-1"></a>                    x[m] <span class="sc">==</span> <span class="dv">1</span>, y[m] <span class="sc">==</span> <span class="dv">1</span>,</span>
+<span id="cb124-14"><a href="using-other-solvers.html#cb124-14" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">diff</span>(x)<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> <span class="fu">diff</span>(y)<span class="sc">^</span><span class="dv">2</span> <span class="sc">&lt;=</span> h<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb124-15"><a href="using-other-solvers.html#cb124-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb124-16"><a href="using-other-solvers.html#cb124-16" aria-hidden="true" tabindex="-1"></a><span class="do">## Solve the catenary problem</span></span>
+<span id="cb124-17"><a href="using-other-solvers.html#cb124-17" aria-hidden="true" tabindex="-1"></a>prob <span class="ot">&lt;-</span> <span class="fu">Problem</span>(objective, constraints)</span>
+<span id="cb124-18"><a href="using-other-solvers.html#cb124-18" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">solve</span>(prob, <span class="at">solver =</span> <span class="st">&quot;ECOS&quot;</span>)</span></code></pre></div>
 <p>The solution status is no longer optimal.</p>
-<div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="using-other-solvers.html#cb126-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Solution status is&quot;</span>, result<span class="sc">$</span>status)</span></code></pre></div>
-<pre><code>## Solution status is optimal</code></pre>
+<div class="sourceCode" id="cb125"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb125-1"><a href="using-other-solvers.html#cb125-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Solution status is&quot;</span>, result<span class="sc">$</span>status)</span></code></pre></div>
+<pre><code>## Solution status is optimal_inaccurate</code></pre>
 <p>In such cases, using a different solver may give more accurate
 results. Let us try <code>MOSEK</code>.</p>
-<div class="sourceCode" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb128-1"><a href="using-other-solvers.html#cb128-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="st">&quot;MOSEK&quot;</span> <span class="sc">%in%</span> <span class="fu">installed_solvers</span>()) {</span>
-<span id="cb128-2"><a href="using-other-solvers.html#cb128-2" aria-hidden="true" tabindex="-1"></a>    result <span class="ot">&lt;-</span> <span class="fu">solve</span>(prob, <span class="at">solver =</span> <span class="st">&quot;MOSEK&quot;</span>)</span>
-<span id="cb128-3"><a href="using-other-solvers.html#cb128-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">&quot;Solution status is&quot;</span>, result<span class="sc">$</span>status)</span>
-<span id="cb128-4"><a href="using-other-solvers.html#cb128-4" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
-<span id="cb128-5"><a href="using-other-solvers.html#cb128-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">&quot;Solution not available as MOSEK is not installed!&quot;</span>)</span>
-<span id="cb128-6"><a href="using-other-solvers.html#cb128-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb127"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb127-1"><a href="using-other-solvers.html#cb127-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="st">&quot;MOSEK&quot;</span> <span class="sc">%in%</span> <span class="fu">installed_solvers</span>()) {</span>
+<span id="cb127-2"><a href="using-other-solvers.html#cb127-2" aria-hidden="true" tabindex="-1"></a>    result <span class="ot">&lt;-</span> <span class="fu">solve</span>(prob, <span class="at">solver =</span> <span class="st">&quot;MOSEK&quot;</span>)</span>
+<span id="cb127-3"><a href="using-other-solvers.html#cb127-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">&quot;Solution status is&quot;</span>, result<span class="sc">$</span>status)</span>
+<span id="cb127-4"><a href="using-other-solvers.html#cb127-4" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb127-5"><a href="using-other-solvers.html#cb127-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">&quot;Solution not available as MOSEK is not installed!&quot;</span>)</span>
+<span id="cb127-6"><a href="using-other-solvers.html#cb127-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <pre><code>## Solution status is optimal</code></pre>
 <p>This returns an optimal solution.</p>
 <p>Here again, even commercial solvers differ; <code>GUROBI</code>, for example,

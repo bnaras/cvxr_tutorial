@@ -105,8 +105,8 @@ solving for in a problem, and we cannot define the problem if
 validation fails. It is the user's responsibility to include domain
 constraints during problem construction.
 
-To facilitate this, we define a method for that returns a list of
-`Constraint` objects delineating an atom's domain. For the QoL
+To facilitate this, we define a method for that that returns a list 
+of `Constraint` objects delineating an atom's domain. For the QoL
 function, we need only constrain its second argument to be
 positive. Strict inequalities are not supported in `CVXR`, so we
 impose a weak inequality $y \geq 0$ as shown below.
@@ -118,7 +118,7 @@ setMethod(".domain", "QuadOverLin", function(object) { list(object@args[[2]] >= 
 Both validation and domain methods may be dropped if an atom's
 arguments span the reals.
 
-The `to_numeric` method is always required. It takes as input an atom and a list `values` containing the numeric values of the its arguments (given in the same order as in `args`), then evaluates the atom at these values. For the QoL function, this method is simply
+The `to_numeric` method is always required. It takes as input an atom and a list `values` containing the numeric values of its arguments (given in the same order as in `args`), then evaluates the atom at these values. For the QoL function, this method is simply
 
 ```{r, eval=FALSE}
 setMethod("to_numeric", "QuadOverLin", function(object, values) { sum(values[[1]]^2) / values[[2]] })
@@ -132,7 +132,11 @@ expressions.
 
 ### Dimension, Sign, and Curvature
 
-For DCP analysis to work, we must explicitly define each atom's dimension, sign, and curvature. `CVXR` uses this information when applying the composition rules to an expression. It is easy to see that $f$ is scalar-valued, nonnegative, and convex over its domain. These properties are encoded in
+For DCP analysis to work, we must explicitly define each atom's dimension, 
+sign, and curvature. `CVXR` uses this information when applying the 
+composition rules to an expression. It is easy to see that $f$ is 
+scalar-valued, nonnegative, and convex over its domain. These properties 
+are encoded in
 
 ```{r, eval=FALSE}
 setMethod("size_from_args", "QuadOverLin", function(object) { c(1,1) })
@@ -143,7 +147,9 @@ setMethod("is_atom_concave", "QuadOverLin", function(object) { FALSE })
 
 Here, the `sign_from_args` function returns a vector of two logical
 values - the first indicates if the atom's value is positive, and the
-second if it is negative. We also define whether the atom is weakly
+second if it is negative. 
+
+We also define whether the atom is weakly
 increasing or decreasing in each of its arguments. By taking
 derivatives, we find that $f$ is weakly decreasing in $y$, weakly
 increasing in $x$ on $\mathbf{R}_+^n$, and weakly decreasing in $x$ on
@@ -154,10 +160,10 @@ setMethod("is_incr", "QuadOverLin", function(object, idx) { (idx == 1) && is_pos
 setMethod("is_decr", "QuadOverLin", function(object, idx) { ((idx == 1) && is_negative(object@args[[idx]])) || (idx == 2) })
 ```
 
-where `idx` is the index of the argument of interest. We call the
-`Expression` class method `is_positive` (resp. `is_negative`) to determine
+where `idx` is the index of the argument of interest (`idx = 1` for `x` and `idx = 2` for `y`). 
+We call the `Expression` class method `is_positive` (resp. `is_negative`) to determine
 if an argument is nonnegative (resp. nonpositive). The user may be
-tempted to write `object@args[[1]] >= 0`, but this is **incorrect**
+tempted to write `object@args[[idx]] >= 0`, but this is **incorrect**
 because it returns a `Constraint` rather than a logical value.
 
 ### Additional Characteristics
@@ -192,7 +198,7 @@ setMethod(".grad", "QuadOverLin", function(object, values) {
 
 This method calculates the vectors $\nabla_x f(x,y)$ and $\nabla_y
 f(x,y))$, wraps each in a sparse `Matrix`, and returns them in a list
-ordered exactly like in the input values. If $(x,y) \notin
+ordered exactly as in the input values. If $(x,y) \notin
 \mathbf{dom}\;f$, all gradients are set to `NA`.
 
 ## Canonicalization
@@ -284,15 +290,15 @@ with respect to $x \in \mathbf{R}^n$ and $y \in \mathbf{R}_{++}$. In
 x <- Variable(n)
 y <- Variable()
 obj <- quad_over_lin(x,y)
-constr <- c(domain(obj), A*x == b)
+constr <- c(domain(obj), A %*% x == b)
 prob <- Problem(Minimize(obj), constr)
 solve(prob)
 ```
 
 Once `solve` is invoked, `CVXR` checks if the problem is DCP with calls
 to `is_atom_convex`, `is_incr`, and `is_decr` for each atom in the
-expression tree. It then converts the problem as modeled to a form compatible with the desired
-solver.
+expression tree. It then converts the problem as modeled to a form compatible 
+with the desired solver.
 
 In our example, this requires a transformation into a
 cone program. Substituting in the graph implementation of $f$, our
@@ -306,8 +312,8 @@ $$
 $$
 
 where $t \in \mathbf{R}$ is the additional epigraph variable. If $b
-\in \mathbf{null}\;A$, a solution is trivially $x^* = \vec{0}$ with
-any $y^* > 0$. Otherwise, the point $y = 0$ is infeasible, so we can
+\in \mathbf{null}\;A$, a solution is trivially $x^{\star} = \vec{0}$ with
+any $y^{\star} > 0$. Otherwise, the point $y = 0$ is infeasible, so we can
 relax the domain constraint to get
 
 $$
@@ -318,7 +324,9 @@ $$
 $$
 
 In `CVXR`, this SOCP canonicalization is performed automatically via a
-call to `QuadOverLin.graph_implementation`. Then, the relevant matrices are formed and passed to the selected conic
-solver. After the solver returns $(x^*,y^*,t^*)$, the transformation is reversed to obtain the optimal point $(x^*,y^*)$ and
-objective value $f(x^*,y^*)$ for the original problem.
+call to `QuadOverLin.graph_implementation`. Then, the relevant matrices 
+are formed and passed to the selected conic solver. After the solver 
+returns $(x^{\star},y^{\star},t^{\star})$, the transformation is reversed 
+to obtain the optimal point $(x^{\star},y^{\star})$ and objective value 
+$f(x^{\star},y^{\star})$ for the original problem.
 

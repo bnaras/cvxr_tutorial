@@ -1168,7 +1168,7 @@ constraints <- list(x[1] == 0, y[1] == 1,
 
 ## Solve the catenary problem
 prob <- Problem(objective, constraints)
-result <- solve(prob)
+result <- solve(prob, solver = "ECOS")
 
 
 ## ------------------------------------------------------------------------

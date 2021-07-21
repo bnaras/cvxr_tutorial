@@ -74,9 +74,10 @@ Calling the `solve` function on a problem sets several things in motion.
    QP, SDP, etc.
 
 4. Among the available solvers, a suitable one is chosen that can
-   handle the problem. Two open source solvers are built-in: Embedded
-   Conic Solver (ECOS) and Splitting Conic Solver (SCS), but there is
-   also support for commercial solvers.
+   handle the problem. Three open source solvers are built-in: Embedded
+   Conic Solver (ECOS), Splitting Conic Solver (SCS), and Operator Splitting 
+   Quadratic Program Solver (OSQP), but there is also support for commercial 
+   solvers.
 
 5. The canonicalized data structures (matrices, cone dimensions) along
    with solver options, if any, are dispatched to the solver in
@@ -104,6 +105,6 @@ result <- solve(problem, verbose = TRUE)
 ## Solver Options
 
 Solver options are unique to the chosen solver, so any arguments to
-`CVXR::solve` besides the three documented above are simply passed
-along to the solver. The reference for the specific solver must be 
+`CVXR::solve` besides those documented [here](https://www.cvxgrp.org/CVXR/reference/psolve.html) 
+are simply passed along to the solver. The reference for the specific solver must be 
 consulted to set these options.

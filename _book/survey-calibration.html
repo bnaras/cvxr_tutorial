@@ -24,7 +24,7 @@
 <meta name="author" content="Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd" />
 
 
-<meta name="date" content="2021-07-18" />
+<meta name="date" content="2021-07-21" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -361,7 +361,7 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="19" data-path="future-enhancements.html"><a href="future-enhancements.html"><i class="fa fa-check"></i><b>19</b> Future Enhancements</a>
 <ul>
-<li class="chapter" data-level="19.1" data-path="future-enhancements.html"><a href="future-enhancements.html#version-1.0"><i class="fa fa-check"></i><b>19.1</b> Version 1.0</a></li>
+<li class="chapter" data-level="19.1" data-path="future-enhancements.html"><a href="future-enhancements.html#version-1.1"><i class="fa fa-check"></i><b>19.1</b> Version 1.1</a></li>
 <li class="chapter" data-level="19.2" data-path="future-enhancements.html"><a href="future-enhancements.html#internal-changes"><i class="fa fa-check"></i><b>19.2</b> Internal Changes</a></li>
 </ul></li>
 <li class="chapter" data-level="20" data-path="references-8.html"><a href="references-8.html"><i class="fa fa-check"></i><b>20</b> References</a></li>
@@ -622,7 +622,7 @@ Yes
 <span id="cb97-3"><a href="survey-calibration.html#cb97-3" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">Problem</span>(Phi_Q, constraints)</span>
 <span id="cb97-4"><a href="survey-calibration.html#cb97-4" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">solve</span>(p, <span class="at">solver =</span> <span class="st">&quot;SCS&quot;</span>)</span>
 <span id="cb97-5"><a href="survey-calibration.html#cb97-5" aria-hidden="true" tabindex="-1"></a>w_cvxr_q <span class="ot">&lt;-</span> di <span class="sc">*</span> res<span class="sc">$</span><span class="fu">getValue</span>(g)</span></code></pre></div>
-<p>The default <code>ECOS</code> solver produces a different number of unique
+<p>The default <code>OSQP</code> solver produces a different number of unique
 weights. Such differences are not unheard of among solvers.</p>
 <pre><code>## `summarise()` has grouped output by &#39;stype&#39;. You can override using the `.groups` argument.
 ## `summarise()` has grouped output by &#39;stype&#39;. You can override using the `.groups` argument.</code></pre>

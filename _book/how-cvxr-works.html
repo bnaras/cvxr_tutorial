@@ -24,7 +24,7 @@
 <meta name="author" content="Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd" />
 
 
-<meta name="date" content="2021-07-18" />
+<meta name="date" content="2021-07-21" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -361,7 +361,7 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="19" data-path="future-enhancements.html"><a href="future-enhancements.html"><i class="fa fa-check"></i><b>19</b> Future Enhancements</a>
 <ul>
-<li class="chapter" data-level="19.1" data-path="future-enhancements.html"><a href="future-enhancements.html#version-1.0"><i class="fa fa-check"></i><b>19.1</b> Version 1.0</a></li>
+<li class="chapter" data-level="19.1" data-path="future-enhancements.html"><a href="future-enhancements.html#version-1.1"><i class="fa fa-check"></i><b>19.1</b> Version 1.1</a></li>
 <li class="chapter" data-level="19.2" data-path="future-enhancements.html"><a href="future-enhancements.html#internal-changes"><i class="fa fa-check"></i><b>19.2</b> Internal Changes</a></li>
 </ul></li>
 <li class="chapter" data-level="20" data-path="references-8.html"><a href="references-8.html"><i class="fa fa-check"></i><b>20</b> References</a></li>
@@ -444,9 +444,10 @@ solve attempt fails with an error message and a non-optimal status.</p></li>
 <li><p>The problem is analyzed and classified according to its type: LP,
 QP, SDP, etc.</p></li>
 <li><p>Among the available solvers, a suitable one is chosen that can
-handle the problem. Two open source solvers are built-in: Embedded
-Conic Solver (ECOS) and Splitting Conic Solver (SCS), but there is
-also support for commercial solvers.</p></li>
+handle the problem. Three open source solvers are built-in: Embedded
+Conic Solver (ECOS), Splitting Conic Solver (SCS), and Operator Splitting
+Quadratic Program Solver (OSQP), but there is also support for commercial
+solvers.</p></li>
 <li><p>The canonicalized data structures (matrices, cone dimensions) along
 with solver options, if any, are dispatched to the solver in
 appropriate form.</p></li>
@@ -482,21 +483,21 @@ by simply passing another parameter to <code>CVXR::solve</code>.</p>
 ## 
 ## iter  objective    pri res    dua res    rho        time
 ##    1   0.0000e+00   3.23e+01   2.20e+04   1.00e-01   1.05e-04s
-##   50   3.4135e+01   2.51e-07   2.97e-07   1.20e-02   2.20e-04s
-## plsh   3.4135e+01   5.80e-15   1.12e-14  ---------   2.95e-04s
+##   50   3.4135e+01   2.51e-07   2.97e-07   1.20e-02   1.99e-04s
+## plsh   3.4135e+01   5.80e-15   1.12e-14  ---------   2.58e-04s
 ## 
 ## status:               solved
 ## solution polish:      successful
 ## number of iterations: 50
 ## optimal objective:    34.1346
-## run time:             2.95e-04s
+## run time:             2.58e-04s
 ## optimal rho estimate: 4.33e-03</code></pre>
 </div>
 <div id="solver-options" class="section level2" number="7.4">
 <h2><span class="header-section-number">7.4</span> Solver Options</h2>
 <p>Solver options are unique to the chosen solver, so any arguments to
-<code>CVXR::solve</code> besides the three documented above are simply passed
-along to the solver. The reference for the specific solver must be
+<code>CVXR::solve</code> besides those documented <a href="https://www.cvxgrp.org/CVXR/reference/psolve.html">here</a>
+are simply passed along to the solver. The reference for the specific solver must be
 consulted to set these options.</p>
 
 </div>

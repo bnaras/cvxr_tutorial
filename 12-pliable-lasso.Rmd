@@ -40,10 +40,10 @@ are tuning parameters. As $\alpha \rightarrow 1$ (but $<1$), the
 solution approaches the lasso solution. The default value used in the paper is
 $\alpha = 0.5.$
 
-An R package for the pliable lasso is forthcoming from the
-authors. Nevertheless, the pliable lasso is an excellent example to
-highlight the prototyping capabilities of `CVXR` for research. Along
-the way, we also introduce some new atoms that are needed in this example. 
+An R package for the pliable lasso is currently archived on [CRAN](https://CRAN.R-project.org/package=pliable). 
+Nevertheless, the pliable lasso is an excellent example to highlight the prototyping 
+capabilities of `CVXR` for research. Along the way, we also introduce some new atoms 
+that are needed in this example. 
 
 ## Example
 
@@ -241,7 +241,7 @@ knitr::kable(est.table, format = "html", digits = 3) %>%
 ```
 
 For this value of $\lambda$, the nonzero $(\beta_1, \beta_2, \beta_3,\beta_4)$ are picked up along
-with a few others like $(\beta_{20}, \beta_{34},\beta_{39})$. 
+with an additional $\beta_{20}$. 
 
 The values for $\theta_0$ are given below.
 
@@ -265,9 +265,7 @@ knitr::kable(est.table, format = "html", digits = 3) %>%
 
 Typically, one would run the fits for various values of $\lambda$, 
 choose one based on cross-validation, and assess the prediction against
-a test set. Here, even a single fit takes a while, but techniques
-discussed previously can be used to speed up the
-computations. However, the potential of `CVXR` in prototyping novel
-methods is clear.
+a test set. Here, even a single fit takes a while. However, the potential 
+of `CVXR` in prototyping novel methods is clear.
 
 ## References

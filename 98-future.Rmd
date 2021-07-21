@@ -1,12 +1,13 @@
 # Future Enhancements
 
-## Version 1.0
-- Modular system of reductions [@reductions:2018]
-  * New standard forms and solvers
-  * Advanced user inputs, e.g. complex variables
-- Disciplined geometric programming [@DGP]
-- Variable and parameter attributes
-- Transformations: linearize, indicator, partial optimization
+## Version 1.1
+- Higher dimensional variables
+- New atoms and transformations
+  * Support function
+  * Scalar product
+  * Matrix multiplication for DGP
+- Disciplined parametrized programming (DPP)
+- System for differentiating the map from a problem's parameters to its solution [@cvxpylayers:2019]
 
 ## Internal Changes
 - Uniform interface for solver settings

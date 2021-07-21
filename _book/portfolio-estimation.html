@@ -24,7 +24,7 @@
 <meta name="author" content="Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd" />
 
 
-<meta name="date" content="2021-07-18" />
+<meta name="date" content="2021-07-21" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -361,7 +361,7 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="19" data-path="future-enhancements.html"><a href="future-enhancements.html"><i class="fa fa-check"></i><b>19</b> Future Enhancements</a>
 <ul>
-<li class="chapter" data-level="19.1" data-path="future-enhancements.html"><a href="future-enhancements.html#version-1.0"><i class="fa fa-check"></i><b>19.1</b> Version 1.0</a></li>
+<li class="chapter" data-level="19.1" data-path="future-enhancements.html"><a href="future-enhancements.html#version-1.1"><i class="fa fa-check"></i><b>19.1</b> Version 1.1</a></li>
 <li class="chapter" data-level="19.2" data-path="future-enhancements.html"><a href="future-enhancements.html#internal-changes"><i class="fa fa-check"></i><b>19.2</b> Internal Changes</a></li>
 </ul></li>
 <li class="chapter" data-level="20" data-path="references-8.html"><a href="references-8.html"><i class="fa fa-check"></i><b>20</b> References</a></li>
@@ -401,7 +401,7 @@ problem under various constraints.</p>
 <p>We have <span class="math inline">\(n\)</span> assets or stocks in our portfolio and must determine the
 amount of money to invest in each. Let <span class="math inline">\(w_i\)</span> denote the fraction of
 our budget invested in asset <span class="math inline">\(i = 1,\ldots,m\)</span>, and let <span class="math inline">\(r_i\)</span> be the
-returns (, fractional change in price) over the period of
+returns (i.e., fractional change in price) over the period of
 interest. We model returns as a random vector <span class="math inline">\(r \in {\mathbf R}^n\)</span> with
 known mean <span class="math inline">\(\mathbf{E}[r] = \mu\)</span> and covariance <span class="math inline">\(\mathbf{Var}(r) = \Sigma\)</span>. Thus,
 given a portfolio <span class="math inline">\(w \in {\mathbf R}^n\)</span>, the overall return is <span class="math inline">\(R = r^Tw\)</span>.</p>
@@ -487,9 +487,8 @@ lower return.</p>
 <span id="cb116-6"><a href="portfolio-estimation.html#cb116-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">fill =</span> grp), <span class="at">stat =</span> <span class="st">&quot;identity&quot;</span>) <span class="sc">+</span></span>
 <span id="cb116-7"><a href="portfolio-estimation.html#cb116-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_x_discrete</span>(<span class="at">labels =</span> <span class="fu">parse</span>(<span class="at">text =</span> <span class="fu">levels</span>(tidyW<span class="sc">$</span>gamma))) <span class="sc">+</span></span>
 <span id="cb116-8"><a href="portfolio-estimation.html#cb116-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> cbPalette) <span class="sc">+</span></span>
-<span id="cb116-9"><a href="portfolio-estimation.html#cb116-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">guides</span>(<span class="at">fill =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb116-9"><a href="portfolio-estimation.html#cb116-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">guides</span>(<span class="at">fill =</span> <span class="st">&quot;none&quot;</span>) <span class="sc">+</span></span>
 <span id="cb116-10"><a href="portfolio-estimation.html#cb116-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Risk Aversion&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Fraction of Budget&quot;</span>)</span></code></pre></div>
-<pre><code>## Warning: `guides(&lt;scale&gt; = FALSE)` is deprecated. Please use `guides(&lt;scale&gt; = &quot;none&quot;)` instead.</code></pre>
 <p><img src="cvxr_tutorial_files/figure-html/unnamed-chunk-123-1.png" width="672" /></p>
 </div>
 <div id="discussion" class="section level2" number="16.4">
@@ -497,7 +496,7 @@ lower return.</p>
 <p>Many variations on the classical portfolio problem exist. For
 instance, we could allow long and short positions, but impose a
 leverage limit <span class="math inline">\(\|w\|_1 \leq L^{max}\)</span> by changing</p>
-<div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="portfolio-estimation.html#cb118-1" aria-hidden="true" tabindex="-1"></a>constr <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="fu">p_norm</span>(w,<span class="dv">1</span>) <span class="sc">&lt;=</span> Lmax, <span class="fu">sum</span>(w) <span class="sc">==</span> <span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="portfolio-estimation.html#cb117-1" aria-hidden="true" tabindex="-1"></a>constr <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="fu">p_norm</span>(w,<span class="dv">1</span>) <span class="sc">&lt;=</span> Lmax, <span class="fu">sum</span>(w) <span class="sc">==</span> <span class="dv">1</span>)</span></code></pre></div>
 <p>An alternative is to set a lower bound on the return and minimize just
 the risk. To account for transaction costs, we could add a term to the
 objective that penalizes deviations of <span class="math inline">\(w\)</span> from the previous

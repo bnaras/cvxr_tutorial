@@ -7,7 +7,7 @@
 
 ## Default Solvers
 
-The default installation of `CVXR` comes with two (imported) open
+The default installation of `CVXR` comes with three (imported) open
 source solvers:
 
 - [ECOS](https://github.com/embotech/ecos) and its mixed integer
@@ -15,6 +15,8 @@ source solvers:
   [ECOSolveR](https://cloud.r-project.org/package=ECOSolveR)
 - [SCS](https://github.com/cvxgrp/scs) via the CRAN package
   [scs](https://cloud.r-project.org/package=scs).
+- [OSQP](https://osqp.org/) via the CRAN package 
+  [osqp](https://CRAN.R-project.org/package=osqp).
   
 `CVXR` can also make use of several other open source solvers
 implemented in R packages. 
@@ -41,23 +43,10 @@ display the solvers that `CVXR` has detected.
 A few commercial solvers are also currently supported: [MOSEK](https://www.mosek.com) and
 [GUROBI](https://www.gurobi.com).
 
-At the moment, `CVXR` calls vendor Python solver packages via
-[`reticulate`](https://cran.r-project.org/package=reticulate), _not R
-packages_. Future versions will provide support directly using
-[_problem
-reductions_](https://web.stanford.edu/~boyd/papers/cvxpy_rewriting.html),
-implemented in [`CVXPY` version 1.0](https://www.cvxpy.org/).
-
-Thus, one needs two prerequisites to use these commercial solvers:
-
-- A Python installation in addition to R
-- The
-  [`reticulate`](https://cran.r-project.org/package=reticulate) R
-  package. 
-  
-We also recommend that you ensure `reticulate` is installed
-correctly and working. For example `reticulate::py_eval('1+1')` should return
-`2`. 
+`CVXR` version 1.0 directly calls these solvers via their associated R packages 
+using [_problem reductions_](https://web.stanford.edu/~boyd/papers/cvxpy_rewriting.html). 
+(Previous `CVXR` versions required Python and the 
+[`reticulate`](https://cran.r-project.org/package=reticulate) package).
 
 ### Installing `MOSEK`
 
@@ -76,7 +65,9 @@ pip install -f https://download.mosek.com/stable/wheel/index.html Mosek
 ```
 
 In addition, the license for the product has to be activated per
-instructions on the `Sales` section of the MOSEK web page.
+instructions on the `Sales` section of the MOSEK web page. The 
+[Rmosek](https://docs.mosek.com/9.2/rmosek/install-interface.html) 
+R package must be installed separately.
 
 Once activated, you can check that `CVXR` recognizes the solver;
 `installed_solvers()` should list `MOSEK`. Otherwise, rinse and repeat
@@ -89,6 +80,8 @@ that is free of charge. You must register to receive the license.
 
 Once registered, install the _Gurobi Optimizer_ software and activate
 your license as necessary.
+The [gurobi](https://www.gurobi.com/documentation/9.1/refman/ins_the_r_package.html) 
+R package must be installed separately.
 
 After activation, you can check that `CVXR::installed_solvers()` lists
 `GUROBI`. Otherwise, rinse and repeat until success.
@@ -99,7 +92,7 @@ If you have an Anaconda installation in your path, you have
 to account for the fact that there may be interactions when using
 RStudio and rendering documents. In particular, Anaconda may include
 its own version of pandoc and other tools that may conflict with what
-Rstudio needs to work properly.
+RStudio needs to work properly.
 
 To be concrete, one problem we found was that the `MOSEK` solver was
 not recognized as available in this rendered document, even
@@ -114,9 +107,9 @@ installed_solvers()
 
 ## Solver Peculiarities
 
-The default solver in `CVXR` is `ECOS`. However, it is not always the
-best solver to use. As an example, let us consider again the [catenary
-problem](/cvxr_examples/cvxr_catenary/). 
+The most commonly used solver in `CVXR` is `ECOS`. However, it is not 
+always the best solver for a problem. As an example, let us consider again 
+the [catenary problem](/cvxr_examples/cvxr_catenary/). 
 
 We will change the problem slightly to use a finer discretization from
 101 to 501 points.
@@ -139,7 +132,7 @@ constraints <- list(x[1] == 0, y[1] == 1,
 
 ## Solve the catenary problem
 prob <- Problem(objective, constraints)
-result <- solve(prob)
+result <- solve(prob, solver = "ECOS")
 ```
 
 The solution status is no longer optimal.

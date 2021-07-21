@@ -20,7 +20,7 @@ problem under various constraints.
 We have $n$ assets or stocks in our portfolio and must determine the
 amount of money to invest in each. Let $w_i$ denote the fraction of
 our budget invested in asset $i = 1,\ldots,m$, and let $r_i$ be the
-returns (\ie, fractional change in price) over the period of
+returns (i.e., fractional change in price) over the period of
 interest. We model returns as a random vector $r \in {\mathbf R}^n$ with
 known mean $\mathbf{E}[r] = \mu$ and covariance $\mathbf{Var}(r) = \Sigma$. Thus,
 given a portfolio $w \in {\mathbf R}^n$, the overall return is $R = r^Tw$.
@@ -120,7 +120,7 @@ ggplot(data = tidyW, mapping = aes(x = gamma, y = fraction)) +
     geom_bar(mapping = aes(fill = grp), stat = "identity") +
     scale_x_discrete(labels = parse(text = levels(tidyW$gamma))) +
     scale_fill_manual(values = cbPalette) +
-    guides(fill = FALSE) +
+    guides(fill = "none") +
     labs(x = "Risk Aversion", y = "Fraction of Budget")
 ```
 

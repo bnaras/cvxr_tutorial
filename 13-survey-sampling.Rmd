@@ -137,7 +137,7 @@ res <- solve(p, solver = "SCS")
 w_cvxr_q <- di * res$getValue(g)
 ```
 
-The default `ECOS` solver produces a different number of unique
+The default `OSQP` solver produces a different number of unique
 weights. Such differences are not unheard of among solvers.
 
 ```{r, echo = FALSE}
