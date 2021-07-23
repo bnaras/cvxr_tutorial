@@ -161,7 +161,7 @@ staircase pattern has been smoothed out.
 (plot.nearconvex <- ggplot(data = data.nearconvex) +
      geom_point(mapping = aes(year, annual), color = "red") +
      geom_line(mapping = aes(year, est), color = "blue") +
-     geom_ribbon(mapping = aes(x = year, ymin = lower,ymax = upper), alpha = 0.3) +
+     geom_ribbon(mapping = aes(x = year, ymin = lower, ymax = upper), alpha = 0.3) +
      labs(x = "Year", y = "Temperature Anomalies")
 )
 ```

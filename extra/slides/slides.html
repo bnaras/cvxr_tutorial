@@ -6,7 +6,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <meta name="author" content="Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd" />
-  <meta name="date" content="2021-07-22" />
+  <meta name="date" content="2021-07-23" />
   <title>Disciplined Convex Optimization in R</title>
   <style type="text/css">
     code{white-space: pre-wrap;}
@@ -159,7 +159,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <p class="author">
 Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd
   </p>
-  <p class="date">2021-07-22</p>
+  <p class="date">2021-07-23</p>
 </div>
 <div id="introduction" class="slide section level1">
 <h1>Introduction</h1>
@@ -2074,15 +2074,15 @@ A\beta \leq 0
 ##           warm start: on, polish: on, time_limit: off
 ## 
 ## iter  objective    pri res    dua res    rho        time
-##    1   0.0000e+00   3.23e+01   2.20e+04   1.00e-01   1.56e-04s
-##   50   3.4135e+01   2.51e-07   2.97e-07   1.20e-02   3.24e-04s
-## plsh   3.4135e+01   5.80e-15   1.12e-14  ---------   4.16e-04s
+##    1   0.0000e+00   3.23e+01   2.20e+04   1.00e-01   1.74e-04s
+##   50   3.4135e+01   2.51e-07   2.97e-07   1.20e-02   3.47e-04s
+## plsh   3.4135e+01   5.80e-15   1.12e-14  ---------   4.48e-04s
 ## 
 ## status:               solved
 ## solution polish:      successful
 ## number of iterations: 50
 ## optimal objective:    34.1346
-## run time:             4.16e-04s
+## run time:             4.48e-04s
 ## optimal rho estimate: 4.33e-03</code></pre>
 <h2 id="solver-options">Solver Options</h2>
 <p>Solver options are unique to the chosen solver, so any arguments to <code>CVXR::solve</code> besides those documented <a href="https://www.cvxgrp.org/CVXR/reference/psolve.html">here</a> are simply passed along to the solver. The reference for the specific solver must be consulted to set these options.</p>
@@ -4327,7 +4327,7 @@ GLMNET
 <div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>(plot.neariso <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> data.neariso) <span class="sc">+</span></span>
 <span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>     <span class="fu">geom_point</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(year, annual), <span class="at">color =</span> <span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
 <span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>     <span class="fu">geom_line</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(year, est), <span class="at">color =</span> <span class="st">&quot;blue&quot;</span>) <span class="sc">+</span></span>
-<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a>     <span class="fu">geom_ribbon</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">ymin =</span> lower,<span class="at">ymax =</span> upper), <span class="at">alpha=</span><span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a>     <span class="fu">geom_ribbon</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">ymin =</span> lower, <span class="at">ymax =</span> upper), <span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
 <span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a>     <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Year&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Temperature Anomalies&quot;</span>)</span>
 <span id="cb75-6"><a href="#cb75-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 </div>
@@ -4388,7 +4388,7 @@ Nearly Isotonic Fit
 <div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>(plot.nearconvex <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> data.nearconvex) <span class="sc">+</span></span>
 <span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>     <span class="fu">geom_point</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(year, annual), <span class="at">color =</span> <span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
 <span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>     <span class="fu">geom_line</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(year, est), <span class="at">color =</span> <span class="st">&quot;blue&quot;</span>) <span class="sc">+</span></span>
-<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>     <span class="fu">geom_ribbon</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">ymin =</span> lower,<span class="at">ymax =</span> upper),<span class="at">alpha=</span><span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>     <span class="fu">geom_ribbon</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">ymin =</span> lower, <span class="at">ymax =</span> upper), <span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
 <span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a>     <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Year&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Temperature Anomalies&quot;</span>)</span>
 <span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 </div>
@@ -4538,7 +4538,7 @@ x_4\beta_4(e - 2z_2);\ \ \beta = (2, -2, 2, 2, 0, 0,\ldots),
 <h2 id="full-function">Full Function</h2>
 <p>We now put it all together.</p>
 <div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a>plasso_fit <span class="ot">&lt;-</span> <span class="cf">function</span>(y, X, Z, lambda, <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">intercept =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb86-2"><a href="#cb86-2" aria-hidden="true" tabindex="-1"></a>                          <span class="at">ZERO_THRESHOLD=</span> <span class="fl">1e-6</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>) {</span>
+<span id="cb86-2"><a href="#cb86-2" aria-hidden="true" tabindex="-1"></a>                          <span class="at">ZERO_THRESHOLD =</span> <span class="fl">1e-6</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>) {</span>
 <span id="cb86-3"><a href="#cb86-3" aria-hidden="true" tabindex="-1"></a>    N <span class="ot">&lt;-</span> <span class="fu">length</span>(y)</span>
 <span id="cb86-4"><a href="#cb86-4" aria-hidden="true" tabindex="-1"></a>    p <span class="ot">&lt;-</span> <span class="fu">ncol</span>(X)</span>
 <span id="cb86-5"><a href="#cb86-5" aria-hidden="true" tabindex="-1"></a>    K <span class="ot">&lt;-</span> <span class="fu">ncol</span>(Z)</span>
