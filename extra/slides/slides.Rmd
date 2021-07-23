@@ -676,7 +676,7 @@ _Hint_: What function in R computes lagged differences?
 This requires some additional knowledge about R and `CVXR`
 functions. The `base::diff` generic function generates lagged
 differences of any order. `CVXR` provides a method for the generic. So
-the monotonicity constraint can be succintly expressed as `diff(beta) >= 0`.
+the monotonicity constraint can be succinctly expressed as `diff(beta) >= 0`.
 
 ```{r}
 problem3 <- Problem(objective,
@@ -1503,14 +1503,16 @@ bootstrapping.
 neariso_fit <- function(y, lambda) {
     m <- length(y)
     beta <- Variable(m)
-    obj <- 0.5 * sum_squares(y - beta) + lambda * sum(pos(diff(beta)))
+    A <- as(m:1, "pMatrix") %*% Matrix::Diagonal(m)   # Matrix for reversing order
+    obj <- 0.5 * sum_squares(y - beta) + lambda * sum(pos(diff(A %*% beta)))
     prob <- Problem(Minimize(obj))
     solve(prob)$getValue(beta)
 }
 ```
 
-The `CVXR::pos` atom evaluates $x_+ = \max(x,0)$ elementwise on the input
-expression.
+Observe that we reverse the order of `beta` since `diff` outputs 
+`beta[i+1] - beta[i]` for $i = 1,\ldots,m$. The `CVXR::pos` atom 
+evaluates $x_+ = \max(x,0)$ elementwise on the input expression.
 
 ---
 
@@ -1552,7 +1554,7 @@ fit.
 (plot.neariso <- ggplot(data = data.neariso) +
      geom_point(mapping = aes(year, annual), color = "red") +
      geom_line(mapping = aes(year, est), color = "blue") +
-     geom_ribbon(mapping = aes(x = year, ymin = lower,ymax = upper), alpha=0.3) +
+     geom_ribbon(mapping = aes(x = year, ymin = lower, ymax = upper), alpha = 0.3) +
      labs(x = "Year", y = "Temperature Anomalies")
 )
 ```
@@ -1585,14 +1587,15 @@ $$
 
 This replaces the first difference term with an approximation to the
 second derivative at $\beta_{i+1}$. In `CVXR`, the only change
-necessary is the penalty line: replace `diff(x)` by 
-`diff(x, differences = 2)`.
+necessary is the penalty line: replace `diff(A %*% x)` by 
+`diff(A %*% x, differences = 2)`.
 
 ```{r, eval = FALSE}
 nearconvex_fit <- function(y, lambda) {
     m <- length(y)
     beta <- Variable(m)
-    obj <- 0.5 * sum_squares(y - beta) + lambda * sum(pos(diff(beta, differences = 2)))
+    A <- as(m:1, "pMatrix") %*% Matrix::Diagonal(m)   # Matrix for reversing order
+    obj <- 0.5 * sum_squares(y - beta) + lambda * sum(pos(diff(A %*% beta, differences = 2)))
     prob <- Problem(Minimize(obj))
     solve(prob)$getValue(beta)
 }
@@ -1628,7 +1631,7 @@ staircase pattern has been smoothed out.
 (plot.nearconvex <- ggplot(data = data.nearconvex) +
      geom_point(mapping = aes(year, annual), color = "red") +
      geom_line(mapping = aes(year, est), color = "blue") +
-     geom_ribbon(mapping = aes(x = year, ymin = lower,ymax = upper),alpha=0.3) +
+     geom_ribbon(mapping = aes(x = year, ymin = lower, ymax = upper), alpha = 0.3) +
      labs(x = "Year", y = "Temperature Anomalies")
 )
 ```
@@ -1861,7 +1864,7 @@ We now put it all together.
 
 ```{r}
 plasso_fit <- function(y, X, Z, lambda, alpha = 0.5, intercept = TRUE,
-                          ZERO_THRESHOLD= 1e-6, verbose = FALSE) {
+                          ZERO_THRESHOLD = 1e-6, verbose = FALSE) {
     N <- length(y)
     p <- ncol(X)
     K <- ncol(Z)

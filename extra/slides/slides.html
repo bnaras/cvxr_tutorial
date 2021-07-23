@@ -1809,7 +1809,7 @@ A\beta \leq 0
 <div class="slide section level1">
 
 <h4 id="solution-3">Solution</h4>
-<p>This requires some additional knowledge about R and <code>CVXR</code> functions. The <code>base::diff</code> generic function generates lagged differences of any order. <code>CVXR</code> provides a method for the generic. So the monotonicity constraint can be succintly expressed as <code>diff(beta) &gt;= 0</code>.</p>
+<p>This requires some additional knowledge about R and <code>CVXR</code> functions. The <code>base::diff</code> generic function generates lagged differences of any order. <code>CVXR</code> provides a method for the generic. So the monotonicity constraint can be succinctly expressed as <code>diff(beta) &gt;= 0</code>.</p>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>problem3 <span class="ot">&lt;-</span> <span class="fu">Problem</span>(objective,</span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">constraints =</span> <span class="fu">list</span>(beta <span class="sc">&gt;=</span> <span class="dv">0</span>, <span class="fu">diff</span>(beta) <span class="sc">&gt;=</span> <span class="dv">0</span>))</span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>ex3 <span class="ot">&lt;-</span> <span class="fu">solve</span>(problem3)</span>
@@ -2074,15 +2074,15 @@ A\beta \leq 0
 ##           warm start: on, polish: on, time_limit: off
 ## 
 ## iter  objective    pri res    dua res    rho        time
-##    1   0.0000e+00   3.23e+01   2.20e+04   1.00e-01   9.63e-05s
-##   50   3.4135e+01   2.51e-07   2.97e-07   1.20e-02   1.87e-04s
-## plsh   3.4135e+01   5.80e-15   1.12e-14  ---------   2.43e-04s
+##    1   0.0000e+00   3.23e+01   2.20e+04   1.00e-01   1.56e-04s
+##   50   3.4135e+01   2.51e-07   2.97e-07   1.20e-02   3.24e-04s
+## plsh   3.4135e+01   5.80e-15   1.12e-14  ---------   4.16e-04s
 ## 
 ## status:               solved
 ## solution polish:      successful
 ## number of iterations: 50
 ## optimal objective:    34.1346
-## run time:             2.43e-04s
+## run time:             4.16e-04s
 ## optimal rho estimate: 4.33e-03</code></pre>
 <h2 id="solver-options">Solver Options</h2>
 <p>Solver options are unique to the chosen solver, so any arguments to <code>CVXR::solve</code> besides those documented <a href="https://www.cvxgrp.org/CVXR/reference/psolve.html">here</a> are simply passed along to the solver. The reference for the specific solver must be consulted to set these options.</p>
@@ -4295,11 +4295,12 @@ GLMNET
 <div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>neariso_fit <span class="ot">&lt;-</span> <span class="cf">function</span>(y, lambda) {</span>
 <span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>    m <span class="ot">&lt;-</span> <span class="fu">length</span>(y)</span>
 <span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a>    beta <span class="ot">&lt;-</span> <span class="fu">Variable</span>(m)</span>
-<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>    obj <span class="ot">&lt;-</span> <span class="fl">0.5</span> <span class="sc">*</span> <span class="fu">sum_squares</span>(y <span class="sc">-</span> beta) <span class="sc">+</span> lambda <span class="sc">*</span> <span class="fu">sum</span>(<span class="fu">pos</span>(<span class="fu">diff</span>(beta)))</span>
-<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a>    prob <span class="ot">&lt;-</span> <span class="fu">Problem</span>(<span class="fu">Minimize</span>(obj))</span>
-<span id="cb72-6"><a href="#cb72-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">solve</span>(prob)<span class="sc">$</span><span class="fu">getValue</span>(beta)</span>
-<span id="cb72-7"><a href="#cb72-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
-<p>The <code>CVXR::pos</code> atom evaluates <span class="math inline">\(x_+ = \max(x,0)\)</span> elementwise on the input expression.</p>
+<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>    A <span class="ot">&lt;-</span> <span class="fu">as</span>(m<span class="sc">:</span><span class="dv">1</span>, <span class="st">&quot;pMatrix&quot;</span>) <span class="sc">%*%</span> Matrix<span class="sc">::</span><span class="fu">Diagonal</span>(m)   <span class="co"># Matrix for reversing order</span></span>
+<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a>    obj <span class="ot">&lt;-</span> <span class="fl">0.5</span> <span class="sc">*</span> <span class="fu">sum_squares</span>(y <span class="sc">-</span> beta) <span class="sc">+</span> lambda <span class="sc">*</span> <span class="fu">sum</span>(<span class="fu">pos</span>(<span class="fu">diff</span>(A <span class="sc">%*%</span> beta)))</span>
+<span id="cb72-6"><a href="#cb72-6" aria-hidden="true" tabindex="-1"></a>    prob <span class="ot">&lt;-</span> <span class="fu">Problem</span>(<span class="fu">Minimize</span>(obj))</span>
+<span id="cb72-7"><a href="#cb72-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">solve</span>(prob)<span class="sc">$</span><span class="fu">getValue</span>(beta)</span>
+<span id="cb72-8"><a href="#cb72-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>Observe that we reverse the order of <code>beta</code> since <code>diff</code> outputs <code>beta[i+1] - beta[i]</code> for <span class="math inline">\(i = 1,\ldots,m\)</span>. The <code>CVXR::pos</code> atom evaluates <span class="math inline">\(x_+ = \max(x,0)\)</span> elementwise on the input expression.</p>
 </div>
 <div class="slide section level1">
 
@@ -4353,35 +4354,36 @@ Nearly Isotonic Fit
 <div class="slide section level1">
 
 <h4 id="solution-11">Solution</h4>
-<p>This replaces the first difference term with an approximation to the second derivative at <span class="math inline">\(\beta_{i+1}\)</span>. In <code>CVXR</code>, the only change necessary is the penalty line: replace <code>diff(x)</code> by <code>diff(x, differences = 2)</code>.</p>
+<p>This replaces the first difference term with an approximation to the second derivative at <span class="math inline">\(\beta_{i+1}\)</span>. In <code>CVXR</code>, the only change necessary is the penalty line: replace <code>diff(A %*% x)</code> by <code>diff(A %*% x, differences = 2)</code>.</p>
 <div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>nearconvex_fit <span class="ot">&lt;-</span> <span class="cf">function</span>(y, lambda) {</span>
 <span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>    m <span class="ot">&lt;-</span> <span class="fu">length</span>(y)</span>
 <span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a>    beta <span class="ot">&lt;-</span> <span class="fu">Variable</span>(m)</span>
-<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a>    obj <span class="ot">&lt;-</span> <span class="fl">0.5</span> <span class="sc">*</span> <span class="fu">sum_squares</span>(y <span class="sc">-</span> beta) <span class="sc">+</span> lambda <span class="sc">*</span> <span class="fu">sum</span>(<span class="fu">pos</span>(<span class="fu">diff</span>(beta, <span class="at">differences =</span> <span class="dv">2</span>)))</span>
-<span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a>    prob <span class="ot">&lt;-</span> <span class="fu">Problem</span>(<span class="fu">Minimize</span>(obj))</span>
-<span id="cb76-6"><a href="#cb76-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">solve</span>(prob)<span class="sc">$</span><span class="fu">getValue</span>(beta)</span>
-<span id="cb76-7"><a href="#cb76-7" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb76-8"><a href="#cb76-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb76-9"><a href="#cb76-9" aria-hidden="true" tabindex="-1"></a>nearconvex_fit_stat <span class="ot">&lt;-</span> <span class="cf">function</span>(data, index, lambda) {</span>
-<span id="cb76-10"><a href="#cb76-10" aria-hidden="true" tabindex="-1"></a>    sample <span class="ot">&lt;-</span> data[index,]                  <span class="co"># Bootstrap sample of rows</span></span>
-<span id="cb76-11"><a href="#cb76-11" aria-hidden="true" tabindex="-1"></a>    sample <span class="ot">&lt;-</span> sample[<span class="fu">order</span>(sample<span class="sc">$</span>year),]   <span class="co"># Order ascending by year</span></span>
-<span id="cb76-12"><a href="#cb76-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nearconvex_fit</span>(sample<span class="sc">$</span>annual, lambda)</span>
-<span id="cb76-13"><a href="#cb76-13" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb76-14"><a href="#cb76-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb76-15"><a href="#cb76-15" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">987</span>)</span>
-<span id="cb76-16"><a href="#cb76-16" aria-hidden="true" tabindex="-1"></a>boot.nearconvex <span class="ot">&lt;-</span> <span class="fu">boot</span>(<span class="at">data =</span> cdiac,</span>
-<span id="cb76-17"><a href="#cb76-17" aria-hidden="true" tabindex="-1"></a>                        <span class="at">statistic =</span> nearconvex_fit_stat,</span>
-<span id="cb76-18"><a href="#cb76-18" aria-hidden="true" tabindex="-1"></a>                        <span class="at">R =</span> <span class="dv">5</span>,</span>
-<span id="cb76-19"><a href="#cb76-19" aria-hidden="true" tabindex="-1"></a>                        <span class="at">lambda =</span> <span class="fl">0.44</span>)</span>
-<span id="cb76-20"><a href="#cb76-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb76-21"><a href="#cb76-21" aria-hidden="true" tabindex="-1"></a>ci.nearconvex <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">sapply</span>(<span class="fu">seq_len</span>(<span class="fu">nrow</span>(cdiac)),</span>
-<span id="cb76-22"><a href="#cb76-22" aria-hidden="true" tabindex="-1"></a>                          <span class="cf">function</span>(i) <span class="fu">boot.ci</span>(<span class="at">boot.out =</span> boot.nearconvex, <span class="at">conf =</span> <span class="fl">0.95</span>,</span>
-<span id="cb76-23"><a href="#cb76-23" aria-hidden="true" tabindex="-1"></a>                                              <span class="at">type =</span> <span class="st">&quot;norm&quot;</span>, <span class="at">index =</span> i)<span class="sc">$</span>normal[<span class="sc">-</span><span class="dv">1</span>]))</span>
-<span id="cb76-24"><a href="#cb76-24" aria-hidden="true" tabindex="-1"></a>data.nearconvex <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">year =</span> cdiac<span class="sc">$</span>year,</span>
-<span id="cb76-25"><a href="#cb76-25" aria-hidden="true" tabindex="-1"></a>                              <span class="at">annual =</span> cdiac<span class="sc">$</span>annual,</span>
-<span id="cb76-26"><a href="#cb76-26" aria-hidden="true" tabindex="-1"></a>                              <span class="at">est =</span> boot.nearconvex<span class="sc">$</span>t0,</span>
-<span id="cb76-27"><a href="#cb76-27" aria-hidden="true" tabindex="-1"></a>                              <span class="at">lower =</span> ci.nearconvex[, <span class="dv">1</span>],</span>
-<span id="cb76-28"><a href="#cb76-28" aria-hidden="true" tabindex="-1"></a>                              <span class="at">upper =</span> ci.nearconvex[, <span class="dv">2</span>])</span></code></pre></div>
+<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a>    A <span class="ot">&lt;-</span> <span class="fu">as</span>(m<span class="sc">:</span><span class="dv">1</span>, <span class="st">&quot;pMatrix&quot;</span>) <span class="sc">%*%</span> Matrix<span class="sc">::</span><span class="fu">Diagonal</span>(m)   <span class="co"># Matrix for reversing order</span></span>
+<span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a>    obj <span class="ot">&lt;-</span> <span class="fl">0.5</span> <span class="sc">*</span> <span class="fu">sum_squares</span>(y <span class="sc">-</span> beta) <span class="sc">+</span> lambda <span class="sc">*</span> <span class="fu">sum</span>(<span class="fu">pos</span>(<span class="fu">diff</span>(A <span class="sc">%*%</span> beta, <span class="at">differences =</span> <span class="dv">2</span>)))</span>
+<span id="cb76-6"><a href="#cb76-6" aria-hidden="true" tabindex="-1"></a>    prob <span class="ot">&lt;-</span> <span class="fu">Problem</span>(<span class="fu">Minimize</span>(obj))</span>
+<span id="cb76-7"><a href="#cb76-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">solve</span>(prob)<span class="sc">$</span><span class="fu">getValue</span>(beta)</span>
+<span id="cb76-8"><a href="#cb76-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb76-9"><a href="#cb76-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-10"><a href="#cb76-10" aria-hidden="true" tabindex="-1"></a>nearconvex_fit_stat <span class="ot">&lt;-</span> <span class="cf">function</span>(data, index, lambda) {</span>
+<span id="cb76-11"><a href="#cb76-11" aria-hidden="true" tabindex="-1"></a>    sample <span class="ot">&lt;-</span> data[index,]                  <span class="co"># Bootstrap sample of rows</span></span>
+<span id="cb76-12"><a href="#cb76-12" aria-hidden="true" tabindex="-1"></a>    sample <span class="ot">&lt;-</span> sample[<span class="fu">order</span>(sample<span class="sc">$</span>year),]   <span class="co"># Order ascending by year</span></span>
+<span id="cb76-13"><a href="#cb76-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nearconvex_fit</span>(sample<span class="sc">$</span>annual, lambda)</span>
+<span id="cb76-14"><a href="#cb76-14" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb76-15"><a href="#cb76-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-16"><a href="#cb76-16" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">987</span>)</span>
+<span id="cb76-17"><a href="#cb76-17" aria-hidden="true" tabindex="-1"></a>boot.nearconvex <span class="ot">&lt;-</span> <span class="fu">boot</span>(<span class="at">data =</span> cdiac,</span>
+<span id="cb76-18"><a href="#cb76-18" aria-hidden="true" tabindex="-1"></a>                        <span class="at">statistic =</span> nearconvex_fit_stat,</span>
+<span id="cb76-19"><a href="#cb76-19" aria-hidden="true" tabindex="-1"></a>                        <span class="at">R =</span> <span class="dv">5</span>,</span>
+<span id="cb76-20"><a href="#cb76-20" aria-hidden="true" tabindex="-1"></a>                        <span class="at">lambda =</span> <span class="fl">0.44</span>)</span>
+<span id="cb76-21"><a href="#cb76-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-22"><a href="#cb76-22" aria-hidden="true" tabindex="-1"></a>ci.nearconvex <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">sapply</span>(<span class="fu">seq_len</span>(<span class="fu">nrow</span>(cdiac)),</span>
+<span id="cb76-23"><a href="#cb76-23" aria-hidden="true" tabindex="-1"></a>                          <span class="cf">function</span>(i) <span class="fu">boot.ci</span>(<span class="at">boot.out =</span> boot.nearconvex, <span class="at">conf =</span> <span class="fl">0.95</span>,</span>
+<span id="cb76-24"><a href="#cb76-24" aria-hidden="true" tabindex="-1"></a>                                              <span class="at">type =</span> <span class="st">&quot;norm&quot;</span>, <span class="at">index =</span> i)<span class="sc">$</span>normal[<span class="sc">-</span><span class="dv">1</span>]))</span>
+<span id="cb76-25"><a href="#cb76-25" aria-hidden="true" tabindex="-1"></a>data.nearconvex <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">year =</span> cdiac<span class="sc">$</span>year,</span>
+<span id="cb76-26"><a href="#cb76-26" aria-hidden="true" tabindex="-1"></a>                              <span class="at">annual =</span> cdiac<span class="sc">$</span>annual,</span>
+<span id="cb76-27"><a href="#cb76-27" aria-hidden="true" tabindex="-1"></a>                              <span class="at">est =</span> boot.nearconvex<span class="sc">$</span>t0,</span>
+<span id="cb76-28"><a href="#cb76-28" aria-hidden="true" tabindex="-1"></a>                              <span class="at">lower =</span> ci.nearconvex[, <span class="dv">1</span>],</span>
+<span id="cb76-29"><a href="#cb76-29" aria-hidden="true" tabindex="-1"></a>                              <span class="at">upper =</span> ci.nearconvex[, <span class="dv">2</span>])</span></code></pre></div>
 <p>The resulting curve for the nearly-convex fit is depicted below with 95% confidence bands generated from <span class="math inline">\(R = 5\)</span> samples. Note the jagged staircase pattern has been smoothed out.</p>
 <div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>(plot.nearconvex <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> data.nearconvex) <span class="sc">+</span></span>
 <span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>     <span class="fu">geom_point</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(year, annual), <span class="at">color =</span> <span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
