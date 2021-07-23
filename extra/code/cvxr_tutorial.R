@@ -553,7 +553,8 @@ str(cdiac)
 neariso_fit <- function(y, lambda) {
     m <- length(y)
     beta <- Variable(m)
-    obj <- 0.5 * sum_squares(y - beta) + lambda * sum(pos(diff(beta)))
+    A <- as(m:1, "pMatrix") %*% Matrix::Diagonal(m)   # Matrix for reversing order
+    obj <- 0.5 * sum_squares(y - beta) + lambda * sum(pos(diff(A %*% beta)))
     prob <- Problem(Minimize(obj))
     solve(prob)$getValue(beta)
 }
@@ -586,7 +587,7 @@ neariso_fit_stat <- function(data, index, lambda) {
 ## (plot.neariso <- ggplot(data = data.neariso) +
 ##      geom_point(mapping = aes(year, annual), color = "red") +
 ##      geom_line(mapping = aes(year, est), color = "blue") +
-##      geom_ribbon(mapping = aes(x = year, ymin = lower,ymax = upper),alpha=0.3) +
+##      geom_ribbon(mapping = aes(x = year, ymin = lower, ymax = upper), alpha = 0.3) +
 ##      labs(x = "Year", y = "Temperature Anomalies")
 ## )
 
@@ -595,7 +596,8 @@ neariso_fit_stat <- function(data, index, lambda) {
 ## nearconvex_fit <- function(y, lambda) {
 ##     m <- length(y)
 ##     beta <- Variable(m)
-##     obj <- 0.5 * sum_squares(y - beta) + lambda * sum(pos(diff(beta, differences = 2)))
+##     A <- as(m:1, "pMatrix") %*% Matrix::Diagonal(m)   # Matrix for reversing order
+##     obj <- 0.5 * sum_squares(y - beta) + lambda * sum(pos(diff(A %*% beta, differences = 2)))
 ##     prob <- Problem(Minimize(obj))
 ##     solve(prob)$getValue(beta)
 ## }
