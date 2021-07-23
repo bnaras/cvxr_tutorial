@@ -27,7 +27,7 @@ The following are some basic convex functions.
 - $a^Tx + b$
 - $x^Tx$; $x^Tx/y$ for $y>0$; $(x^Tx)^{1/2}$ 
 - $||x||$ (any norm)
-- $\max(x_1, x_2, \ldots, x_n)$, $\log(e^x_{1}+ \ldots + e^x_{n})$
+- $\max(x_1, x_2, \ldots, x_n)$, $\log(e^{x_1}+ \ldots + e^{x_n})$
 - $\log(\Phi(x))$, where $\Phi$ is Gaussian CDF
 - $\log(\text{det}X^{-1})$ for $X \succ 0$
 

@@ -24,7 +24,7 @@
 <meta name="author" content="Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd" />
 
 
-<meta name="date" content="2021-07-21" />
+<meta name="date" content="2021-07-22" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -496,12 +496,12 @@ comments as placeholders for code we shall construct later.</p>
 this norm:</p>
 <ul>
 <li><code>hstack</code> to bind columns of <span class="math inline">\(\beta\)</span> and the matrix <span class="math inline">\(\Theta\)</span>, the
-equivalent of <code>rbind</code> in R,</li>
+equivalent of <code>cbind</code> in R,</li>
 <li><code>cvxr_norm</code>, which accepts a matrix variable and an <code>axis</code> denoting the axis along which
 the norm is to be taken. The penalty requires us to use the row axis,
 so <code>axis = 1</code> per the usual R convention.</li>
 </ul>
-<p>The second term in the parentheses, <span class="math inline">\(\sum_{j}||\theta_j||_2\)</span>, is also a norm
+<p>The second term in the parentheses, <span class="math inline">\(\sum_{j=1}^p||\theta_j||_2\)</span>, is also a norm
 along rows as the <span class="math inline">\(\theta_j\)</span> are rows of <span class="math inline">\(\Theta\)</span>. The last term is simply a <span class="math inline">\(l_1\)</span>-norm.</p>
 <div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="pliable-lasso.html#cb81-1" aria-hidden="true" tabindex="-1"></a>penalty_term1 <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">cvxr_norm</span>(<span class="fu">hstack</span>(beta, theta), <span class="dv">2</span>, <span class="at">axis =</span> <span class="dv">1</span>))</span>
 <span id="cb81-2"><a href="pliable-lasso.html#cb81-2" aria-hidden="true" tabindex="-1"></a>penalty_term2 <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">cvxr_norm</span>(theta, <span class="dv">2</span>, <span class="at">axis =</span> <span class="dv">1</span>))</span>

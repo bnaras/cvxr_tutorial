@@ -200,7 +200,7 @@ print_matrix(m, row_names = paste0("$\\beta_{", 1:p, "}$"))
 
 We can verify once again that these values are comparable to those
 obtained from another R package,
-say [nnls]( https://CRAN.R-project.org/package=nnls). 
+say [`nnls`]( https://CRAN.R-project.org/package=nnls). 
 
 ```{r}
 nnls.fit <- nnls::nnls(X, Y)$x

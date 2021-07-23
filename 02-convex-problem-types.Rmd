@@ -22,8 +22,8 @@ for linear programs.
 
 ## Quadratic Programs
 
-When the objective $f_0$ is quadratic in $x$, the problem is called a
-quadratic program.
+When the objective $f_0$ is quadratic in $x$ and $f_1,\ldots,f_M$ are 
+linear in $x$, the problem is called a quadratic program.
 
 ## Cone Programs
 
@@ -32,4 +32,4 @@ Examples of $C$ are the positive orthant $\mathbf{R}^n$, the set of positive sem
 
 ## Integer and Mixed Integer Programs
 
-When all elements of $x$ are constrained to be integers, or even binary ($\{0,1\}$) values, the problem is called an integer program. If only a few elements of $x$ are constrained to be integers, then the problem is a mixed integer program.
+When all elements of $x$ are constrained to be integers, or even binary ($\{0,1\}$) values, the problem is called an integer program. If only a few elements of $x$ are constrained to be integers, then the problem is a mixed integer program. These problems are not convex, but can be relaxed (e.g., we replace $x \in \{0,1\}$ with $x \in [0,1]$).

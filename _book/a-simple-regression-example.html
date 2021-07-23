@@ -24,7 +24,7 @@
 <meta name="author" content="Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd" />
 
 
-<meta name="date" content="2021-07-21" />
+<meta name="date" content="2021-07-22" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -1055,7 +1055,7 @@ problem definition.</p>
 </table>
 <p>We can verify once again that these values are comparable to those
 obtained from another R package,
-say <a href="https://CRAN.R-project.org/package=nnls">nnls</a>.</p>
+say <a href="https://CRAN.R-project.org/package=nnls"><code>nnls</code></a>.</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="a-simple-regression-example.html#cb19-1" aria-hidden="true" tabindex="-1"></a>nnls.fit <span class="ot">&lt;-</span> nnls<span class="sc">::</span><span class="fu">nnls</span>(X, Y)<span class="sc">$</span>x</span>
 <span id="cb19-2"><a href="a-simple-regression-example.html#cb19-2" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">cbind</span>(betaEstimate, nnls.fit)</span></code></pre></div>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">

@@ -3,7 +3,7 @@
 ## Goals
 
 - Formulate nearly-isotonic and nearly-convex fits using `CVXR` atoms
-- Use the bootstrap to estimate variance of estimates
+- Use the bootstrap to estimate variance of approximation
 
 ```{r, message = FALSE, echo = FALSE}
 library(ggplot2)

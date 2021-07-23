@@ -9,7 +9,7 @@ The following are prerequisites.
   which can be installed like any other package from
   [CRAN](https://cran.r-project.org).
 
-- An IDE/editing environment such as [Rstudio](https://rstudio.com),
+- An IDE/editing environment such as [RStudio](https://rstudio.com),
   [Emacs](https://www.gnu.org/software/emacs/), or equivalent. If you
   use Emacs, we recommend the version packaged and distributed by
   [Vincent Goulet](https://vgoulet.act.ulaval.ca/en/home/) as it
@@ -76,7 +76,7 @@ have to register for an account and accept the license agreement.
 
 2. Obtain an [evaluation or academic licence](http://www.gurobi.com/downloads/licenses/license-center).
 
-3. Install the GUROBI R package using [these
+3. Install the `gurobi` R package using [these
 instructions](https://www.gurobi.com/documentation/9.1/refman/ins_the_r_package.html).
 
 4. Ensure that you can run any one of the [R

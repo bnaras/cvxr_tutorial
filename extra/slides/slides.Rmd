@@ -104,7 +104,7 @@ The following are prerequisites.
   which can be installed like any other package from
   [CRAN](https://cran.r-project.org).
 
-- An IDE/editing environment such as [Rstudio](https://rstudio.com),
+- An IDE/editing environment such as [RStudio](https://rstudio.com),
   [Emacs](https://www.gnu.org/software/emacs/), or equivalent. If you
   use Emacs, we recommend the version packaged and distributed by
   [Vincent Goulet](https://vgoulet.act.ulaval.ca/en/home/) as it
@@ -171,9 +171,9 @@ to install the `Rmosek` package.
 9.1.2](http://www.gurobi.com/downloads/gurobi-optimizer). You will
 have to register for an account and accept the license agreement.
 
-2. Obtain an [evaluation or academic licence](http://www.gurobi.com/downloads/licenses/license-center).
+2. Obtain an [evaluation or academic license](http://www.gurobi.com/downloads/licenses/license-center).
 
-3. Install the GUROBI R package using [these
+3. Install the `gurobi` R package using [these
 instructions](https://www.gurobi.com/documentation/9.1/refman/ins_the_r_package.html).
 
 4. Ensure that you can run any one of the [R
@@ -204,8 +204,8 @@ for linear programs.
 
 ## Quadratic Programs
 
-When the objective $f_0$ is quadratic in $x$, the problem is called a
-quadratic program.
+When the objective $f_0$ is quadratic in $x$ and $f_1,\ldots,f_M$ are 
+linear in $x$, the problem is called a quadratic program.
 
 ## Cone Programs
 
@@ -213,7 +213,7 @@ When $f_i(x) \leq 0$ for all $i$ constrain $x$ to lie in a convex cone $C$, the 
 
 ## Integer and Mixed Integer Programs
 
-When all elements of $x$ are constrained to be integers, or even binary ($\{0,1\}$) values, the problem is called an integer program. If only a few elements of $x$ are constrained to be integers, then the problem is a mixed integer program.
+When all elements of $x$ are constrained to be integers, or even binary ($\{0,1\}$) values, the problem is called an integer program. If only a few elements of $x$ are constrained to be integers, then the problem is a mixed integer program. These problems are not convex, but can be relaxed (e.g., we replace $x \in \{0,1\}$ with $x \in [0,1]$).
 
 
 <!--chapter:end:02-convex-problem-types.Rmd-->
@@ -256,7 +256,7 @@ then you can use `ROI` in a straightforward way.
 Even before attempting a solution, one has to verify a problem is convex. A few possible approaches are to
 
 - Directly apply the definition of a convex function
-- Check first or second order conditions $\nabla^2{f}\succeq 0$. (These are often tedious and hard to derive).
+- Check first or second order conditions $\nabla^2{f}\succeq 0$. (These are often tedious and hard to derive)
 - Construct $f_i$ out of a library of basic convex functions/atoms by combining them using calculus rules that preserve convexity, yielding a problem that is automatically convex
 
 ---
@@ -273,7 +273,7 @@ Over the last few years, specialized languages have become available for
 general convex optimization using the constructive approach discussed
 above.
 
-- [CVX](https://cvxr.com/cvx/) and [YALMIP](https://yalmip.github.io), both implemented in Matlab
+- [CVX](https://cvxr.com/cvx/) and [YALMIP](https://yalmip.github.io), both implemented in MatLAB
 - [CVXPY](https//www.cvxpy.org) implemented in Python
 - [Convex.jl](https://github.com/JuliaOpt/Convex.jl) implemented in Julia
 - [CVXR](https://cvxr.rbind.io) implemented in R
@@ -318,7 +318,7 @@ The following are some basic convex functions.
 - $a^Tx + b$
 - $x^Tx$; $x^Tx/y$ for $y>0$; $(x^Tx)^{1/2}$ 
 - $\|x\|$ (any norm)
-- $\max(x_1, x_2, \ldots, x_n)$, $\log(e^x_{1}+ \ldots + e^x_{n})$
+- $\max(x_1, x_2, \ldots, x_n)$, $\log(e^{x_1}+ \ldots + e^{x_n})$
 - $\log(\Phi(x))$, where $\Phi$ is the Gaussian CDF
 - $\log(\text{det}(X^{-1}))$ for $X \succ 0$
 
@@ -559,7 +559,7 @@ print_matrix(m, row_names = paste0("$\\beta_{", 1:p, "}$"))
 
 We can verify once again that these values are comparable to those
 obtained from another R package,
-say [nnls]( https://CRAN.R-project.org/package=nnls). 
+say [`nnls`]( https://CRAN.R-project.org/package=nnls). 
 
 ```{r}
 nnls.fit <- nnls::nnls(X, Y)$x
@@ -1455,7 +1455,7 @@ print_matrix(round(beta_vals, 3),
 ## Goals
 
 - Formulate nearly-isotonic and nearly-convex fits using `CVXR` atoms
-- Use the bootstrap to estimate variance of estimates
+- Use the bootstrap to estimate variance of approximation
 
 ```{r, message = FALSE, echo = FALSE}
 library(ggplot2)
@@ -1552,7 +1552,7 @@ fit.
 (plot.neariso <- ggplot(data = data.neariso) +
      geom_point(mapping = aes(year, annual), color = "red") +
      geom_line(mapping = aes(year, est), color = "blue") +
-     geom_ribbon(mapping = aes(x = year, ymin = lower,ymax = upper),alpha=0.3) +
+     geom_ribbon(mapping = aes(x = year, ymin = lower,ymax = upper), alpha=0.3) +
      labs(x = "Year", y = "Temperature Anomalies")
 )
 ```
@@ -1785,7 +1785,7 @@ $\beta$ and rows of $\Theta$. `CVXR` provides two functions to express
 this norm: 
 
 - `hstack` to bind columns of $\beta$ and the matrix $\Theta$, the
-  equivalent of `rbind` in R,
+  equivalent of `cbind` in R,
 - `cvxr_norm`, which accepts a matrix variable and an `axis` denoting the axis along which
   the norm is to be taken. The penalty requires us to use the row axis, 
   so `axis = 1` per the usual R convention. 

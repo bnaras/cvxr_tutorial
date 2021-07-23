@@ -124,12 +124,12 @@ $\beta$ and rows of $\Theta$. `CVXR` provides two functions to express
 this norm: 
 
 - `hstack` to bind columns of $\beta$ and the matrix $\Theta$, the
-  equivalent of `rbind` in R,
+  equivalent of `cbind` in R,
 - `cvxr_norm`, which accepts a matrix variable and an `axis` denoting the axis along which
   the norm is to be taken. The penalty requires us to use the row axis, 
   so `axis = 1` per the usual R convention. 
   
-The second term in the parentheses, $\sum_{j}||\theta_j||_2$, is also a norm
+The second term in the parentheses, $\sum_{j=1}^p||\theta_j||_2$, is also a norm
 along rows as the $\theta_j$ are rows of $\Theta$. The last term is simply a $l_1$-norm.
 
 ```{r Build_Penalty_Terms, eval = FALSE}
