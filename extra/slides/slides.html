@@ -2074,15 +2074,15 @@ A\beta \leq 0
 ##           warm start: on, polish: on, time_limit: off
 ## 
 ## iter  objective    pri res    dua res    rho        time
-##    1   0.0000e+00   3.23e+01   2.20e+04   1.00e-01   1.74e-04s
-##   50   3.4135e+01   2.51e-07   2.97e-07   1.20e-02   3.47e-04s
-## plsh   3.4135e+01   5.80e-15   1.12e-14  ---------   4.48e-04s
+##    1   0.0000e+00   3.23e+01   2.20e+04   1.00e-01   1.03e-04s
+##   50   3.4135e+01   2.51e-07   2.97e-07   1.20e-02   2.05e-04s
+## plsh   3.4135e+01   5.80e-15   1.12e-14  ---------   2.76e-04s
 ## 
 ## status:               solved
 ## solution polish:      successful
 ## number of iterations: 50
 ## optimal objective:    34.1346
-## run time:             4.48e-04s
+## run time:             2.76e-04s
 ## optimal rho estimate: 4.33e-03</code></pre>
 <h2 id="solver-options">Solver Options</h2>
 <p>Solver options are unique to the chosen solver, so any arguments to <code>CVXR::solve</code> besides those documented <a href="https://www.cvxgrp.org/CVXR/reference/psolve.html">here</a> are simply passed along to the solver. The reference for the specific solver must be consulted to set these options.</p>
@@ -5722,7 +5722,7 @@ Yes
 <p>Portfolio optimization involves a trade-off between the expected return <span class="math inline">\(\mathbf{E}[R] = \mu^Tw\)</span> and the associated risk, which we take to be the return variance <span class="math inline">\(\mathbf{Var}(R) = w^T\Sigma w\)</span>. Initially, we consider only long portfolios, so our problem is <span class="math display">\[
 \begin{array}{ll} 
 \underset{w}{\mbox{maximize}} &amp; \mu^Tw - \gamma w^T\Sigma w \\
-\mbox{subject to} &amp; w \geq 0, \quad \sum_{i=1}^n w = 1,
+\mbox{subject to} &amp; w \geq 0, \quad \sum_{i=1}^n w_i = 1,
 \end{array}
 \]</span> where the objective is the risk-adjusted return and <span class="math inline">\(\gamma &gt; 0\)</span> is a risk aversion parameter.</p>
 </div>

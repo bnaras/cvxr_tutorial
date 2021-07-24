@@ -2424,7 +2424,7 @@ long portfolios, so our problem is
 $$
 \begin{array}{ll} 
 \underset{w}{\mbox{maximize}} & \mu^Tw - \gamma w^T\Sigma w \\
-\mbox{subject to} & w \geq 0, \quad \sum_{i=1}^n w = 1,
+\mbox{subject to} & w \geq 0, \quad \sum_{i=1}^n w_i = 1,
 \end{array}
 $$
 where the objective is the risk-adjusted return and $\gamma > 0$ is a

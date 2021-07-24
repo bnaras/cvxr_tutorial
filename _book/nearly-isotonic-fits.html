@@ -24,7 +24,7 @@
 <meta name="author" content="Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd" />
 
 
-<meta name="date" content="2021-07-22" />
+<meta name="date" content="2021-07-23" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -470,7 +470,7 @@ fit.</p>
 <div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="nearly-isotonic-fits.html#cb75-1" aria-hidden="true" tabindex="-1"></a>(plot.neariso <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> data.neariso) <span class="sc">+</span></span>
 <span id="cb75-2"><a href="nearly-isotonic-fits.html#cb75-2" aria-hidden="true" tabindex="-1"></a>     <span class="fu">geom_point</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(year, annual), <span class="at">color =</span> <span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
 <span id="cb75-3"><a href="nearly-isotonic-fits.html#cb75-3" aria-hidden="true" tabindex="-1"></a>     <span class="fu">geom_line</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(year, est), <span class="at">color =</span> <span class="st">&quot;blue&quot;</span>) <span class="sc">+</span></span>
-<span id="cb75-4"><a href="nearly-isotonic-fits.html#cb75-4" aria-hidden="true" tabindex="-1"></a>     <span class="fu">geom_ribbon</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">ymin =</span> lower,<span class="at">ymax =</span> upper),<span class="at">alpha=</span><span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb75-4"><a href="nearly-isotonic-fits.html#cb75-4" aria-hidden="true" tabindex="-1"></a>     <span class="fu">geom_ribbon</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">ymin =</span> lower, <span class="at">ymax =</span> upper), <span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
 <span id="cb75-5"><a href="nearly-isotonic-fits.html#cb75-5" aria-hidden="true" tabindex="-1"></a>     <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Year&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Temperature Anomalies&quot;</span>)</span>
 <span id="cb75-6"><a href="nearly-isotonic-fits.html#cb75-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <p>The curve follows the data well, but exhibits some choppiness in
@@ -525,7 +525,7 @@ staircase pattern has been smoothed out.</p>
 <div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="nearly-isotonic-fits.html#cb77-1" aria-hidden="true" tabindex="-1"></a>(plot.nearconvex <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> data.nearconvex) <span class="sc">+</span></span>
 <span id="cb77-2"><a href="nearly-isotonic-fits.html#cb77-2" aria-hidden="true" tabindex="-1"></a>     <span class="fu">geom_point</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(year, annual), <span class="at">color =</span> <span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
 <span id="cb77-3"><a href="nearly-isotonic-fits.html#cb77-3" aria-hidden="true" tabindex="-1"></a>     <span class="fu">geom_line</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(year, est), <span class="at">color =</span> <span class="st">&quot;blue&quot;</span>) <span class="sc">+</span></span>
-<span id="cb77-4"><a href="nearly-isotonic-fits.html#cb77-4" aria-hidden="true" tabindex="-1"></a>     <span class="fu">geom_ribbon</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">ymin =</span> lower,<span class="at">ymax =</span> upper), <span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb77-4"><a href="nearly-isotonic-fits.html#cb77-4" aria-hidden="true" tabindex="-1"></a>     <span class="fu">geom_ribbon</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">ymin =</span> lower, <span class="at">ymax =</span> upper), <span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
 <span id="cb77-5"><a href="nearly-isotonic-fits.html#cb77-5" aria-hidden="true" tabindex="-1"></a>     <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Year&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Temperature Anomalies&quot;</span>)</span>
 <span id="cb77-6"><a href="nearly-isotonic-fits.html#cb77-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 </div>
