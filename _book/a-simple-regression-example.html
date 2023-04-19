@@ -6,11 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 6 A Simple Regression Example | Disciplined Convex Optimization in R</title>
   <meta name="description" content="Chapter 6 A Simple Regression Example | Disciplined Convex Optimization in R" />
-  <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 6 A Simple Regression Example | Disciplined Convex Optimization in R" />
   <meta property="og:type" content="book" />
-  
   
   
   
@@ -24,7 +23,7 @@
 <meta name="author" content="Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd" />
 
 
-<meta name="date" content="2021-07-23" />
+<meta name="date" content="2023-04-19" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,8 +32,8 @@
   
 <link rel="prev" href="disciplined-convex-programming.html"/>
 <link rel="next" href="how-cvxr-works.html"/>
-<script src="libs/header-attrs-2.9/header-attrs.js"></script>
-<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -50,9 +49,9 @@
 
 
 
-
-<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 <script>
@@ -120,7 +119,7 @@ code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
 code span.at { color: #7d9029; } /* Attribute */
 code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
+code span.bu { color: #008000; } /* BuiltIn */
 code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
 code span.ch { color: #4070a0; } /* Char */
 code span.cn { color: #880000; } /* Constant */
@@ -133,7 +132,7 @@ code span.er { color: #ff0000; font-weight: bold; } /* Error */
 code span.ex { } /* Extension */
 code span.fl { color: #40a070; } /* Float */
 code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
+code span.im { color: #008000; font-weight: bold; } /* Import */
 code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
 code span.kw { color: #007020; font-weight: bold; } /* Keyword */
 code span.op { color: #666666; } /* Operator */
@@ -386,10 +385,10 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="a-simple-regression-example" class="section level1" number="6">
-<h1><span class="header-section-number">Chapter 6</span> A Simple Regression Example</h1>
-<div id="goals" class="section level2" number="6.1">
-<h2><span class="header-section-number">6.1</span> Goals</h2>
+<div id="a-simple-regression-example" class="section level1 hasAnchor" number="6">
+<h1><span class="header-section-number">Chapter 6</span> A Simple Regression Example<a href="a-simple-regression-example.html#a-simple-regression-example" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="goals" class="section level2 hasAnchor" number="6.1">
+<h2><span class="header-section-number">6.1</span> Goals<a href="a-simple-regression-example.html#goals" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <ul>
 <li>Basic introduction to <code>CVXR</code></li>
 <li>Exercise on formulating a different objective, demonstrating how
@@ -400,13 +399,13 @@ using linear algebra</li>
 atoms</li>
 </ul>
 </div>
-<div id="ordinary-least-squares-regression" class="section level2" number="6.2">
-<h2><span class="header-section-number">6.2</span> Ordinary Least-Squares Regression</h2>
+<div id="ordinary-least-squares-regression" class="section level2 hasAnchor" number="6.2">
+<h2><span class="header-section-number">6.2</span> Ordinary Least-Squares Regression<a href="a-simple-regression-example.html#ordinary-least-squares-regression" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Consider a simple linear regression problem, where it is desired to
 estimate a set of parameters using a least-squares criterion.</p>
 <p>We generate some synthetic data in which we know the model completely,
 i.e.</p>
-<p><span class="math display">\[ 
+<p><span class="math display">\[
 Y = X\beta + \epsilon,
 \]</span></p>
 <p>where <span class="math inline">\(Y\)</span> is a <span class="math inline">\(100\times 1\)</span> vector, <span class="math inline">\(X\)</span> is a <span class="math inline">\(100\times 10\)</span> matrix,
@@ -509,8 +508,8 @@ Y = X\beta + \epsilon,
 <p>These are the least-squares estimates and can be seen to be reasonably
 close to the original <span class="math inline">\(\beta\)</span> values -4 through 5.</p>
 </div>
-<div id="the-cvxr-formulation" class="section level2" number="6.3">
-<h2><span class="header-section-number">6.3</span> The <code>CVXR</code> Formulation</h2>
+<div id="the-cvxr-formulation" class="section level2 hasAnchor" number="6.3">
+<h2><span class="header-section-number">6.3</span> The <code>CVXR</code> Formulation<a href="a-simple-regression-example.html#the-cvxr-formulation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The <code>CVXR</code> formulation states the above as an optimization problem:
 <span class="math display">\[
   \begin{array}{ll}
@@ -675,16 +674,16 @@ lm est.
 </tr>
 </tbody>
 </table>
-<div id="exercise" class="section level3" number="6.3.1">
-<h3><span class="header-section-number">6.3.1</span> Exercise</h3>
+<div id="exercise" class="section level3 hasAnchor" number="6.3.1">
+<h3><span class="header-section-number">6.3.1</span> Exercise<a href="a-simple-regression-example.html#exercise" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Modify the objective to perform least absolute deviation regression
 and solve the problem. Compare the results to OLS. Which objective has
 a lower value?</p>
 <p><em>Hint</em>: In LAD regression, we minimize the sum of the absolute value
 of the residuals. Also, since the default solver <code>OSQP</code> has some
 issues at the time of this writing, do pass on the parameter <code>solver = "ECOS"</code> in your call to <code>CVXR::solve</code>.</p>
-<div id="solution" class="section level4" number="6.3.1.1">
-<h4><span class="header-section-number">6.3.1.1</span> Solution</h4>
+<div id="solution" class="section level4 hasAnchor" number="6.3.1.1">
+<h4><span class="header-section-number">6.3.1.1</span> Solution<a href="a-simple-regression-example.html#solution" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="a-simple-regression-example.html#cb12-1" aria-hidden="true" tabindex="-1"></a>objective2 <span class="ot">&lt;-</span> <span class="fu">Minimize</span>(<span class="fu">sum</span>(<span class="fu">abs</span>(Y <span class="sc">-</span> X <span class="sc">%*%</span> beta)))</span>
 <span id="cb12-2"><a href="a-simple-regression-example.html#cb12-2" aria-hidden="true" tabindex="-1"></a>problem2 <span class="ot">&lt;-</span> <span class="fu">Problem</span>(objective2)</span>
 <span id="cb12-3"><a href="a-simple-regression-example.html#cb12-3" aria-hidden="true" tabindex="-1"></a>result2 <span class="ot">&lt;-</span> <span class="fu">solve</span>(problem2, <span class="at">solver =</span> <span class="st">&quot;ECOS&quot;</span>)</span>
@@ -955,8 +954,8 @@ Problem 2 est.
 </div>
 </div>
 </div>
-<div id="adding-constraints" class="section level2" number="6.4">
-<h2><span class="header-section-number">6.4</span> Adding Constraints</h2>
+<div id="adding-constraints" class="section level2 hasAnchor" number="6.4">
+<h2><span class="header-section-number">6.4</span> Adding Constraints<a href="a-simple-regression-example.html#adding-constraints" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>On the surface, it appears that we have replaced one call to <code>lm</code> with
 at least five or six lines of new R code. On top of that, the code
 actually runs slower, so it is not clear what we really achieved.</p>
@@ -1184,11 +1183,11 @@ nnls est.
 </tr>
 </tbody>
 </table>
-<div id="exercise-1" class="section level3" number="6.4.1">
-<h3><span class="header-section-number">6.4.1</span> Exercise</h3>
+<div id="exercise-1" class="section level3 hasAnchor" number="6.4.1">
+<h3><span class="header-section-number">6.4.1</span> Exercise<a href="a-simple-regression-example.html#exercise-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Suppose it is known that <span class="math inline">\(\sum_{i=1}^4\beta_i \leq 0\)</span>. Modify the original OLS problem to add this constraint.</p>
-<div id="solution-1" class="section level4" number="6.4.1.1">
-<h4><span class="header-section-number">6.4.1.1</span> Solution</h4>
+<div id="solution-1" class="section level4 hasAnchor" number="6.4.1.1">
+<h4><span class="header-section-number">6.4.1.1</span> Solution<a href="a-simple-regression-example.html#solution-1" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>The obvious solution is to add a constraint of the form</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="a-simple-regression-example.html#cb20-1" aria-hidden="true" tabindex="-1"></a>constraint1 <span class="ot">&lt;-</span> beta[<span class="dv">1</span>] <span class="sc">+</span> beta[<span class="dv">2</span>] <span class="sc">+</span> beta[<span class="dv">3</span>] <span class="sc">+</span> beta[<span class="dv">4</span>] <span class="sc">&lt;=</span> <span class="dv">0</span></span></code></pre></div>
 <p>but it is generally easier working with matrices in <code>CVXR</code>, and so
@@ -1362,12 +1361,12 @@ which we express in R as</p>
 </table>
 </div>
 </div>
-<div id="exercise-2" class="section level3" number="6.4.2">
-<h3><span class="header-section-number">6.4.2</span> Exercise</h3>
+<div id="exercise-2" class="section level3 hasAnchor" number="6.4.2">
+<h3><span class="header-section-number">6.4.2</span> Exercise<a href="a-simple-regression-example.html#exercise-2" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Add an additional constraint to the previous exercise that
 <span class="math inline">\(\beta_i \leq 4\)</span> for <span class="math inline">\(i=5,\ldots,10\)</span>.</p>
-<div id="solution-2" class="section level4" number="6.4.2.1">
-<h4><span class="header-section-number">6.4.2.1</span> Solution</h4>
+<div id="solution-2" class="section level4 hasAnchor" number="6.4.2.1">
+<h4><span class="header-section-number">6.4.2.1</span> Solution<a href="a-simple-regression-example.html#solution-2" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>We create a diagonal matrix with ones along the diagonal entries <span class="math inline">\(i=5,\ldots,10\)</span>.</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="a-simple-regression-example.html#cb25-1" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> <span class="fu">diag</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>), <span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">6</span>)))</span></code></pre></div>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
@@ -1851,13 +1850,13 @@ which we express in R as</p>
 </table>
 </div>
 </div>
-<div id="exercise-3" class="section level3" number="6.4.3">
-<h3><span class="header-section-number">6.4.3</span> Exercise</h3>
+<div id="exercise-3" class="section level3 hasAnchor" number="6.4.3">
+<h3><span class="header-section-number">6.4.3</span> Exercise<a href="a-simple-regression-example.html#exercise-3" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Solve the OLS regression problem under the constraint that the
 <span class="math inline">\(\beta_i\)</span> are nonnegative and monotonically nondecreasing.</p>
 <p><em>Hint</em>: What function in R computes lagged differences?</p>
-<div id="solution-3" class="section level4" number="6.4.3.1">
-<h4><span class="header-section-number">6.4.3.1</span> Solution</h4>
+<div id="solution-3" class="section level4 hasAnchor" number="6.4.3.1">
+<h4><span class="header-section-number">6.4.3.1</span> Solution<a href="a-simple-regression-example.html#solution-3" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>This requires some additional knowledge about R and <code>CVXR</code>
 functions. The <code>base::diff</code> generic function generates lagged
 differences of any order. <code>CVXR</code> provides a method for the generic. So
@@ -1952,12 +1951,12 @@ the monotonicity constraint can be succintly expressed as <code>diff(beta) &gt;=
 </table>
 </div>
 </div>
-<div id="exercise-4" class="section level3" number="6.4.4">
-<h3><span class="header-section-number">6.4.4</span> Exercise</h3>
+<div id="exercise-4" class="section level3 hasAnchor" number="6.4.4">
+<h3><span class="header-section-number">6.4.4</span> Exercise<a href="a-simple-regression-example.html#exercise-4" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Fit OLS with just the following order constraints on <span class="math inline">\(\beta\)</span>:
 <span class="math inline">\(\beta_{i} \leq \beta_{i+1}\)</span> for <span class="math inline">\(i=1,\ldots, 4\)</span> and <span class="math inline">\(\beta_i \geq \beta_{i+1}\)</span> for <span class="math inline">\(i=5,\ldots,p\)</span>.</p>
-<div id="solution-4" class="section level4" number="6.4.4.1">
-<h4><span class="header-section-number">6.4.4.1</span> Solution</h4>
+<div id="solution-4" class="section level4 hasAnchor" number="6.4.4.1">
+<h4><span class="header-section-number">6.4.4.1</span> Solution<a href="a-simple-regression-example.html#solution-4" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>We have to combine all that we have learned earlier.</p>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="a-simple-regression-example.html#cb28-1" aria-hidden="true" tabindex="-1"></a>D1 <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="fu">diag</span>(<span class="dv">5</span>), <span class="fu">diag</span>(<span class="dv">0</span>, <span class="dv">5</span>))</span>
 <span id="cb28-2"><a href="a-simple-regression-example.html#cb28-2" aria-hidden="true" tabindex="-1"></a>D2 <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="fu">matrix</span>(<span class="dv">0</span>, <span class="dv">6</span>, <span class="dv">4</span>), <span class="fu">diag</span>(<span class="dv">6</span>))</span>
@@ -2052,8 +2051,8 @@ the monotonicity constraint can be succintly expressed as <code>diff(beta) &gt;=
 </div>
 </div>
 </div>
-<div id="summary" class="section level2" number="6.5">
-<h2><span class="header-section-number">6.5</span> Summary</h2>
+<div id="summary" class="section level2 hasAnchor" number="6.5">
+<h2><span class="header-section-number">6.5</span> Summary<a href="a-simple-regression-example.html#summary" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>This introduction demonstrates a chief advantage of <code>CVXR</code>:
 <em>flexibility</em>. Users can quickly modify and re-solve a problem, which
 is ideal for prototyping and experimenting with new statistical
@@ -2079,7 +2078,6 @@ variability.</p>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
-<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
 <script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
@@ -2119,6 +2117,10 @@ gitbook.start({
 "text": null
 },
 "download": ["cvxr_tutorial.pdf", "cvxr_tutorial.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
 "toc": {
 "collapse": "subsection"
 }
@@ -2132,7 +2134,7 @@ gitbook.start({
     var script = document.createElement("script");
     script.type = "text/javascript";
     var src = "true";
-    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
     if (location.protocol !== "file:")
       if (/^https?:/.test(src))
         src = src.replace(/^https?:/, '');

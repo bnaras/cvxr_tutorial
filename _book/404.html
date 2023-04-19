@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 4 Solving Convex Problems | Disciplined Convex Optimization in R</title>
-  <meta name="description" content="Chapter 4 Solving Convex Problems | Disciplined Convex Optimization in R" />
-  <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
+  <title>Page not found | Disciplined Convex Optimization in R</title>
+  <meta name="description" content="Page not found | Disciplined Convex Optimization in R" />
+  <meta name="generator" content="bookdown 0.32 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 4 Solving Convex Problems | Disciplined Convex Optimization in R" />
+  <meta property="og:title" content="Page not found | Disciplined Convex Optimization in R" />
   <meta property="og:type" content="book" />
   
   
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 4 Solving Convex Problems | Disciplined Convex Optimization in R" />
+  <meta name="twitter:title" content="Page not found | Disciplined Convex Optimization in R" />
   
   
   
@@ -23,15 +23,15 @@
 <meta name="author" content="Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd" />
 
 
-<meta name="date" content="2023-04-19" />
+<meta name="date" content="2023-02-21" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="types-of-convex-optimization-problems.html"/>
-<link rel="next" href="disciplined-convex-programming.html"/>
+
+
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -360,7 +360,7 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="19" data-path="future-enhancements.html"><a href="future-enhancements.html"><i class="fa fa-check"></i><b>19</b> Future Enhancements</a>
 <ul>
-<li class="chapter" data-level="19.1" data-path="future-enhancements.html"><a href="future-enhancements.html#version-1.1"><i class="fa fa-check"></i><b>19.1</b> Version 1.1</a></li>
+<li class="chapter" data-level="19.1" data-path="future-enhancements.html"><a href="future-enhancements.html#version-1.0"><i class="fa fa-check"></i><b>19.1</b> Version 1.0</a></li>
 <li class="chapter" data-level="19.2" data-path="future-enhancements.html"><a href="future-enhancements.html#internal-changes"><i class="fa fa-check"></i><b>19.2</b> Internal Changes</a></li>
 </ul></li>
 <li class="chapter" data-level="20" data-path="references-8.html"><a href="references-8.html"><i class="fa fa-check"></i><b>20</b> References</a></li>
@@ -385,84 +385,19 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="solving-convex-problems" class="section level1 hasAnchor" number="4">
-<h1><span class="header-section-number">Chapter 4</span> Solving Convex Problems<a href="solving-convex-problems.html#solving-convex-problems" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>Although convex problems can look very difficult (nonlinear, even
-nondifferentiable), they can be solved very efficiently like a linear
-program. So, how does one solve such problems in R?</p>
-<p>One possibility is to match the form of the problem to an existing
-solver routine. For example, the well-known
-<a href="https://cran.r-project.org/package=optimx"><code>optimx</code></a> package provides
-the following omnibus function:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="solving-convex-problems.html#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">optimx</span>(par, fn, <span class="at">gr=</span><span class="cn">NULL</span>, <span class="at">hess=</span><span class="cn">NULL</span>, <span class="at">lower=</span><span class="sc">-</span><span class="cn">Inf</span>, <span class="at">upper=</span><span class="cn">Inf</span>, </span>
-<span id="cb2-2"><a href="solving-convex-problems.html#cb2-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">method=</span><span class="fu">c</span>(<span class="st">&quot;Nelder-Mead&quot;</span>,<span class="st">&quot;BFGS&quot;</span>), <span class="at">itnmax=</span><span class="cn">NULL</span>, <span class="at">hessian=</span><span class="cn">FALSE</span>,</span>
-<span id="cb2-3"><a href="solving-convex-problems.html#cb2-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">control=</span><span class="fu">list</span>(),</span>
-<span id="cb2-4"><a href="solving-convex-problems.html#cb2-4" aria-hidden="true" tabindex="-1"></a>             ...)</span></code></pre></div>
-<p>Here one has to specify a vector of initial parameters (<code>par</code>), the
-objective function (<code>fn</code>), optional gradient (<code>gr</code>) and Hessian
-functions (<code>hess</code>) depending on the method used, and upper and lower
-bounds for the solution. Obviously, the objective and the constraints
-must be supported by the <code>optimx</code> routines.</p>
-<p>Another possibility is to use a package such as
-<a href="https://cran.r-project.org/package=ROI"><code>ROI</code></a>, which provides
-interfaces to a number of solvers, including solvers for convex
-problems. It offers an object-oriented framework for defining
-optimization problems, but one still has to explicitly identify the
-type of every objective and constraint. If you can transform your
-problem into a cone program and use a standard cone program solver,
-then you can use <code>ROI</code> in a straightforward way.</p>
-<div id="verifying-convexity" class="section level2 hasAnchor" number="4.1">
-<h2><span class="header-section-number">4.1</span> Verifying Convexity<a href="solving-convex-problems.html#verifying-convexity" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Even before attempting a solution, one has to verify a problem is
-convex. One can start with the basic definition
-@ref{eq:convex-function} or use first or second order conditions
-<span class="math inline">\(\nabla^2{f}\succeq 0.\)</span> These often turn out to be tedious and hard
-to derive.</p>
-<p>Another possibility is to construct <span class="math inline">\(f_i\)</span> out of a library of basic
-examples or atoms that are convex. These could be combined using
-calculus rules and transformations that preserve convexity, yielding
-a problem that is automatically verified to be convex.</p>
-</div>
-<div id="domain-specific-languages-for-convex-optimization" class="section level2 hasAnchor" number="4.2">
-<h2><span class="header-section-number">4.2</span> Domain Specific Languages for Convex Optimization<a href="solving-convex-problems.html#domain-specific-languages-for-convex-optimization" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Domain Specific Languages (DSLs) are specialized languages for a
-particular application, implemented in a general purpose programming
-language. They have become useful for expressing, manipulating, and
-solving problems in specific contexts: circuit design (VHDL), graph
-layout (DOT), data (XML), etc.</p>
-<p>Over the last few years, specialized languages have become available for
-general convex optimization using the constructive approach discussed
-above.</p>
-<ul>
-<li><a href="https://cvxr.com/cvx/">CVX</a> and <a href="https://yalmip.github.io">YALMIP</a>, both implemented in Matlab</li>
-<li><a href="https//www.cvxpy.org">CVXPY</a> implemented in Python</li>
-<li><a href="https://github.com/JuliaOpt/Convex.jl">Convex.jl</a> implemented in Julia</li>
-<li><a href="https://cvxr.rbind.io">CVXR</a> implemented in R</li>
-</ul>
-<p>Such DSLs may result in code that is slightly slower, but they are
-extremely flexible and enable fast prototyping of novel methods.</p>
-<p>The last one, <code>CVXR</code>, is our focus and is described in a paper
-<span class="citation">(<a href="#ref-fu:naras:boyd:2019" role="doc-biblioref">Fu, B. Narasimhan, and Boyd 2020</a>)</span> that appears in the <a href="https://www.jstatsoft.org">Journal of Statistical
-Software</a>.</p>
-</div>
-<div id="references" class="section level2 hasAnchor" number="4.3">
-<h2><span class="header-section-number">4.3</span> References<a href="solving-convex-problems.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-
-</div>
-</div>
-<h3>References<a href="references-9.html#references-9" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-fu:naras:boyd:2019" class="csl-entry">
-Fu, A., B. Narasimhan, and Stephen Boyd. 2020. <span>“CVXR: An <span>R</span> Package for Disciplined Convex Optimization.”</span> <em>Journal of Statistical Software (to Appear)</em> 94 (14): 1–34. <a href="https://doi.org/10.18637/jss.v094.i14">https://doi.org/10.18637/jss.v094.i14</a>.
-</div>
+<div id="page-not-found" class="section level1">
+<h1>Page not found</h1>
+<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
+<p>You may want to try searching to find the page's new location, or use
+the table of contents to find the page you are looking for.</p>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="types-of-convex-optimization-problems.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="disciplined-convex-programming.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+
+
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

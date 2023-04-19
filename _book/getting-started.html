@@ -6,11 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 2 Getting Started | Disciplined Convex Optimization in R</title>
   <meta name="description" content="Chapter 2 Getting Started | Disciplined Convex Optimization in R" />
-  <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 2 Getting Started | Disciplined Convex Optimization in R" />
   <meta property="og:type" content="book" />
-  
   
   
   
@@ -24,7 +23,7 @@
 <meta name="author" content="Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd" />
 
 
-<meta name="date" content="2021-07-23" />
+<meta name="date" content="2023-04-19" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,8 +32,8 @@
   
 <link rel="prev" href="index.html"/>
 <link rel="next" href="types-of-convex-optimization-problems.html"/>
-<script src="libs/header-attrs-2.9/header-attrs.js"></script>
-<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -50,11 +49,9 @@
 
 
 
-
-<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
-<script src="libs/kePrint-0.0.1/kePrint.js"></script>
-<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 <script>
   // Added visibility option for solution (naras@stat)
   $(document).ready(function () {
@@ -120,7 +117,7 @@ code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
 code span.at { color: #7d9029; } /* Attribute */
 code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
+code span.bu { color: #008000; } /* BuiltIn */
 code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
 code span.ch { color: #4070a0; } /* Char */
 code span.cn { color: #880000; } /* Constant */
@@ -133,7 +130,7 @@ code span.er { color: #ff0000; font-weight: bold; } /* Error */
 code span.ex { } /* Extension */
 code span.fl { color: #40a070; } /* Float */
 code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
+code span.im { color: #008000; font-weight: bold; } /* Import */
 code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
 code span.kw { color: #007020; font-weight: bold; } /* Keyword */
 code span.op { color: #666666; } /* Operator */
@@ -386,13 +383,13 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="getting-started" class="section level1" number="2">
-<h1><span class="header-section-number">Chapter 2</span> Getting Started</h1>
+<div id="getting-started" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">Chapter 2</span> Getting Started<a href="getting-started.html#getting-started" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>The following are prerequisites.</p>
 <ul>
 <li><p>A recent R installation (version 3.5.x and up) will do. However, we
-highly recommend 4.0.5 so as to avoid any unforeseen problems with <code>CVXR</code>.</p></li>
-<li><p><a href="https://cran.r-project.org/package=CVXR"><code>CVXR</code></a> version 1.0-9,
+highly recommend 4.2.0+ so as to avoid any unforeseen problems with <code>CVXR</code>.</p></li>
+<li><p><a href="https://cran.r-project.org/package=CVXR"><code>CVXR</code></a> version 1.0-11,
 which can be installed like any other package from
 <a href="https://cran.r-project.org">CRAN</a>.</p></li>
 <li><p>An IDE/editing environment such as <a href="https://rstudio.com">RStudio</a>,
@@ -419,8 +416,8 @@ following code snippet in your R session will install them for you.</p></li>
 <span id="cb1-11"><a href="getting-started.html#cb1-11" aria-hidden="true" tabindex="-1"></a>                        <span class="st">&quot;RColorBrewer&quot;</span>,</span>
 <span id="cb1-12"><a href="getting-started.html#cb1-12" aria-hidden="true" tabindex="-1"></a>                        <span class="st">&quot;kableExtra&quot;</span>)</span>
 <span id="cb1-13"><a href="getting-started.html#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(required_packages)</span></code></pre></div>
-<div id="solver-prerequisites" class="section level2" number="2.1">
-<h2><span class="header-section-number">2.1</span> Solver Prerequisites</h2>
+<div id="solver-prerequisites" class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> Solver Prerequisites<a href="getting-started.html#solver-prerequisites" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p><code>CVXR</code> comes with open source solvers, and most of the tutorial will
 use these <em>built-in</em> open source solvers. However, we will discuss use
 of commercial solvers, <a href="https://www.mosek.com">MOSEK</a> and
@@ -433,8 +430,8 @@ and evaluation single user licenses are available for free.</p>
 <a href="https://developer.apple.com/xcode/">Xcode</a> on Macs,
 <a href="http://cran.r-project.org/bin/windows/Rtools/">Rtools</a> on
 Windows.</p>
-<div id="mosek" class="section level3" number="2.1.1">
-<h3><span class="header-section-number">2.1.1</span> MOSEK</h3>
+<div id="mosek" class="section level3 hasAnchor" number="2.1.1">
+<h3><span class="header-section-number">2.1.1</span> MOSEK<a href="getting-started.html#mosek" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <ol style="list-style-type: decimal">
 <li><p>Follow the <a href="https://docs.mosek.com/9.0/install/index.html">general
 setup</a> instructions.</p></li>
@@ -446,8 +443,8 @@ to install the <code>Rmosek</code> package.</p></li>
 <li><p>Ensure that you can run any one of the <a href="https://docs.mosek.com/9.0/rmosek/optimization-tutorials.html">R examples</a>.</p></li>
 </ol>
 </div>
-<div id="gurobi" class="section level3" number="2.1.2">
-<h3><span class="header-section-number">2.1.2</span> GUROBI</h3>
+<div id="gurobi" class="section level3 hasAnchor" number="2.1.2">
+<h3><span class="header-section-number">2.1.2</span> GUROBI<a href="getting-started.html#gurobi" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <ol style="list-style-type: decimal">
 <li><p>Download <a href="http://www.gurobi.com/downloads/gurobi-optimizer">GUROBI optimizer version
 9.1.2</a>. You will
@@ -472,7 +469,6 @@ examples</a>.</p></li>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
-<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
 <script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
@@ -512,6 +508,10 @@ gitbook.start({
 "text": null
 },
 "download": ["cvxr_tutorial.pdf", "cvxr_tutorial.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
 "toc": {
 "collapse": "subsection"
 }
@@ -519,20 +519,6 @@ gitbook.start({
 });
 </script>
 
-<!-- dynamically load mathjax for compatibility with self-contained -->
-<script>
-  (function () {
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    var src = "true";
-    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
-    if (location.protocol !== "file:")
-      if (/^https?:/.test(src))
-        src = src.replace(/^https?:/, '');
-    script.src = src;
-    document.getElementsByTagName("head")[0].appendChild(script);
-  })();
-</script>
 </body>
 
 </html>

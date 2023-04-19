@@ -6,11 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 5 Disciplined Convex Programming | Disciplined Convex Optimization in R</title>
   <meta name="description" content="Chapter 5 Disciplined Convex Programming | Disciplined Convex Optimization in R" />
-  <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 5 Disciplined Convex Programming | Disciplined Convex Optimization in R" />
   <meta property="og:type" content="book" />
-  
   
   
   
@@ -24,7 +23,7 @@
 <meta name="author" content="Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd" />
 
 
-<meta name="date" content="2021-07-23" />
+<meta name="date" content="2023-04-19" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,8 +32,8 @@
   
 <link rel="prev" href="solving-convex-problems.html"/>
 <link rel="next" href="a-simple-regression-example.html"/>
-<script src="libs/header-attrs-2.9/header-attrs.js"></script>
-<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -50,9 +49,9 @@
 
 
 
-
-<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 <script>
@@ -120,7 +119,7 @@ code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
 code span.at { color: #7d9029; } /* Attribute */
 code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
+code span.bu { color: #008000; } /* BuiltIn */
 code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
 code span.ch { color: #4070a0; } /* Char */
 code span.cn { color: #880000; } /* Constant */
@@ -133,7 +132,7 @@ code span.er { color: #ff0000; font-weight: bold; } /* Error */
 code span.ex { } /* Extension */
 code span.fl { color: #40a070; } /* Float */
 code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
+code span.im { color: #008000; font-weight: bold; } /* Import */
 code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
 code span.kw { color: #007020; font-weight: bold; } /* Keyword */
 code span.op { color: #666666; } /* Operator */
@@ -386,8 +385,8 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="disciplined-convex-programming" class="section level1" number="5">
-<h1><span class="header-section-number">Chapter 5</span> Disciplined Convex Programming</h1>
+<div id="disciplined-convex-programming" class="section level1 hasAnchor" number="5">
+<h1><span class="header-section-number">Chapter 5</span> Disciplined Convex Programming<a href="disciplined-convex-programming.html#disciplined-convex-programming" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <blockquote>
 <p>“All… new systems of notation are such that one can accomplish
 nothing by means of them which would not also be accomplished
@@ -405,8 +404,8 @@ differential calculus…”</p>
 reference to DCP, but still, it’s pretty clear!”</p>
 <p>—Stephen Boyd, on Gauss’ letter to Schumacher, April 8, 2019</p>
 </blockquote>
-<div id="basic-convex-functions" class="section level2" number="5.1">
-<h2><span class="header-section-number">5.1</span> Basic Convex Functions</h2>
+<div id="basic-convex-functions" class="section level2 hasAnchor" number="5.1">
+<h2><span class="header-section-number">5.1</span> Basic Convex Functions<a href="disciplined-convex-programming.html#basic-convex-functions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The following are some basic convex functions.</p>
 <ul>
 <li><span class="math inline">\(x^p\)</span> for <span class="math inline">\(p \geq 1\)</span> or <span class="math inline">\(p \leq 0\)</span>; <span class="math inline">\(-x^p\)</span> for <span class="math inline">\(0 \leq p \leq 1\)</span></li>
@@ -419,8 +418,8 @@ reference to DCP, but still, it’s pretty clear!”</p>
 <li><span class="math inline">\(\log(\text{det}X^{-1})\)</span> for <span class="math inline">\(X \succ 0\)</span></li>
 </ul>
 </div>
-<div id="calculus-rules" class="section level2" number="5.2">
-<h2><span class="header-section-number">5.2</span> Calculus Rules</h2>
+<div id="calculus-rules" class="section level2 hasAnchor" number="5.2">
+<h2><span class="header-section-number">5.2</span> Calculus Rules<a href="disciplined-convex-programming.html#calculus-rules" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <ul>
 <li><em>Nonnegative Scaling</em>: if <span class="math inline">\(f\)</span> is convex and <span class="math inline">\(\alpha \geq 0\)</span>, then <span class="math inline">\(\alpha f\)</span> is convex</li>
 <li><em>Sum</em>: if <span class="math inline">\(f\)</span> and <span class="math inline">\(g\)</span> are convex, so is <span class="math inline">\(f+g\)</span></li>
@@ -431,8 +430,8 @@ reference to DCP, but still, it’s pretty clear!”</p>
 </ul>
 <p>There are many other rules, but the above will get you far.</p>
 </div>
-<div id="examples" class="section level2" number="5.3">
-<h2><span class="header-section-number">5.3</span> Examples</h2>
+<div id="examples" class="section level2 hasAnchor" number="5.3">
+<h2><span class="header-section-number">5.3</span> Examples<a href="disciplined-convex-programming.html#examples" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <ul>
 <li>Piecewise-linear function: <span class="math inline">\(f(x) = \underset{i}{\text{max}}(a_i^Tx + b_i)\)</span></li>
 <li><span class="math inline">\(l_1\)</span>-regularized least-squares cost: <span class="math inline">\(||Ax-b||_2^2 + \lambda ||x||_1\)</span> with <span class="math inline">\(\lambda \geq 0\)</span></li>
@@ -454,7 +453,6 @@ reference to DCP, but still, it’s pretty clear!”</p>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
-<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
 <script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
@@ -494,6 +492,10 @@ gitbook.start({
 "text": null
 },
 "download": ["cvxr_tutorial.pdf", "cvxr_tutorial.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
 "toc": {
 "collapse": "subsection"
 }
@@ -507,7 +509,7 @@ gitbook.start({
     var script = document.createElement("script");
     script.type = "text/javascript";
     var src = "true";
-    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
     if (location.protocol !== "file:")
       if (/^https?:/.test(src))
         src = src.replace(/^https?:/, '');

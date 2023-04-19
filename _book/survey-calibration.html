@@ -6,11 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 14 Survey Calibration | Disciplined Convex Optimization in R</title>
   <meta name="description" content="Chapter 14 Survey Calibration | Disciplined Convex Optimization in R" />
-  <meta name="generator" content="bookdown 0.22 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 14 Survey Calibration | Disciplined Convex Optimization in R" />
   <meta property="og:type" content="book" />
-  
   
   
   
@@ -24,7 +23,7 @@
 <meta name="author" content="Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd" />
 
 
-<meta name="date" content="2021-07-23" />
+<meta name="date" content="2023-04-19" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,8 +32,8 @@
   
 <link rel="prev" href="pliable-lasso.html"/>
 <link rel="next" href="sparse-inverse-covariance-estimation.html"/>
-<script src="libs/header-attrs-2.9/header-attrs.js"></script>
-<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -50,9 +49,9 @@
 
 
 
-
-<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 <script>
@@ -120,7 +119,7 @@ code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
 code span.at { color: #7d9029; } /* Attribute */
 code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
+code span.bu { color: #008000; } /* BuiltIn */
 code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
 code span.ch { color: #4070a0; } /* Char */
 code span.cn { color: #880000; } /* Constant */
@@ -133,7 +132,7 @@ code span.er { color: #ff0000; font-weight: bold; } /* Error */
 code span.ex { } /* Extension */
 code span.fl { color: #40a070; } /* Float */
 code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
+code span.im { color: #008000; font-weight: bold; } /* Import */
 code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
 code span.kw { color: #007020; font-weight: bold; } /* Keyword */
 code span.op { color: #666666; } /* Operator */
@@ -386,16 +385,16 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="survey-calibration" class="section level1" number="14">
-<h1><span class="header-section-number">Chapter 14</span> Survey Calibration</h1>
-<div id="goals-6" class="section level2" number="14.1">
-<h2><span class="header-section-number">14.1</span> Goals</h2>
+<div id="survey-calibration" class="section level1 hasAnchor" number="14">
+<h1><span class="header-section-number">Chapter 14</span> Survey Calibration<a href="survey-calibration.html#survey-calibration" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="goals-6" class="section level2 hasAnchor" number="14.1">
+<h2><span class="header-section-number">14.1</span> Goals<a href="survey-calibration.html#goals-6" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <ul>
 <li>Demonstrate different methods for calibrating data</li>
 </ul>
 </div>
-<div id="survey-calibration-problem" class="section level2" number="14.2">
-<h2><span class="header-section-number">14.2</span> Survey Calibration Problem</h2>
+<div id="survey-calibration-problem" class="section level2 hasAnchor" number="14.2">
+<h2><span class="header-section-number">14.2</span> Survey Calibration Problem<a href="survey-calibration.html#survey-calibration-problem" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Calibration is a widely used technique in survey sampling. Suppose
 <span class="math inline">\(m\)</span> sampling units in a survey have been assigned initial weights
 <span class="math inline">\(d_i\)</span> for <span class="math inline">\(i = 1,\ldots,m\)</span>, and furthermore, there are <span class="math inline">\(n\)</span> auxiliary
@@ -404,10 +403,10 @@ improve the initial weights <span class="math inline">\(d_i\)</span> by finding 
 incorporate this auxiliary information while perturbing the initial
 weights as little as possible, , the ratio <span class="math inline">\(g_i = w_i/d_i\)</span> must
 be close to one. Such reweighting improves precision of estimates
-(Chapter 7, <span class="citation"><a href="#ref-Lumley:2010" role="doc-biblioref">T. S. Lumley</a> (<a href="#ref-Lumley:2010" role="doc-biblioref">2010</a>)</span>).</p>
+(Chapter 7, <span class="citation">T. S. Lumley (<a href="#ref-Lumley:2010" role="doc-biblioref">2010</a>)</span>).</p>
 <p>Let <span class="math inline">\(X \in {\mathbf R}^{m \times n}\)</span> be the matrix of survey samples, with
 each column corresponding to an auxiliary variable. Reweighting can be
-expressed as the optimization problem (see <span class="citation"><a href="#ref-Davies:2016" role="doc-biblioref">Davies, Gillard, and Zhigljavsky</a> (<a href="#ref-Davies:2016" role="doc-biblioref">2016</a>)</span>):</p>
+expressed as the optimization problem (see <span class="citation">Davies, Gillard, and Zhigljavsky (<a href="#ref-Davies:2016" role="doc-biblioref">2016</a>)</span>):</p>
 <p><span class="math display">\[
     \begin{array}{ll}
         \mbox{minimize} &amp; \sum_{i=1}^m d_i\phi(g_i) \\
@@ -417,13 +416,13 @@ expressed as the optimization problem (see <span class="citation"><a href="#ref-
 <p>with respect to <span class="math inline">\(g \in {\mathbf R}^m\)</span>, where <span class="math inline">\(\phi:{\mathbf R} \rightarrow {\mathbf R}\)</span> is a strictly convex function with <span class="math inline">\(\phi(1) = 0\)</span>, <span class="math inline">\(r \in {\mathbf R}^n\)</span> are the known population totals of the auxiliary variables,
 and <span class="math inline">\(A \in {\mathbf R}^{m \times n}\)</span> is related to <span class="math inline">\(X\)</span> by <span class="math inline">\(A_{ij} = d_iX_{ij}\)</span> for <span class="math inline">\(i = 1,\ldots,m\)</span> and <span class="math inline">\(j = 1,\ldots,n\)</span>.</p>
 </div>
-<div id="raking" class="section level2" number="14.3">
-<h2><span class="header-section-number">14.3</span> Raking</h2>
+<div id="raking" class="section level2 hasAnchor" number="14.3">
+<h2><span class="header-section-number">14.3</span> Raking<a href="survey-calibration.html#raking" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>A common calibration technique is <em>raking</em>, which uses the penalty
 function <span class="math inline">\(\phi(g_i) = g_i\log(g_i) - g_i + 1\)</span> as the calibration
 metric.</p>
 <p>We illustrate this with the California Academic Performance Index data in
-the <code>survey</code> package (<span class="citation"><a href="#ref-lumley:2018" role="doc-biblioref">T. Lumley</a> (<a href="#ref-lumley:2018" role="doc-biblioref">2018</a>)</span>), which also supplies facilities for
+the <code>survey</code> package (<span class="citation">T. Lumley (<a href="#ref-lumley:2018" role="doc-biblioref">2018</a>)</span>), which also supplies facilities for
 calibration via the function <code>calibrate</code>. Both the population dataset
 (<code>apipop</code>) and a simple random sample of <span class="math inline">\(m = 200\)</span> (<code>apisrs</code>) are
 provided. Suppose that we wish to reweight the observations in the
@@ -432,34 +431,34 @@ sample using known totals for two variables from the population:
 whether the school met the yearly target or not. This reweighting
 would make the sample more representative of the general population.</p>
 <p>The code below estimates the weights using <code>survey::calibrate</code>.</p>
-<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb93-1"><a href="survey-calibration.html#cb93-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(api)</span>
-<span id="cb93-2"><a href="survey-calibration.html#cb93-2" aria-hidden="true" tabindex="-1"></a>design_api <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">id =</span> <span class="sc">~</span>dnum, <span class="at">weights =</span> <span class="sc">~</span>pw, <span class="at">data =</span> apisrs)</span>
-<span id="cb93-3"><a href="survey-calibration.html#cb93-3" aria-hidden="true" tabindex="-1"></a>formula <span class="ot">&lt;-</span> <span class="er">~</span>stype <span class="sc">+</span> sch.wide</span>
-<span id="cb93-4"><a href="survey-calibration.html#cb93-4" aria-hidden="true" tabindex="-1"></a>T <span class="ot">&lt;-</span> <span class="fu">apply</span>(<span class="fu">model.matrix</span>(<span class="at">object =</span> formula, <span class="at">data =</span> apipop),</span>
-<span id="cb93-5"><a href="survey-calibration.html#cb93-5" aria-hidden="true" tabindex="-1"></a>           <span class="dv">2</span>,</span>
-<span id="cb93-6"><a href="survey-calibration.html#cb93-6" aria-hidden="true" tabindex="-1"></a>           sum)</span>
-<span id="cb93-7"><a href="survey-calibration.html#cb93-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb93-8"><a href="survey-calibration.html#cb93-8" aria-hidden="true" tabindex="-1"></a>cal_api <span class="ot">&lt;-</span> <span class="fu">calibrate</span>(design_api, formula, <span class="at">population =</span> T, <span class="at">calfun =</span> cal.raking)</span>
-<span id="cb93-9"><a href="survey-calibration.html#cb93-9" aria-hidden="true" tabindex="-1"></a>w_survey <span class="ot">&lt;-</span> <span class="fu">weights</span>(cal_api)</span></code></pre></div>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="survey-calibration.html#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(api)</span>
+<span id="cb57-2"><a href="survey-calibration.html#cb57-2" aria-hidden="true" tabindex="-1"></a>design_api <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">id =</span> <span class="sc">~</span>dnum, <span class="at">weights =</span> <span class="sc">~</span>pw, <span class="at">data =</span> apisrs)</span>
+<span id="cb57-3"><a href="survey-calibration.html#cb57-3" aria-hidden="true" tabindex="-1"></a>formula <span class="ot">&lt;-</span> <span class="er">~</span>stype <span class="sc">+</span> sch.wide</span>
+<span id="cb57-4"><a href="survey-calibration.html#cb57-4" aria-hidden="true" tabindex="-1"></a>T <span class="ot">&lt;-</span> <span class="fu">apply</span>(<span class="fu">model.matrix</span>(<span class="at">object =</span> formula, <span class="at">data =</span> apipop),</span>
+<span id="cb57-5"><a href="survey-calibration.html#cb57-5" aria-hidden="true" tabindex="-1"></a>           <span class="dv">2</span>,</span>
+<span id="cb57-6"><a href="survey-calibration.html#cb57-6" aria-hidden="true" tabindex="-1"></a>           sum)</span>
+<span id="cb57-7"><a href="survey-calibration.html#cb57-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-8"><a href="survey-calibration.html#cb57-8" aria-hidden="true" tabindex="-1"></a>cal_api <span class="ot">&lt;-</span> <span class="fu">calibrate</span>(design_api, formula, <span class="at">population =</span> T, <span class="at">calfun =</span> cal.raking)</span>
+<span id="cb57-9"><a href="survey-calibration.html#cb57-9" aria-hidden="true" tabindex="-1"></a>w_survey <span class="ot">&lt;-</span> <span class="fu">weights</span>(cal_api)</span></code></pre></div>
 <p>The <code>CVXR</code> formulation follows.</p>
-<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="survey-calibration.html#cb94-1" aria-hidden="true" tabindex="-1"></a>di <span class="ot">&lt;-</span> apisrs<span class="sc">$</span>pw</span>
-<span id="cb94-2"><a href="survey-calibration.html#cb94-2" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="at">object =</span> formula, <span class="at">data =</span> apisrs)</span>
-<span id="cb94-3"><a href="survey-calibration.html#cb94-3" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> di <span class="sc">*</span> X</span>
-<span id="cb94-4"><a href="survey-calibration.html#cb94-4" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(apisrs)</span>
-<span id="cb94-5"><a href="survey-calibration.html#cb94-5" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">Variable</span>(n)</span>
-<span id="cb94-6"><a href="survey-calibration.html#cb94-6" aria-hidden="true" tabindex="-1"></a>constraints <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="fu">t</span>(A) <span class="sc">%*%</span> g <span class="sc">==</span> T)</span>
-<span id="cb94-7"><a href="survey-calibration.html#cb94-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb94-8"><a href="survey-calibration.html#cb94-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Raking</span></span>
-<span id="cb94-9"><a href="survey-calibration.html#cb94-9" aria-hidden="true" tabindex="-1"></a>Phi_R <span class="ot">&lt;-</span> <span class="fu">Minimize</span>(<span class="fu">sum</span>(di <span class="sc">*</span> (<span class="sc">-</span><span class="fu">entr</span>(g) <span class="sc">-</span> g <span class="sc">+</span> <span class="dv">1</span>)))</span>
-<span id="cb94-10"><a href="survey-calibration.html#cb94-10" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">Problem</span>(Phi_R, constraints)</span>
-<span id="cb94-11"><a href="survey-calibration.html#cb94-11" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">solve</span>(p)</span>
-<span id="cb94-12"><a href="survey-calibration.html#cb94-12" aria-hidden="true" tabindex="-1"></a>w_cvxr <span class="ot">&lt;-</span> di <span class="sc">*</span> res<span class="sc">$</span><span class="fu">getValue</span>(g)</span></code></pre></div>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="survey-calibration.html#cb58-1" aria-hidden="true" tabindex="-1"></a>di <span class="ot">&lt;-</span> apisrs<span class="sc">$</span>pw</span>
+<span id="cb58-2"><a href="survey-calibration.html#cb58-2" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="at">object =</span> formula, <span class="at">data =</span> apisrs)</span>
+<span id="cb58-3"><a href="survey-calibration.html#cb58-3" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> di <span class="sc">*</span> X</span>
+<span id="cb58-4"><a href="survey-calibration.html#cb58-4" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(apisrs)</span>
+<span id="cb58-5"><a href="survey-calibration.html#cb58-5" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">Variable</span>(n)</span>
+<span id="cb58-6"><a href="survey-calibration.html#cb58-6" aria-hidden="true" tabindex="-1"></a>constraints <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="fu">t</span>(A) <span class="sc">%*%</span> g <span class="sc">==</span> T)</span>
+<span id="cb58-7"><a href="survey-calibration.html#cb58-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-8"><a href="survey-calibration.html#cb58-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Raking</span></span>
+<span id="cb58-9"><a href="survey-calibration.html#cb58-9" aria-hidden="true" tabindex="-1"></a>Phi_R <span class="ot">&lt;-</span> <span class="fu">Minimize</span>(<span class="fu">sum</span>(di <span class="sc">*</span> (<span class="sc">-</span><span class="fu">entr</span>(g) <span class="sc">-</span> g <span class="sc">+</span> <span class="dv">1</span>)))</span>
+<span id="cb58-10"><a href="survey-calibration.html#cb58-10" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">Problem</span>(Phi_R, constraints)</span>
+<span id="cb58-11"><a href="survey-calibration.html#cb58-11" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">solve</span>(p)</span>
+<span id="cb58-12"><a href="survey-calibration.html#cb58-12" aria-hidden="true" tabindex="-1"></a>w_cvxr <span class="ot">&lt;-</span> di <span class="sc">*</span> res<span class="sc">$</span><span class="fu">getValue</span>(g)</span></code></pre></div>
 <p>The results are identical as shown in the table below.</p>
 <pre><code>## `summarise()` has grouped output by &#39;stype&#39;. You can override using the `.groups` argument.
 ## `summarise()` has grouped output by &#39;stype&#39;. You can override using the `.groups` argument.</code></pre>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:unnamed-chunk-99">Table 14.1: </span>Calibration weights from Raking
+<span id="tab:unnamed-chunk-62">Table 14.1: </span>Calibration weights from Raking
 </caption>
 <thead>
 <tr>
@@ -606,29 +605,29 @@ Yes
 </tr>
 </tbody>
 </table>
-<div id="exercise-12" class="section level3" number="14.3.1">
-<h3><span class="header-section-number">14.3.1</span> Exercise</h3>
+<div id="exercise-12" class="section level3 hasAnchor" number="14.3.1">
+<h3><span class="header-section-number">14.3.1</span> Exercise<a href="survey-calibration.html#exercise-12" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>The quadratic penalty function</p>
 <p><span class="math display">\[
   \phi^{Q}(g) = \frac{1}{2}(g-1)^2
 \]</span></p>
 <p>is also sometimes used. Calibrate using <code>CVXR</code> and the <code>SCS</code> solver and compare with the
 <code>survey::cal.linear</code> results, which can be obtained via</p>
-<div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="survey-calibration.html#cb96-1" aria-hidden="true" tabindex="-1"></a>w_survey_q <span class="ot">&lt;-</span> <span class="fu">weights</span>(<span class="fu">calibrate</span>(design_api, formula, <span class="at">population =</span> T, <span class="at">calfun =</span> cal.linear))</span></code></pre></div>
-<div id="solution-12" class="section level4" number="14.3.1.1">
-<h4><span class="header-section-number">14.3.1.1</span> Solution</h4>
-<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="survey-calibration.html#cb97-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Quadratic</span></span>
-<span id="cb97-2"><a href="survey-calibration.html#cb97-2" aria-hidden="true" tabindex="-1"></a>Phi_Q  <span class="ot">&lt;-</span> <span class="fu">Minimize</span>(<span class="fu">sum_squares</span>(g <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">/</span> <span class="dv">2</span>)</span>
-<span id="cb97-3"><a href="survey-calibration.html#cb97-3" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">Problem</span>(Phi_Q, constraints)</span>
-<span id="cb97-4"><a href="survey-calibration.html#cb97-4" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">solve</span>(p, <span class="at">solver =</span> <span class="st">&quot;SCS&quot;</span>)</span>
-<span id="cb97-5"><a href="survey-calibration.html#cb97-5" aria-hidden="true" tabindex="-1"></a>w_cvxr_q <span class="ot">&lt;-</span> di <span class="sc">*</span> res<span class="sc">$</span><span class="fu">getValue</span>(g)</span></code></pre></div>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="survey-calibration.html#cb60-1" aria-hidden="true" tabindex="-1"></a>w_survey_q <span class="ot">&lt;-</span> <span class="fu">weights</span>(<span class="fu">calibrate</span>(design_api, formula, <span class="at">population =</span> T, <span class="at">calfun =</span> cal.linear))</span></code></pre></div>
+<div id="solution-12" class="section level4 hasAnchor" number="14.3.1.1">
+<h4><span class="header-section-number">14.3.1.1</span> Solution<a href="survey-calibration.html#solution-12" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="survey-calibration.html#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Quadratic</span></span>
+<span id="cb61-2"><a href="survey-calibration.html#cb61-2" aria-hidden="true" tabindex="-1"></a>Phi_Q  <span class="ot">&lt;-</span> <span class="fu">Minimize</span>(<span class="fu">sum_squares</span>(g <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">/</span> <span class="dv">2</span>)</span>
+<span id="cb61-3"><a href="survey-calibration.html#cb61-3" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">Problem</span>(Phi_Q, constraints)</span>
+<span id="cb61-4"><a href="survey-calibration.html#cb61-4" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">solve</span>(p, <span class="at">solver =</span> <span class="st">&quot;SCS&quot;</span>)</span>
+<span id="cb61-5"><a href="survey-calibration.html#cb61-5" aria-hidden="true" tabindex="-1"></a>w_cvxr_q <span class="ot">&lt;-</span> di <span class="sc">*</span> res<span class="sc">$</span><span class="fu">getValue</span>(g)</span></code></pre></div>
 <p>The default <code>OSQP</code> solver produces a different number of unique
 weights. Such differences are not unheard of among solvers.</p>
 <pre><code>## `summarise()` has grouped output by &#39;stype&#39;. You can override using the `.groups` argument.
 ## `summarise()` has grouped output by &#39;stype&#39;. You can override using the `.groups` argument.</code></pre>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:unnamed-chunk-102">Table 14.2: </span>Calibration weights from Quadratic metric
+<span id="tab:unnamed-chunk-65">Table 14.2: </span>Calibration weights from Quadratic metric
 </caption>
 <thead>
 <tr>
@@ -667,7 +666,7 @@ No
 15
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-30.063
+28.907
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
 15
@@ -687,7 +686,7 @@ Yes
 127
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-32.653
+31.397
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
 127
@@ -707,7 +706,7 @@ No
 13
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-30.165
+29.005
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
 13
@@ -727,7 +726,7 @@ Yes
 12
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-32.755
+31.495
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
 12
@@ -747,7 +746,7 @@ No
 9
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-30.199
+29.037
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
 9
@@ -767,7 +766,7 @@ Yes
 24
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
-32.789
+31.528
 </td>
 <td style="text-align:right;background-color: #ececec !important;">
 24
@@ -777,30 +776,30 @@ Yes
 </table>
 </div>
 </div>
-<div id="exercise-13" class="section level3" number="14.3.2">
-<h3><span class="header-section-number">14.3.2</span> Exercise</h3>
+<div id="exercise-13" class="section level3 hasAnchor" number="14.3.2">
+<h3><span class="header-section-number">14.3.2</span> Exercise<a href="survey-calibration.html#exercise-13" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Repeat the above exercise with the logistic function</p>
 <p><span class="math display">\[
   \phi^{L}(g; l, u) = \frac{1}{C}\biggl[ (g-l)\log\left(\frac{g-l}{1-l}\right) +
   (u-g)\log\left(\frac{u-g}{u-1}\right) \biggr] \mbox{ for } C = \frac{u-l}{(1-l)(u-1)},
 \]</span></p>
 <p>which requires bounds <span class="math inline">\(l\)</span> and <span class="math inline">\(u\)</span> on the coefficients. Use <span class="math inline">\(l=0.9\)</span> and <span class="math inline">\(u=1.1\)</span>. The results from <code>survey::cal.linear</code> can be obtained with the code below.</p>
-<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb99-1"><a href="survey-calibration.html#cb99-1" aria-hidden="true" tabindex="-1"></a>u <span class="ot">&lt;-</span> <span class="fl">1.10</span>; l <span class="ot">&lt;-</span> <span class="fl">0.90</span></span>
-<span id="cb99-2"><a href="survey-calibration.html#cb99-2" aria-hidden="true" tabindex="-1"></a>w_survey_l <span class="ot">&lt;-</span> <span class="fu">weights</span>(<span class="fu">calibrate</span>(design_api, formula, <span class="at">population =</span> T, <span class="at">calfun =</span> cal.linear,</span>
-<span id="cb99-3"><a href="survey-calibration.html#cb99-3" aria-hidden="true" tabindex="-1"></a>                                <span class="at">bounds =</span> <span class="fu">c</span>(l, u)))</span></code></pre></div>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="survey-calibration.html#cb63-1" aria-hidden="true" tabindex="-1"></a>u <span class="ot">&lt;-</span> <span class="fl">1.10</span>; l <span class="ot">&lt;-</span> <span class="fl">0.90</span></span>
+<span id="cb63-2"><a href="survey-calibration.html#cb63-2" aria-hidden="true" tabindex="-1"></a>w_survey_l <span class="ot">&lt;-</span> <span class="fu">weights</span>(<span class="fu">calibrate</span>(design_api, formula, <span class="at">population =</span> T, <span class="at">calfun =</span> cal.linear,</span>
+<span id="cb63-3"><a href="survey-calibration.html#cb63-3" aria-hidden="true" tabindex="-1"></a>                                <span class="at">bounds =</span> <span class="fu">c</span>(l, u)))</span></code></pre></div>
 </div>
-<div id="solution-13" class="section level3" number="14.3.3">
-<h3><span class="header-section-number">14.3.3</span> Solution</h3>
-<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="survey-calibration.html#cb100-1" aria-hidden="true" tabindex="-1"></a>Phi_L <span class="ot">&lt;-</span> <span class="fu">Minimize</span>(<span class="fu">sum</span>(<span class="sc">-</span><span class="fu">entr</span>((g <span class="sc">-</span> l) <span class="sc">/</span> (u <span class="sc">-</span> l))  <span class="sc">-</span></span>
-<span id="cb100-2"><a href="survey-calibration.html#cb100-2" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">entr</span>((u <span class="sc">-</span> g) <span class="sc">/</span> (u <span class="sc">-</span> l)))) </span>
-<span id="cb100-3"><a href="survey-calibration.html#cb100-3" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">Problem</span>(Phi_L, <span class="fu">c</span>(constraints, <span class="fu">list</span>(l <span class="sc">&lt;=</span> g, g <span class="sc">&lt;=</span> u)))</span>
-<span id="cb100-4"><a href="survey-calibration.html#cb100-4" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">solve</span>(p)</span>
-<span id="cb100-5"><a href="survey-calibration.html#cb100-5" aria-hidden="true" tabindex="-1"></a>w_cvxr_l <span class="ot">&lt;-</span> di <span class="sc">*</span> res<span class="sc">$</span><span class="fu">getValue</span>(g)</span></code></pre></div>
+<div id="solution-13" class="section level3 hasAnchor" number="14.3.3">
+<h3><span class="header-section-number">14.3.3</span> Solution<a href="survey-calibration.html#solution-13" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="survey-calibration.html#cb64-1" aria-hidden="true" tabindex="-1"></a>Phi_L <span class="ot">&lt;-</span> <span class="fu">Minimize</span>(<span class="fu">sum</span>(<span class="sc">-</span><span class="fu">entr</span>((g <span class="sc">-</span> l) <span class="sc">/</span> (u <span class="sc">-</span> l))  <span class="sc">-</span></span>
+<span id="cb64-2"><a href="survey-calibration.html#cb64-2" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">entr</span>((u <span class="sc">-</span> g) <span class="sc">/</span> (u <span class="sc">-</span> l)))) </span>
+<span id="cb64-3"><a href="survey-calibration.html#cb64-3" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">Problem</span>(Phi_L, <span class="fu">c</span>(constraints, <span class="fu">list</span>(l <span class="sc">&lt;=</span> g, g <span class="sc">&lt;=</span> u)))</span>
+<span id="cb64-4"><a href="survey-calibration.html#cb64-4" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">solve</span>(p)</span>
+<span id="cb64-5"><a href="survey-calibration.html#cb64-5" aria-hidden="true" tabindex="-1"></a>w_cvxr_l <span class="ot">&lt;-</span> di <span class="sc">*</span> res<span class="sc">$</span><span class="fu">getValue</span>(g)</span></code></pre></div>
 <pre><code>## `summarise()` has grouped output by &#39;stype&#39;. You can override using the `.groups` argument.
 ## `summarise()` has grouped output by &#39;stype&#39;. You can override using the `.groups` argument.</code></pre>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:unnamed-chunk-105">Table 14.3: </span>Calibration weights from Logit metric
+<span id="tab:unnamed-chunk-68">Table 14.3: </span>Calibration weights from Logit metric
 </caption>
 <thead>
 <tr>
@@ -948,28 +947,28 @@ Yes
 </tbody>
 </table>
 </div>
-<div id="exercise-14" class="section level3" number="14.3.4">
-<h3><span class="header-section-number">14.3.4</span> Exercise</h3>
+<div id="exercise-14" class="section level3 hasAnchor" number="14.3.4">
+<h3><span class="header-section-number">14.3.4</span> Exercise<a href="survey-calibration.html#exercise-14" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Repeat with the Hellinger distance</p>
 <p><span class="math display">\[
   \Phi^{H}(g) = \frac{1}{(1 - g/2)^2}
 \]</span></p>
 <p>and the following results.</p>
-<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="survey-calibration.html#cb102-1" aria-hidden="true" tabindex="-1"></a>hellinger <span class="ot">&lt;-</span> <span class="fu">make.calfun</span>(<span class="at">Fm1 =</span> <span class="cf">function</span>(u, bounds)  ((<span class="dv">1</span> <span class="sc">-</span> u <span class="sc">/</span> <span class="dv">2</span>)<span class="sc">^-</span><span class="dv">2</span>) <span class="sc">-</span> <span class="dv">1</span>,</span>
-<span id="cb102-2"><a href="survey-calibration.html#cb102-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">dF=</span> <span class="cf">function</span>(u, bounds) (<span class="dv">1</span> <span class="sc">-</span>u <span class="sc">/</span> <span class="dv">2</span>)<span class="sc">^-</span><span class="dv">3</span> ,</span>
-<span id="cb102-3"><a href="survey-calibration.html#cb102-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">name =</span> <span class="st">&quot;Hellinger distance&quot;</span>)</span>
-<span id="cb102-4"><a href="survey-calibration.html#cb102-4" aria-hidden="true" tabindex="-1"></a>w_survey_h <span class="ot">&lt;-</span> <span class="fu">weights</span>(<span class="fu">calibrate</span>(design_api, formula, <span class="at">population =</span> T, <span class="at">calfun =</span> hellinger))</span></code></pre></div>
-<div id="solution-14" class="section level4" number="14.3.4.1">
-<h4><span class="header-section-number">14.3.4.1</span> Solution</h4>
-<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="survey-calibration.html#cb103-1" aria-hidden="true" tabindex="-1"></a>Phi_h <span class="ot">&lt;-</span> <span class="fu">Minimize</span>(<span class="fu">sum</span>((<span class="dv">1</span> <span class="sc">-</span> g <span class="sc">/</span> <span class="dv">2</span>)<span class="sc">^</span>(<span class="sc">-</span><span class="dv">2</span>)))</span>
-<span id="cb103-2"><a href="survey-calibration.html#cb103-2" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">Problem</span>(Phi_h, constraints)</span>
-<span id="cb103-3"><a href="survey-calibration.html#cb103-3" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">solve</span>(p)</span>
-<span id="cb103-4"><a href="survey-calibration.html#cb103-4" aria-hidden="true" tabindex="-1"></a>w_cvxr_h <span class="ot">&lt;-</span> di <span class="sc">*</span> res<span class="sc">$</span><span class="fu">getValue</span>(g)</span></code></pre></div>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="survey-calibration.html#cb66-1" aria-hidden="true" tabindex="-1"></a>hellinger <span class="ot">&lt;-</span> <span class="fu">make.calfun</span>(<span class="at">Fm1 =</span> <span class="cf">function</span>(u, bounds)  ((<span class="dv">1</span> <span class="sc">-</span> u <span class="sc">/</span> <span class="dv">2</span>)<span class="sc">^-</span><span class="dv">2</span>) <span class="sc">-</span> <span class="dv">1</span>,</span>
+<span id="cb66-2"><a href="survey-calibration.html#cb66-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">dF=</span> <span class="cf">function</span>(u, bounds) (<span class="dv">1</span> <span class="sc">-</span>u <span class="sc">/</span> <span class="dv">2</span>)<span class="sc">^-</span><span class="dv">3</span> ,</span>
+<span id="cb66-3"><a href="survey-calibration.html#cb66-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">name =</span> <span class="st">&quot;Hellinger distance&quot;</span>)</span>
+<span id="cb66-4"><a href="survey-calibration.html#cb66-4" aria-hidden="true" tabindex="-1"></a>w_survey_h <span class="ot">&lt;-</span> <span class="fu">weights</span>(<span class="fu">calibrate</span>(design_api, formula, <span class="at">population =</span> T, <span class="at">calfun =</span> hellinger))</span></code></pre></div>
+<div id="solution-14" class="section level4 hasAnchor" number="14.3.4.1">
+<h4><span class="header-section-number">14.3.4.1</span> Solution<a href="survey-calibration.html#solution-14" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="survey-calibration.html#cb67-1" aria-hidden="true" tabindex="-1"></a>Phi_h <span class="ot">&lt;-</span> <span class="fu">Minimize</span>(<span class="fu">sum</span>((<span class="dv">1</span> <span class="sc">-</span> g <span class="sc">/</span> <span class="dv">2</span>)<span class="sc">^</span>(<span class="sc">-</span><span class="dv">2</span>)))</span>
+<span id="cb67-2"><a href="survey-calibration.html#cb67-2" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">Problem</span>(Phi_h, constraints)</span>
+<span id="cb67-3"><a href="survey-calibration.html#cb67-3" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">solve</span>(p)</span>
+<span id="cb67-4"><a href="survey-calibration.html#cb67-4" aria-hidden="true" tabindex="-1"></a>w_cvxr_h <span class="ot">&lt;-</span> di <span class="sc">*</span> res<span class="sc">$</span><span class="fu">getValue</span>(g)</span></code></pre></div>
 <pre><code>## `summarise()` has grouped output by &#39;stype&#39;. You can override using the `.groups` argument.
 ## `summarise()` has grouped output by &#39;stype&#39;. You can override using the `.groups` argument.</code></pre>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:unnamed-chunk-108">Table 14.4: </span>Calibration weights from Hellinger distance metric
+<span id="tab:unnamed-chunk-71">Table 14.4: </span>Calibration weights from Hellinger distance metric
 </caption>
 <thead>
 <tr>
@@ -1118,26 +1117,26 @@ Yes
 </table>
 </div>
 </div>
-<div id="exercise-15" class="section level3" number="14.3.5">
-<h3><span class="header-section-number">14.3.5</span> Exercise</h3>
+<div id="exercise-15" class="section level3 hasAnchor" number="14.3.5">
+<h3><span class="header-section-number">14.3.5</span> Exercise<a href="survey-calibration.html#exercise-15" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Lastly, use the derivative of the inverse hyperbolic sine</p>
 <p><span class="math display">\[
   \Phi^{S}(g) = \frac{1}{2}(e^g + e^{-g})
 \]</span></p>
 <p>along with the results produced below.</p>
-<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="survey-calibration.html#cb105-1" aria-hidden="true" tabindex="-1"></a>w_survey_s <span class="ot">&lt;-</span> <span class="fu">weights</span>(<span class="fu">calibrate</span>(design_api, formula, <span class="at">population =</span> T, <span class="at">calfun =</span> cal.sinh,</span>
-<span id="cb105-2"><a href="survey-calibration.html#cb105-2" aria-hidden="true" tabindex="-1"></a>                                <span class="at">bounds =</span> <span class="fu">c</span>(l, u)))</span></code></pre></div>
-<div id="solution-15" class="section level4" number="14.3.5.1">
-<h4><span class="header-section-number">14.3.5.1</span> Solution</h4>
-<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="survey-calibration.html#cb106-1" aria-hidden="true" tabindex="-1"></a>Phi_s <span class="ot">&lt;-</span> <span class="fu">Minimize</span>(<span class="fu">sum</span>( <span class="fl">0.5</span> <span class="sc">*</span> (<span class="fu">exp</span>(g) <span class="sc">+</span> <span class="fu">exp</span>(<span class="sc">-</span>g))))</span>
-<span id="cb106-2"><a href="survey-calibration.html#cb106-2" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">Problem</span>(Phi_s, <span class="fu">c</span>(constraints, <span class="fu">list</span>(l <span class="sc">&lt;=</span> g, g <span class="sc">&lt;=</span> u)))</span>
-<span id="cb106-3"><a href="survey-calibration.html#cb106-3" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">solve</span>(p)</span>
-<span id="cb106-4"><a href="survey-calibration.html#cb106-4" aria-hidden="true" tabindex="-1"></a>w_cvxr_s <span class="ot">&lt;-</span> di <span class="sc">*</span> res<span class="sc">$</span><span class="fu">getValue</span>(g)</span></code></pre></div>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="survey-calibration.html#cb69-1" aria-hidden="true" tabindex="-1"></a>w_survey_s <span class="ot">&lt;-</span> <span class="fu">weights</span>(<span class="fu">calibrate</span>(design_api, formula, <span class="at">population =</span> T, <span class="at">calfun =</span> cal.sinh,</span>
+<span id="cb69-2"><a href="survey-calibration.html#cb69-2" aria-hidden="true" tabindex="-1"></a>                                <span class="at">bounds =</span> <span class="fu">c</span>(l, u)))</span></code></pre></div>
+<div id="solution-15" class="section level4 hasAnchor" number="14.3.5.1">
+<h4><span class="header-section-number">14.3.5.1</span> Solution<a href="survey-calibration.html#solution-15" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="survey-calibration.html#cb70-1" aria-hidden="true" tabindex="-1"></a>Phi_s <span class="ot">&lt;-</span> <span class="fu">Minimize</span>(<span class="fu">sum</span>( <span class="fl">0.5</span> <span class="sc">*</span> (<span class="fu">exp</span>(g) <span class="sc">+</span> <span class="fu">exp</span>(<span class="sc">-</span>g))))</span>
+<span id="cb70-2"><a href="survey-calibration.html#cb70-2" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">Problem</span>(Phi_s, <span class="fu">c</span>(constraints, <span class="fu">list</span>(l <span class="sc">&lt;=</span> g, g <span class="sc">&lt;=</span> u)))</span>
+<span id="cb70-3"><a href="survey-calibration.html#cb70-3" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">solve</span>(p)</span>
+<span id="cb70-4"><a href="survey-calibration.html#cb70-4" aria-hidden="true" tabindex="-1"></a>w_cvxr_s <span class="ot">&lt;-</span> di <span class="sc">*</span> res<span class="sc">$</span><span class="fu">getValue</span>(g)</span></code></pre></div>
 <pre><code>## `summarise()` has grouped output by &#39;stype&#39;. You can override using the `.groups` argument.
 ## `summarise()` has grouped output by &#39;stype&#39;. You can override using the `.groups` argument.</code></pre>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:unnamed-chunk-111">Table 14.5: </span>Calibration weights from derivative of sinh metric
+<span id="tab:unnamed-chunk-74">Table 14.5: </span>Calibration weights from derivative of sinh metric
 </caption>
 <thead>
 <tr>
@@ -1287,12 +1286,12 @@ Yes
 </div>
 </div>
 </div>
-<div id="references-4" class="section level2" number="14.4">
-<h2><span class="header-section-number">14.4</span> References</h2>
+<div id="references-4" class="section level2 hasAnchor" number="14.4">
+<h2><span class="header-section-number">14.4</span> References<a href="survey-calibration.html#references-4" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 
 </div>
 </div>
-<h3>References</h3>
+<h3>References<a href="references-9.html#references-9" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-Davies:2016" class="csl-entry">
 Davies, G., J. Gillard, and A. Zhigljavsky. 2016. <span>“Comparative Study of Different Penalty Functions and Algorithms in Survey Calibration.”</span> In <em>Advances in Stochastic and Deterministic Global Optimization</em>, 87–127. Cham: Springer-Verlag. <a href="https://doi.org/10.1007/978-3-319-29975-4_6">https://doi.org/10.1007/978-3-319-29975-4_6</a>.
@@ -1314,7 +1313,6 @@ Lumley, Thomas S. 2010. <em>Complex Surveys: A Guide to Analysis Using r</em>. J
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
-<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
 <script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
@@ -1354,6 +1352,10 @@ gitbook.start({
 "text": null
 },
 "download": ["cvxr_tutorial.pdf", "cvxr_tutorial.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
 "toc": {
 "collapse": "subsection"
 }
@@ -1367,7 +1369,7 @@ gitbook.start({
     var script = document.createElement("script");
     script.type = "text/javascript";
     var src = "true";
-    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
     if (location.protocol !== "file:")
       if (/^https?:/.test(src))
         src = src.replace(/^https?:/, '');

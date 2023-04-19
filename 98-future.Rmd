@@ -4,8 +4,10 @@
 - Higher dimensional variables
 - New atoms and transformations
   * Support function
-  * Scalar product
-  * Matrix multiplication for DGP
+  * Condition number
+  * Log transforms (log-normal-CDF, log-gamma)
+  * Matrix operators (matrix fraction, geometric product, Pf eigenvalue)
+- Disciplined quasiconvex programming (DQCP)
 - Disciplined parametrized programming (DPP)
 - System for differentiating the map from a problem's parameters to its solution [@cvxpylayers:2019]
 
