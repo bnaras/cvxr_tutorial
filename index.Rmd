@@ -2,7 +2,6 @@
 title: 'Disciplined Convex Optimization in R'
 author: "Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd"
 date: "`r Sys.Date()`"
-site: bookdown::bookdown_site
 bibliography: ["packages.bib", "cvxr.bib"]
 biblio-style: "apalike"
 link-citations: true
