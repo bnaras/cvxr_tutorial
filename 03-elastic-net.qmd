@@ -1,0 +1,19 @@
+# Penalized Regression: Ridge, Lasso, Elastic Net {#sec-elastic-net}
+
+<!-- LIVE. Source: cvxr_docs/examples/regression/elastic-net.qmd,
+     machine-learning/ridge.qmd, machine-learning/lasso.qmd,
+     regression/glmnet-equivalence.qmd. The natural statistician on-ramp:
+     OLS -> ridge -> lasso -> elastic net as one penalty family. glmnet as a
+     one-chunk validation aside. Sets up the lambda sweep paid off in DPP. -->
+
+::: callout-note
+## What you'll be able to do
+Add an L2, L1, or elastic-net penalty to a regression, see ridge and lasso as
+special cases of one family, and validate against `glmnet`.
+:::
+
+::: callout-important
+## Chapter under construction (Phase 2)
+The first rung of the **regression spine**. Climax is the parameter sweep in
+@sec-dpp. See [Elastic Net](https://cvxr.rbind.io/examples/regression/elastic-net.html).
+:::

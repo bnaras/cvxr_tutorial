@@ -1,0 +1,65 @@
+project:
+  type: book
+  output-dir: _book
+
+book:
+  title: "Convex Optimization in R Using CVXR"
+  subtitle: "A Hands-On Tutorial"
+  author:
+    - "Anqi Fu"
+    - "Balasubramanian Narasimhan"
+    - "Stephen Boyd"
+  date: today
+  description: >
+    A hands-on tutorial on disciplined convex optimization in R with CVXR,
+    prepared for useR! 2026 (Warsaw).
+  site-url: "https://cvxr.rbind.io"
+  repo-url: "https://github.com/bnaras/cvxr_tutorial"
+  repo-actions: [issue]
+  search: true
+  page-navigation: true
+  chapters:
+    - index.qmd
+    - part: "Foundations"
+      chapters:
+        - 01-gentle-intro.qmd
+        - 02-dcp.qmd
+    - part: "The Regression Spine"
+      chapters:
+        - 03-elastic-net.qmd
+        - 04-change-the-loss.qmd
+        - 05-dpp.qmd
+    - part: "Frontiers"
+      chapters:
+        - 06-mip.qmd
+        - 07-showcase.qmd
+        - 08-dnlp.qmd
+        - 09-dgp-dqcp.qmd
+    - part: "Practice"
+      chapters:
+        - 10-byo.qmd
+    - references.qmd
+
+bibliography: [references.bib, cvxr.bib]
+
+format:
+  html:
+    theme:
+      - cosmo
+      - custom.scss
+    toc: true
+    toc-depth: 3
+    code-copy: true
+    code-overflow: wrap
+    highlight-style: github
+    link-external-newwindow: true
+  pdf:
+    documentclass: scrbook
+    keep-tex: false
+
+# Re-use rendered chunk results across renders; every chunk must still execute
+# cleanly against CRAN CVXR 1.9.1 in CI.
+execute:
+  freeze: auto
+  warning: false
+  message: false

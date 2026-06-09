@@ -1,0 +1,17 @@
+# Bring Your Own Problem {#sec-byo}
+
+<!-- Open problem-solving session. Problems collected ~mid-June and curated
+     before the tutorial; a few graded challenge problems with collapsible
+     solutions, plus roaming instructor help. -->
+
+::: callout-note
+## Goal
+Formulate and solve a problem of your own --- or one of our curated challenges ---
+with instructor guidance.
+:::
+
+::: callout-important
+## Session material (Phase 4)
+Populated the week before the tutorial from problems submitted by participants,
+plus a curated challenge set with click-to-reveal solutions.
+:::

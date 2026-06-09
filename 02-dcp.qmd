@@ -1,0 +1,22 @@
+# Disciplined Convex Programming {#sec-dcp}
+
+<!-- LIVE. Source: cvxr_docs/reference/dcp.qmd, reference/visualization.qmd;
+     2019 ch.04 (disciplined-convex-programming), ch.06 (how-cvxr-works).
+     Goal: make DCP the backbone. Curvature/sign, the atom library, composition
+     rules, the "not-DCP -> reformulate" loop, and visualize(). Pays off the
+     invalid-problem error from Chapter 1. -->
+
+::: callout-note
+## What you'll be able to do
+Read the curvature and sign of an expression, understand why CVXR accepts or
+rejects a problem, fix a non-DCP formulation, and use `visualize()` to inspect an
+expression tree.
+:::
+
+::: callout-important
+## Chapter under construction
+This chapter will be authored in Phase 2. It expands the DCP error you met at the
+end of @sec-gentle-intro into the core mental model for the rest of the book.
+Source material: the CVXR website [DCP rules](https://cvxr.rbind.io/reference/dcp.html)
+and [visualization](https://cvxr.rbind.io/reference/visualization.html) pages.
+:::

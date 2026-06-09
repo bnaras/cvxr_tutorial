@@ -1,0 +1,19 @@
+# Parameters and Efficient Sweeps (DPP) {#sec-dpp}
+
+<!-- LIVE (CORE). Source: cvxr_docs/examples/dpp/tutorial.qmd,
+     dpp/sensitivity-analysis.qmd. The climax of the regression spine: sweep
+     lambda over the elastic net with Parameter() + compilation caching. The
+     "wow" for advanced attendees, tied to something intro folks already built. -->
+
+::: callout-note
+## What you'll be able to do
+Use `Parameter()` to solve a problem repeatedly over a grid of values (e.g. a
+regularization path) far faster than rebuilding it each time, via DPP compilation
+caching.
+:::
+
+::: callout-important
+## Chapter under construction (Phase 2)
+The payoff of the regression spine.
+See [DPP Tutorial](https://cvxr.rbind.io/examples/dpp/tutorial.html).
+:::

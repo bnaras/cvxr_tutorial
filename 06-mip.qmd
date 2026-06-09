@@ -1,0 +1,18 @@
+# Mixed-Integer Programming {#sec-mip}
+
+<!-- LIVE hands-on (MILP/MIQP on HiGHS, install-free) + MI-SOCP DEMO via scip.
+     Source: cvxr_docs/examples/basic/miqp.qmd, misc/integer-programming.qmd.
+     HiGHS does MILP/MIQP only (no MI-SOCP); scip handles MI-SOCP as a demo. -->
+
+::: callout-note
+## What you'll be able to do
+Add integer or boolean variables to a model and solve it with HiGHS (MILP/MIQP).
+See a mixed-integer second-order-cone problem solved with SCIP.
+:::
+
+::: callout-important
+## Chapter under construction (Phase 2)
+Hands-on MILP/MIQP runs on HiGHS (a CVXR import). The MI-SOCP showcase uses
+`scip` and is run as a demo (CRAN-reproducible at home).
+See [Mixed-Integer QP](https://cvxr.rbind.io/examples/basic/miqp.html).
+:::

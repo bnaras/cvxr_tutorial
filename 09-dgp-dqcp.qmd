@@ -1,0 +1,18 @@
+# Further Frontiers: DGP and DQCP {#sec-dgp-dqcp}
+
+<!-- MENTION ONLY (slides + pointers), no live discussion. Source:
+     cvxr_docs/examples/dgp/*, dqcp/*. Kept brief by design. -->
+
+::: callout-note
+## What you'll learn about
+Two more disciplined dialects: **Disciplined Geometric Programming** (DGP) for
+posynomial/log-log-convex problems, and **Disciplined Quasiconvex Programming**
+(DQCP) for quasiconvex objectives.
+:::
+
+::: callout-important
+## Pointer chapter (Phase 3)
+Mentioned briefly in the session; full treatment on the website.
+See [DGP](https://cvxr.rbind.io/examples/dgp/tutorial.html) and
+[DQCP](https://cvxr.rbind.io/examples/dqcp/tutorial.html).
+:::

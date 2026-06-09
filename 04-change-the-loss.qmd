@@ -1,0 +1,18 @@
+# Changing the Loss: Huber, Quantile, LAD {#sec-change-the-loss}
+
+<!-- LIVE. Source: cvxr_docs/examples/regression/huber-regression.qmd,
+     regression/quantile-regression.qmd. The unifying idea: swap the loss,
+     get a different estimator. Builds directly on the LAD exercise in Ch.1. -->
+
+::: callout-note
+## What you'll be able to do
+Swap a squared-error loss for Huber, quantile, or absolute-deviation loss and see
+how the estimator changes --- robustness and asymmetry from a one-line edit.
+:::
+
+::: callout-important
+## Chapter under construction (Phase 2)
+Second rung of the regression spine.
+See [Huber](https://cvxr.rbind.io/examples/regression/huber-regression.html) and
+[Quantile](https://cvxr.rbind.io/examples/regression/quantile-regression.html).
+:::

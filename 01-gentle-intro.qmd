@@ -1,0 +1,300 @@
+# A Gentle Introduction {#sec-gentle-intro}
+
+<!-- Source of truth: cvxr_docs/examples/gentle-intro.qmd + 2019 ch.05. -->
+
+::: callout-note
+## What you'll be able to do
+By the end of this chapter you can state a convex problem in CVXR, solve it, read
+its status and solution, modify and re-solve it, and recognize when a problem is
+*not* something CVXR will accept.
+:::
+
+```{r}
+#| label: setup
+#| include: false
+library(CVXR)
+source("_check_status.R")
+```
+
+## Convex optimization in one picture
+
+A **convex optimization problem** has the form
+
+$$
+\begin{array}{ll}
+  \mbox{minimize}   & f_0(x)\\
+  \mbox{subject to} & f_i(x) \leq 0, \quad i = 1,\ldots,m\\
+                    & g_i(x) = 0,    \quad i = 1,\ldots,p
+\end{array}
+$$
+
+where $x$ is the variable, the objective $f_0$ and the inequality functions
+$f_1,\ldots,f_m$ are **convex**, and the equality functions $g_1,\ldots,g_p$ are
+**affine**.
+
+A handy mental picture:
+
+- a **convex** function is *upward-curving* (a chord lies above the graph),
+- a **concave** function is *downward-curving*,
+- an **affine** function is *flat* --- both convex and concave.
+
+We minimize a convex function (or maximize a concave one) over a convex region.
+The payoff for staying convex: **any local solution is automatically global.**
+For much more, see @BoydVandenberghe:2004.
+
+## 'Hello World'
+
+Here is about the simplest problem that shows all three ingredients --- an
+objective, an inequality constraint, and an equality constraint:
+
+$$
+\begin{array}{ll}
+  \mbox{minimize}   & x^2 + y^2 \\
+  \mbox{subject to} & x \geq 0, \quad 2x + y = 1
+\end{array}
+$$
+
+with scalar variables $x$ and $y$. It is simple enough to solve by hand, so we can
+check CVXR's answer. Here it is in CVXR:
+
+```{r}
+#| label: hello
+# Variables minimized over
+x <- Variable(1)
+y <- Variable(1)
+
+# Problem definition
+objective   <- Minimize(x^2 + y^2)
+constraints <- list(x >= 0, 2 * x + y == 1)
+prob1 <- Problem(objective, constraints)
+
+# Solve it
+sol1 <- psolve(prob1)
+
+status(prob1)   # did it solve?
+sol1            # optimal objective value
+value(x)
+value(y)
+```
+
+Let's walk through that carefully, because every CVXR problem is built the same way.
+
+**Variables are placeholders.** The first two lines create scalar `Variable`
+objects. They have no value yet --- not until we solve.
+
+```{r}
+#| eval: false
+x <- Variable(1)
+y <- Variable(1)
+```
+
+**`Minimize()` builds an objective, not a number.** Unlike base R's `min()`, this
+does not compute anything (there is nothing to compute --- `x` and `y` have no
+values). It records the *goal*.
+
+```{r}
+#| eval: false
+objective <- Minimize(x^2 + y^2)
+```
+
+**`>=` and `==` build constraints, not `TRUE`/`FALSE`.** The comparison operators
+are overloaded: `x >= 0` returns a *Constraint* object the solver will enforce ---
+not a logical. (Without the constraints, the solution would trivially be
+$x = y = 0$.)
+
+```{r}
+#| eval: false
+constraints <- list(x >= 0, 2 * x + y == 1)
+```
+
+**`Problem()` assembles, `psolve()` solves.** A problem pairs an objective with
+zero or more constraints. `psolve()` translates it into a form a convex solver
+understands, calls the solver, and returns the optimal objective value. Afterwards
+`value()` retrieves each variable and `status()` reports what happened.
+
+Solving by hand: the equality gives $y = 1 - 2x$, so we minimize
+$x^2 + (1-2x)^2 = 5x^2 - 4x + 1$, which is smallest at $x = 2/5$. Then $y = 1/5$ and
+the objective is $1/5$ --- exactly what CVXR found. The world says 'hi' back.
+
+### Three things that can happen
+
+When you `psolve()` a problem, `status()` is one of:
+
+1. **`"optimal"`** --- solved; `value()` gives the optimal variables.
+2. **`"infeasible"`** --- no point satisfies all constraints (e.g. `x >= 1` *and*
+   `x <= 0`). `psolve()` returns `+Inf` (minimization) and variable values are `NA`.
+3. **`"unbounded"`** --- the objective can be driven to $-\infty$. `psolve()`
+   returns `-Inf`.
+
+Always glance at `status()` before trusting a solution.
+
+## Modifying and re-solving
+
+CVXR objects are ordinary R objects: you can build new problems from old ones. Here
+we reuse the constraints from `prob1`, change the objective, and add a constraint:
+
+```{r}
+#| label: modify
+prob2 <- Problem(Minimize(x^2 + y^2 + abs(x - y)),
+                 c(prob1@constraints, list(y <= 1)))
+sol2 <- psolve(prob2)
+status(prob2)
+sol2
+value(x)
+value(y)
+```
+
+This *modify-and-re-solve* loop --- change one thing, solve again --- is what makes
+CVXR so good for prototyping new methods.
+
+## An *invalid* problem
+
+You can't type *any* problem you like. Suppose we tried to **maximize** the convex
+objective $x^2 + y^2$:
+
+```{r}
+#| label: invalid
+#| error: true
+prob_bad <- Problem(Maximize(x^2 + y^2), prob1@constraints)
+psolve(prob_bad)
+```
+
+CVXR refuses. Maximizing a convex function is *not* a convex problem, and CVXR
+checks this using a strict rule set called **Disciplined Convex Programming (DCP)**.
+Follow the rules and your problem is guaranteed convex; break them and CVXR stops
+you rather than silently returning nonsense. The next chapter is devoted to DCP ---
+this error is your first encounter with it.
+
+## A familiar example: least squares
+
+Let's connect to something every statistician knows. We generate data from a known
+linear model $Y = X\beta + \epsilon$ and recover $\beta$.
+
+```{r}
+#| label: ols-data
+set.seed(123)
+n <- 50; p <- 10
+beta_true <- -4:5                      # the true coefficients, -4 through 5
+X <- matrix(rnorm(n * p), nrow = n)
+Y <- X %*% beta_true + rnorm(n)
+```
+
+The textbook tool is `lm()`:
+
+```{r}
+#| label: ols-lm
+ls_fit <- lm(Y ~ 0 + X)                # no intercept in our model
+coef(ls_fit)
+```
+
+In CVXR we write the least-squares problem in its mathematical form,
+$\min_\beta \|Y - X\beta\|_2^2$:
+
+```{r}
+#| label: ols-cvxr
+beta <- Variable(p)
+obj  <- Minimize(sum((Y - X %*% beta)^2))
+ols  <- Problem(obj)
+sol  <- psolve(ols)
+```
+
+Notice the objective is written with the same `sum`, `%*%`, and `^` you use on
+ordinary R numbers --- but `beta` is a CVXR variable. The estimates match `lm()`:
+
+```{r}
+#| label: ols-compare
+cbind(CVXR = value(beta), lm = coef(ls_fit))
+```
+
+### So what did we gain?
+
+Fair question --- we replaced one call to `lm()` with several lines, and it even
+runs slower. The payoff appears the moment the problem changes. Suppose we *know*
+the coefficients are **nonnegative**. That is
+[nonnegative least squares](https://en.wikipedia.org/wiki/Non-negative_least_squares),
+and `lm()` can no longer help. In CVXR it is **one extra constraint**:
+
+```{r}
+#| label: nnls
+nnls_prob <- Problem(obj, constraints = list(beta >= 0))
+psolve(nnls_prob)
+value(beta)
+```
+
+We can check against the dedicated `nnls` package:
+
+```{r}
+#| label: nnls-check
+cbind(CVXR = value(beta), nnls = nnls::nnls(X, Y)$x)
+```
+
+Same answer --- but in CVXR we got there by *adding a line*, not by finding a new
+package. That is the whole idea: you describe the problem, CVXR solves it.
+
+## Exercises
+
+Try these by editing the chunks above and re-running. Solutions are one click away.
+
+**Exercise 1.** Change the least-squares objective to **least absolute deviation**
+(minimize the sum of absolute residuals) and solve. Which objective gives a smaller
+*sum of absolute* residuals?
+
+::: {.callout-tip collapse="true"}
+## Solution
+```{r}
+#| label: ex-lad
+lad_obj  <- Minimize(sum(abs(Y - X %*% beta)))
+lad_prob <- Problem(lad_obj)
+psolve(lad_prob)
+cbind(LAD = value(beta), lm = coef(ls_fit))
+```
+LAD minimizes absolute residuals, so by that yardstick it wins; `lm` minimizes
+*squared* residuals and would win on sum of squares. Note we reused `beta` --- its
+value reflects whichever problem was last solved.
+:::
+
+**Exercise 2.** Add the constraint that the coefficients are **nondecreasing**:
+$\beta_1 \le \beta_2 \le \cdots \le \beta_p$.
+
+*Hint:* what base-R function takes lagged differences?
+
+::: {.callout-tip collapse="true"}
+## Solution
+`base::diff()` has a CVXR method, so the monotonicity constraint is just
+`diff(beta) >= 0`:
+```{r}
+#| label: ex-monotone
+mono <- Problem(obj, constraints = list(diff(beta) >= 0))
+psolve(mono)
+value(beta)
+```
+:::
+
+**Exercise 3 (⭐).** Constrain the first four coefficients to sum to at most zero,
+$\sum_{i=1}^{4}\beta_i \le 0$, using a matrix row rather than writing out four terms.
+
+::: {.callout-tip collapse="true"}
+## Solution
+Build a row vector that picks out $\beta_1,\ldots,\beta_4$:
+```{r}
+#| label: ex-sum
+A <- matrix(c(rep(1, 4), rep(0, 6)), nrow = 1)
+sum_con <- Problem(obj, constraints = list(A %*% beta <= 0))
+psolve(sum_con)
+value(beta)
+```
+Working with matrices generalizes far better than writing `beta[1] + beta[2] + ...`.
+:::
+
+## Takeaways
+
+- Every CVXR problem is **Variable → objective → constraints → `Problem` →
+  `psolve`**, then `status()` and `value()`.
+- Operators like `>=`, `==`, `sum`, `%*%` are *overloaded* to build optimization
+  objects, not to compute numbers.
+- The power is **flexibility**: change the loss, add a constraint, re-solve --- no
+  closed form or special-purpose package required.
+- CVXR only accepts problems that pass the **DCP** rules, which we turn to next.
+
+For a longer version of this introduction, see the
+[CVXR website](https://cvxr.rbind.io/examples/gentle-intro.html).

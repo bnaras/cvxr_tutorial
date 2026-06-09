@@ -1,0 +1,17 @@
+# Beyond Convex: Nonlinear Programming (Demo) {#sec-dnlp}
+
+<!-- DEMO (instructor-run), CRAN-reproducible at home via Uno + sparsediff;
+     ipopt dropped. Source: cvxr_docs/examples/dnlp/tutorial.qmd, trimmed. -->
+
+::: callout-note
+## What you'll be able to do
+Recognize when a problem is smooth-but-nonconvex, and see how CVXR hands it to a
+nonlinear solver (`Uno`) using automatic differentiation (`sparsediff`).
+:::
+
+::: callout-important
+## Demo chapter (Phase 3)
+Run by the instructor; reproduce it at home with
+`install.packages(c("Uno","sparsediff"))` (no `ipopt` needed).
+See [DNLP Tutorial](https://cvxr.rbind.io/examples/dnlp/tutorial.html).
+:::

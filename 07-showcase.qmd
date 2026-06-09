@@ -1,0 +1,19 @@
+# Showcase: Image Reconstruction and the Bootstrap {#sec-showcase}
+
+<!-- LIVE. Source: cvxr_docs/examples/applications/tv-inpainting.qmd (the "sexy"
+     image-reconstruction example; needs png + image asset) and
+     regression/near-isotonic-and-near-convex-regression.qmd (boot-based
+     variability, already CRAN-only). -->
+
+::: callout-note
+## What you'll be able to do
+Reconstruct a corrupted image by total-variation inpainting, and attach
+bootstrap confidence intervals to a CVXR fit.
+:::
+
+::: callout-important
+## Chapter under construction (Phase 2)
+Engagement showcase. TV inpainting needs `png` and the bundled image asset.
+See [TV Inpainting](https://cvxr.rbind.io/examples/applications/tv-inpainting.html)
+and [Near-Isotonic](https://cvxr.rbind.io/examples/regression/near-isotonic-and-near-convex-regression.html).
+:::

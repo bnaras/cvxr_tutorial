@@ -1,0 +1,148 @@
+/*-- scss:defaults --*/
+$white: #fff;
+$body-bg: $white;
+$body-color: #333;
+$link-color: #004B6B;
+$link-hover-color: #003050;
+$font-family-sans-serif: Georgia, 'Times New Roman', serif;
+$font-family-monospace: 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
+$font-size-base: 0.92rem;
+$headings-color: #333;
+$headings-font-weight: 400;
+$code-color: #333;
+$code-bg: #f8f8f8;
+$border-color: #e1e4e5;
+$sidebar-bg: #fcfcfc;
+
+/*-- scss:rules --*/
+
+/* Alabaster-inspired clean styling */
+body {
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 400;
+  color: #333;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+h1 { font-size: 1.65rem; border-bottom: 1px solid #e1e4e5; padding-bottom: 0.3em; }
+h2 { font-size: 1.38rem; }
+h3 { font-size: 1.15rem; }
+
+h1 code, h2 code, h3 code, h4 code,
+.title code {
+  font-size: inherit;
+}
+
+/* Sidebar styling */
+.sidebar {
+  background-color: #fcfcfc;
+  border-right: 1px solid #e1e4e5;
+}
+
+.sidebar-title {
+  font-weight: 600;
+  color: #333;
+}
+
+/* Code blocks */
+pre {
+  background-color: #f8f8f8;
+  border: 1px solid #e1e4e5;
+  border-radius: 3px;
+  padding: 0.75em 1em;
+  font-size: 0.82rem;
+}
+
+code {
+  font-size: 0.82rem;
+}
+
+div.sourceCode {
+  border: 1px solid #e1e4e5;
+  border-radius: 3px;
+}
+
+/* Tables */
+.table {
+  border-collapse: collapse;
+}
+
+.table th {
+  background-color: #f8f8f8;
+  border-bottom: 2px solid #e1e4e5;
+  font-weight: 600;
+}
+
+.table td {
+  border-bottom: 1px solid #e1e4e5;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: #f9f9f9;
+}
+
+/* Callout boxes */
+.callout {
+  border-radius: 3px;
+  margin: 1.5em 0;
+}
+
+.callout-note {
+  border-left: 4px solid #004B6B;
+}
+
+.callout-tip {
+  border-left: 4px solid #3c763d;
+}
+
+.callout-warning {
+  border-left: 4px solid #8a6d3b;
+}
+
+/* Links */
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Navbar */
+.navbar {
+  border-bottom: 1px solid #e1e4e5;
+  box-shadow: none;
+}
+
+.navbar {
+  padding-top: 0.15rem;
+  padding-bottom: 0.15rem;
+}
+
+.navbar-brand img {
+  max-height: 56px;
+  height: 56px;
+  margin-right: 0.5rem;
+}
+
+/* Footer */
+.nav-footer {
+  border-top: 1px solid #e1e4e5;
+  color: #999;
+  font-size: 0.85rem;
+}
+
+/* Math display */
+.MathJax_Display {
+  margin: 1em 0;
+}
+
+/* Content width */
+.content {
+  max-width: 800px;
+}

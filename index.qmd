@@ -1,0 +1,89 @@
+# Preface {.unnumbered}
+
+Welcome to **Convex Optimization in R Using CVXR**, a hands-on tutorial
+prepared for [useR! 2026](https://user2026.r-project.org) in Warsaw.
+
+Convex optimization sits underneath a remarkable share of modern statistics and
+machine learning --- least squares and ridge regression, the lasso and
+elastic net, robust and quantile regression, support vector machines, portfolio
+optimization, maximum-entropy modeling, and much more. [CVXR](https://cvxr.rbind.io)
+lets you write these problems in R in *natural mathematical notation* and have
+them solved to global optimality, without hand-deriving a solver or matching your
+problem to a canned routine.
+
+This tutorial accompanies CVXR **1.9.1**, a ground-up rewrite built on R's S7
+object system that brings R to parity with Python's [CVXPY](https://www.cvxpy.org).
+
+## Who this is for
+
+We assume **intermediate R** (data frames, functions, basic matrix algebra) and a
+little linear algebra and probability. **No optimization background is required.**
+The early chapters start gently --- if you have never solved an optimization
+problem in your life, you are in the right place. Later chapters reach material
+that will interest experienced optimizers too; exercises marked with a star
+(⭐) are there for you.
+
+## How to use this book
+
+This is a **hands-on** book. You are meant to *run the code*, not just read it.
+
+- Open the accompanying **RStudio project** and work through each chapter's `.qmd`
+  (or `.R`) by **executing the code chunks** as you read. You do not need to type
+  anything --- click *Run* (or press `Ctrl/Cmd+Enter`) and watch what happens.
+- Each hands-on chapter ends with **exercises**. Try them, then click to reveal
+  the solution:
+
+::: {.callout-tip collapse="true"}
+## Solution (click to reveal)
+Solutions look like this --- the code and its output are right here, hidden until
+you want them.
+:::
+
+## Installation
+
+Everything in this tutorial runs on **CRAN packages only**. Two lines install all
+you need --- the **solvers** and a handful of **helper packages** (for plots,
+data, and comparisons against familiar R routines):
+
+```r
+# Solvers (CVXR auto-pulls clarabel, osqp, scs, highs)
+install.packages(c("CVXR", "scip", "Uno", "sparsediff"))
+
+# Helpers used by the examples
+install.packages(c("ggplot2", "nnls", "glmnet", "boot", "png", "kableExtra"))
+```
+
+`CVXR` automatically brings in the four open-source solvers it uses ---
+`clarabel`, `osqp`, `scs`, and `highs`. The `scip`/`Uno`/`sparsediff` trio powers
+two *demonstrations* near the end (mixed-integer second-order-cone programming with
+`scip`, and nonlinear programming with `Uno` + `sparsediff`); the **core hands-on
+chapters need only `CVXR` plus the helpers**.
+
+Before the tutorial, please run the included **`setup_check.R`** to confirm your
+machine is ready:
+
+```r
+source("setup_check.R")   # or:  Rscript setup_check.R
+```
+
+It checks your R version, the packages, and runs a tiny solve on each solver,
+reporting `PASS`/`FAIL`. Requires **R ≥ 4.3.0**.
+
+## A note on solvers
+
+We deliberately restrict ourselves to solvers available on CRAN. CVXR also
+interfaces with commercial solvers (MOSEK, Gurobi, CPLEX, Xpress) and several
+others, but none are needed here. Wherever a chapter names a solver explicitly,
+it is one of the CRAN ones above.
+
+## Further reading
+
+Every topic here is expanded, with many more worked examples, at the CVXR website
+[cvxr.rbind.io](https://cvxr.rbind.io). The package is described in @cvxr2020.
+The standard reference for the subject is @BoydVandenberghe:2004.
+
+## Acknowledgments
+
+CVXR builds on the work of the CVXPY team and the broader disciplined-convex-
+programming community. The examples here draw on the CVXR documentation, to whose
+many contributors we are grateful.

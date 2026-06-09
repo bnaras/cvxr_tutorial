@@ -1,8 +1,0 @@
-# Speed Considerations
-
-
-__NOTE__: The material in this section was written for `CVXR` pre
-1.0. It no longer applies to versions 1.0 and above. Indeed `CVXR` is
-actually much faster now by default. We will update this section for
-1.0 as appropriate later. 
-
