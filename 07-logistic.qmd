@@ -109,9 +109,31 @@ Larger `lambda` drives more coefficients to zero, just as the lasso did for line
 regression --- logistic regression and penalized regression are the *same modeling
 vocabulary* applied to a different loss.
 
-## Exercise
+## Exercises
 
-**Exercise.** Fit a ridge-penalized ($\ell_2$) logistic regression at the same
+**Exercise 1.** Put "anything is a function of the solution" to work. Using the
+(unpenalized) fitted model, compute the in-sample **predicted probabilities**, turn
+them into class predictions at a 0.5 threshold, and report the classification accuracy
+and a confusion matrix.
+
+::: {.callout-tip collapse="true"}
+## Solution
+Re-solve the maximum-likelihood fit (the penalized sections above changed `beta`), then
+everything is just `value()` of an expression:
+```{r}
+#| label: ex-fitted
+psolve(prob)                                  # the unpenalized MLE fit
+p_hat <- 1 / (1 + exp(-value(X %*% beta)))    # fitted probabilities
+y_hat <- as.numeric(p_hat >= 0.5)             # predicted classes
+c(accuracy = mean(y_hat == y))
+table(predicted = y_hat, actual = y)
+```
+The log-odds `X %*% beta` is an *expression*; `value()` evaluates it at the solution,
+and the rest is ordinary R. The very same pattern would score *new* data --- just
+substitute a new design matrix.
+:::
+
+**Exercise 2.** Fit a ridge-penalized ($\ell_2$) logistic regression at the same
 `lambda = 25` and compare its coefficients with the $\ell_1$ fit above. Which zeroes
 coefficients?
 
