@@ -3,6 +3,8 @@
 /.quarto/
 /_freeze/
 *_files/
+# Rendered standalone reveal.js deck (source is slides/intro.qmd)
+/slides/*.html
 
 # History / session files
 .Rhistory

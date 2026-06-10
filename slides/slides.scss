@@ -1,0 +1,25 @@
+/*-- scss:defaults --*/
+// Thin intro deck for useR! 2026 — kept close to the reveal default theme.
+$presentation-heading-color: #1a5276;
+$link-color: #2471a3;
+$presentation-font-size-root: 30px;
+
+/*-- scss:rules --*/
+
+// The per-slide "further info" footnotes (::: aside) — small and unobtrusive.
+.reveal .slide aside,
+.reveal .aside-footnotes {
+  font-size: 0.55em;
+  color: #5d6d7e;
+}
+
+// Slightly tighter code blocks so the live snippet fits one screen.
+.reveal pre code {
+  font-size: 0.78em;
+  line-height: 1.25;
+}
+
+// Global footer link colour.
+.reveal .footer a {
+  color: #2471a3;
+}
