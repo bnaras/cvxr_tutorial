@@ -68,17 +68,16 @@ good <- Problem(Minimize(g * w), list(w == g * z, z >= 1))
 cat("Is DPP?", is_dpp(good), "\n")
 ```
 
-## The payoff: re-solve vs. rebuild
+## The payoff: watch the compile time vanish
 
-How much does skipping recompilation actually save? Let's measure it properly with
-`bench::mark`, which reports the garbage-collection-free **minimum** time --- the
-honest way to compare. We set up a lasso whose penalty weight is a `Parameter`, and
-compare one **DPP re-solve** (change the value, solve again) against one **rebuild**
-(fresh problem with a numeric weight).
+Recall from @sec-gentle-intro that `verbose = TRUE` splits each solve into a
+**compile time** and a **solver time** in its summary. Parameters target the
+*compile* time --- so let's just watch it. We set up a lasso whose penalty weight is
+a `Parameter`, and solve it the first time:
 
 ```{r}
-#| label: bench-setup
-library(bench)
+#| label: verbose-first
+#| message: true
 set.seed(1)
 n <- 120; m <- 40
 A <- matrix(rnorm(n * m), n, m); b <- rnorm(n)
@@ -88,11 +87,33 @@ error <- sum_squares(A %*% x - b)
 gamma <- Parameter(nonneg = TRUE)
 param_prob <- Problem(Minimize(error + gamma * p_norm(x, 1)))   # DPP
 
-value(gamma) <- 0.5; psolve(param_prob)   # one-time compile, up front
+value(gamma) <- 0.5
+psolve(param_prob, verbose = TRUE)        # first solve: pays compilation
 ```
+
+Look at the **`Compile time`** in the summary. Now change the parameter and re-solve
+the *same problem object*:
+
+```{r}
+#| label: verbose-resolve
+#| message: true
+value(gamma) <- 0.7
+psolve(param_prob, verbose = TRUE)        # re-solve: compilation is cached
+```
+
+The compile time has **collapsed** --- CVXR reused the cached parameter-to-data
+mapping and went straight to the solver. A freshly built problem, by contrast, pays
+the full compile *every* time.
+
+## Quantifying it
+
+Now let's measure the per-solve saving with `bench::mark`, which reports the
+garbage-collection-free **minimum** time --- the honest way to compare. We pit one
+**DPP re-solve** against one **rebuild** (a fresh problem with a numeric weight):
 
 ```{r}
 #| label: bench-run
+library(bench)
 bench::mark(
   `DPP re-solve` = { value(gamma) <- 0.7; psolve(param_prob) },
   `rebuild`      = { psolve(Problem(Minimize(error + 0.7 * p_norm(x, 1)))) },
@@ -101,8 +122,8 @@ bench::mark(
 ```
 
 On our machine the DPP re-solve is roughly **2–3× faster per solve** and allocates
-less memory --- it reuses the cached compilation instead of redoing it. Over a sweep
-of $K$ values you save that difference $K$ times.
+less memory --- precisely the compile time we just watched disappear. Over a sweep of
+$K$ values you save that difference $K$ times.
 
 ::: callout-note
 ## How big is the win, really?
