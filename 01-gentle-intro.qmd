@@ -136,6 +136,7 @@ diagnose a slow or stalling solve:
 
 ```{r}
 #| label: verbose
+#| message: true
 psolve(prob1, verbose = TRUE)
 ```
 
