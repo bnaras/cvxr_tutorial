@@ -144,6 +144,99 @@ Logical rules like mutual exclusion, prerequisites (`pick[a] <= pick[b]`), or "p
 exactly k" are all just linear constraints on 0/1 variables.
 :::
 
+## Bonus: solving Sudoku
+
+Sudoku is a pure **feasibility** integer program --- there is nothing to optimize, only
+constraints to satisfy. It is a lovely illustration of how "exactly one of these"
+rules become linear equations on boolean variables.
+
+![A hard Sudoku puzzle. The blanks are the cells to fill --- we encode them as `0`.](images/sudoku.png){width=58%}
+
+We store the grid as a $9\times 9$ matrix, using **`0` for a blank cell**:
+
+```{r}
+#| label: sudoku-puzzle
+puzzle <- matrix(c(
+  0,2,0, 0,0,0, 8,0,0,
+  0,5,0, 0,0,0, 0,4,0,
+  0,0,0, 8,9,1, 2,0,0,
+  0,0,0, 4,0,9, 0,3,0,
+  7,0,0, 0,0,2, 0,0,0,
+  2,1,0, 0,0,8, 0,6,4,
+  0,0,8, 0,0,0, 4,0,7,
+  0,4,2, 6,8,0, 9,0,0,
+  1,9,0, 0,5,0, 0,0,3), nrow = 9, byrow = TRUE)
+```
+
+### The formulation
+
+The trick is to replace each cell's *digit* with nine **yes/no** decisions. Define a
+boolean variable for every (cell, digit) pair:
+
+$$
+x_{ijk} = \begin{cases} 1 & \text{if cell } (i,j) \text{ holds digit } k,\\ 0 & \text{otherwise,}\end{cases}
+\qquad i,j,k \in \{1,\dots,9\}.
+$$
+
+That is $9\times 9\times 9 = 729$ booleans. Every Sudoku rule is now an **"exactly one"
+count** --- a sum of these booleans set equal to 1:
+
+$$
+\begin{array}{lll}
+\textstyle\sum_{k} x_{ijk} = 1 & \forall\, i,j & \text{(each cell holds exactly one digit)}\\[2pt]
+\textstyle\sum_{j} x_{ijk} = 1 & \forall\, i,k & \text{(digit } k \text{ appears once in each row } i)\\[2pt]
+\textstyle\sum_{i} x_{ijk} = 1 & \forall\, j,k & \text{(digit } k \text{ appears once in each column } j)\\[2pt]
+\textstyle\sum_{(i,j)\in B} x_{ijk} = 1 & \forall\, \text{box } B,\ k & \text{(digit } k \text{ appears once in each } 3\times3 \text{ box)}\\[2pt]
+x_{ij g_{ij}} = 1 & \text{for each clue } g_{ij} & \text{(given numbers are fixed)}
+\end{array}
+$$
+
+There is **no objective** --- any grid satisfying all of these *is* the answer, so we
+minimize the constant `0` and let the solver find a feasible point.
+
+### In CVXR
+
+We hold the booleans as a list of nine $9\times 9$ matrices, `X[[k]]` being the
+indicator that each cell equals digit `k`. Each block of constraints below mirrors one
+line of the formulation. (Recall CVXR's 1-based axes from earlier: `axis = 1` sums each
+**row**, `axis = 2` sums each **column**.)
+
+```{r}
+#| label: sudoku-model
+X <- lapply(1:9, function(k) Variable(c(9, 9), boolean = TRUE))
+
+cons <- list(Reduce(`+`, X) == matrix(1, 9, 9))          # one digit per cell
+
+for (k in 1:9) {
+  cons <- c(cons,
+            list(sum_entries(X[[k]], axis = 1) == 1,      # digit k once per row
+                 sum_entries(X[[k]], axis = 2) == 1))     # digit k once per column
+  for (br in 0:2) for (bc in 0:2) {                       # digit k once per 3x3 box
+    rows <- (3 * br + 1):(3 * br + 3)
+    cols <- (3 * bc + 1):(3 * bc + 3)
+    cons <- c(cons, list(sum_entries(X[[k]][rows, cols]) == 1))
+  }
+}
+
+for (i in 1:9) for (j in 1:9) if (puzzle[i, j] != 0)     # fix the clues
+  cons <- c(cons, list(X[[puzzle[i, j]]][i, j] == 1))
+```
+
+Solve it as a feasibility problem and read the chosen digit in each cell:
+
+```{r}
+#| label: sudoku-solve
+psolve(Problem(Minimize(0), cons), solver = "HIGHS")
+
+solution <- matrix(0, 9, 9)
+for (k in 1:9) solution[round(value(X[[k]])) == 1] <- k
+solution
+```
+
+A few hundred boolean variables, a couple hundred linear constraints, and HiGHS fills
+the grid in well under a second --- with **no Sudoku-specific algorithm**, just the
+rules written as constraints. (Swap in any puzzle by editing the `0`-padded matrix.)
+
 ## Takeaways
 
 - Declaring a variable `integer = TRUE` or `boolean = TRUE` turns a model into a
@@ -154,6 +247,8 @@ exactly k" are all just linear constraints on 0/1 variables.
   but **reformulate the quadratic as an SOC** and SCIP solves it on CRAN, same answer.
 - Match the solver to the problem --- and never trust an SOC sent to a pure-MILP
   solver like HiGHS.
+- Some integer problems have **no objective at all**: logical puzzles like Sudoku are
+  pure *feasibility* programs, where every rule is an "exactly one" sum of booleans.
 
 See [Mixed-Integer QP](https://cvxr.rbind.io/examples/basic/miqp.html) and
 [Integer Programming](https://cvxr.rbind.io/examples/misc/integer-programming.html).
