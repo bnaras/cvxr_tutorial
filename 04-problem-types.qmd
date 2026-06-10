@@ -1,0 +1,113 @@
+# Types of Convex Optimization Problems {#sec-problem-types}
+
+<!-- Survey/taxonomy: LP < QP < SOCP < SDP, one tiny verified example each.
+     Source: 2019 ch02 + cvxr_docs basic/*. Verified vs CVXR 1.9.1. -->
+
+::: callout-note
+## What you'll be able to do
+Recognize the standard families of convex problems --- **LP, QP, SOCP, SDP** --- see a
+tiny CVXR example of each, and understand that you rarely have to choose: DCP
+(@sec-dcp) classifies your problem and CVXR routes it to a capable solver.
+:::
+
+```{r}
+#| label: setup
+#| include: false
+library(CVXR)
+```
+
+## A hierarchy of problem classes
+
+Convex problems come in named families of increasing generality. Each contains the
+previous one as a special case:
+
+$$\text{LP} \;\subset\; \text{QP} \;\subset\; \text{SOCP} \;\subset\; \text{SDP}.$$
+
+You usually do **not** pick the family by hand. You write the problem from atoms; DCP
+certifies it is convex; and CVXR canonicalizes it into a cone program and hands it to a
+solver that can handle the cones involved (you saw this chain in the `verbose` output
+of @sec-gentle-intro). Still, it helps to recognize the families --- they tell you what
+is expressible and which solvers apply.
+
+## Linear program (LP)
+
+Linear objective, linear constraints. The workhorse of operations research.
+
+```{r}
+#| label: lp
+x <- Variable(2)
+lp <- Problem(Minimize(sum(c(2, 3) * x)),
+              list(x >= 0, x[1] + x[2] >= 1, x <= 5))
+psolve(lp)
+value(x)
+```
+
+## Quadratic program (QP)
+
+A convex **quadratic** objective with linear constraints. Least squares (and ridge,
+and the Markowitz portfolio of @sec-portfolio) live here.
+
+```{r}
+#| label: qp
+set.seed(1)
+A <- matrix(rnorm(20), 10, 2); b <- rnorm(10)
+z <- Variable(2)
+# constrained least squares: quadratic objective, linear constraint -> a QP
+psolve(Problem(Minimize(sum_squares(A %*% z - b)), list(z >= 0)))
+value(z)
+```
+
+## Second-order cone program (SOCP)
+
+Adds constraints involving the Euclidean norm --- "second-order cones." Anything with
+a `p_norm(., 2)`, `huber`, or robust-constraint flavor is typically an SOCP. Minimizing
+a norm subject to a budget is the canonical toy:
+
+```{r}
+#| label: socp
+xs <- Variable(3)
+psolve(Problem(Minimize(p_norm(xs, 2)), list(sum(xs) == 1)))
+round(value(xs), 4)             # 1/3 each -> the min-norm point on the simplex plane
+```
+
+## Semidefinite program (SDP)
+
+The most general of the four: constraints that a **matrix is positive semidefinite**
+($\succeq 0$), written with `%>>%`. Eigenvalue optimization, covariance/correlation
+problems, and relaxations of hard combinatorial problems are SDPs. Here we compute the
+largest eigenvalue of a matrix $M$ as $\min\{t : tI - M \succeq 0\}$:
+
+```{r}
+#| label: sdp
+M <- matrix(c(2, 1, 1, 2), 2, 2)
+t <- Variable(1)
+psolve(Problem(Minimize(t), list((t * diag(2) - M) %>>% 0)))   # = lambda_max(M) = 3
+```
+
+Variables can themselves be matrices constrained to be PSD --- e.g. finding the nearest
+unit-diagonal PSD matrix to $M$:
+
+```{r}
+#| label: sdp-var
+X <- Variable(c(2, 2), PSD = TRUE)
+psolve(Problem(Minimize(sum_squares(X - M)), list(diag(X) == 1)))
+round(value(X), 3)
+```
+
+## And their integer cousins
+
+Allow some variables to be **integer** or **boolean** and each family gains a
+mixed-integer version (MILP, MIQP, MI-SOCP). Those are no longer convex --- they are
+combinatorial --- but CVXR expresses them the same way and hands them to an
+integer-capable solver. We devote @sec-mip to them.
+
+## Takeaways
+
+- Convex problems form a hierarchy **LP $\subset$ QP $\subset$ SOCP $\subset$ SDP**;
+  each tiny example above is a few lines of CVXR.
+- You write problems from **atoms**, not by naming a family --- DCP classifies and CVXR
+  routes to a solver automatically.
+- Adding integrality gives the mixed-integer versions (@sec-mip).
+
+For more worked basics, see the
+[CVXR examples gallery](https://cvxr.rbind.io) (least squares, LP, QP, SOCP, SDP).

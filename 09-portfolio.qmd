@@ -1,0 +1,176 @@
+# Portfolio Optimization {#sec-portfolio}
+
+<!-- LIVE. Mean-variance (Markowitz) efficient frontier + mean-CVaR, on a real
+     12-asset price subset bundled in data/stock_prices.csv. Example and data
+     adapted from Riskfolio-Lib Tutorial 1 (Dany Cajas). Originals: Markowitz
+     (1952) mean-variance; Rockafellar-Uryasev (2000) CVaR. Verified vs CVXR 1.9.1. -->
+
+::: callout-note
+## What you'll be able to do
+Build a **mean-variance** (Markowitz) portfolio, trace its risk-return **efficient
+frontier**, and re-cast the problem with a different risk measure --- **Conditional
+Value-at-Risk (CVaR)** --- all from real return data.
+:::
+
+::: callout-tip
+## Credits
+The example and the bundled price data are adapted from
+[**Riskfolio-Lib**](https://github.com/dcajasn/Riskfolio-Lib) (Dany Cajas) ---
+"Tutorial 1: Classic Mean-Risk Optimization" [@riskfolio], itself built on CVXPY. The
+underlying models are due to @Markowitz:1952 (mean-variance) and
+@RockafellarUryasev:2000 (CVaR).
+:::
+
+```{r}
+#| label: setup
+#| include: false
+library(CVXR)
+library(ggplot2)
+source("_check_status.R")
+```
+
+## The mean-variance problem
+
+We hold $n$ assets; $w_i$ is the fraction of our budget in asset $i$. Returns $r$
+have mean $\mu$ and covariance $\Sigma$, so a portfolio $w$ has expected return
+$\mu^\top w$ and variance (risk) $w^\top\Sigma w$. Markowitz's insight: trade return
+against risk with a **risk-aversion** knob $\gamma \ge 0$,
+
+$$
+\underset{w}{\mbox{maximize}}\ \ \mu^\top w - \gamma\, w^\top\Sigma w
+\qquad\text{subject to}\qquad w \ge 0,\ \ \sum_i w_i = 1.
+$$
+
+The constraints make it a *long-only, fully-invested* portfolio. Small $\gamma$ chases
+return; large $\gamma$ avoids risk.
+
+## Real data
+
+We use ~3 years of daily prices for 12 well-known stocks (a subset of the Riskfolio-Lib
+dataset), and turn prices into simple returns, a mean vector, and a covariance matrix:
+
+```{r}
+#| label: data
+prices <- read.csv("data/stock_prices.csv", check.names = FALSE)
+P <- as.matrix(prices[, -1])              # drop the Dates column
+R <- P[-1, ] / P[-nrow(P), ] - 1          # daily simple returns
+mu    <- colMeans(R)
+Sigma <- cov(R)
+n     <- ncol(R)
+colnames(R)
+```
+
+## Trace the efficient frontier
+
+For each $\gamma$ we solve the Markowitz problem and record the realized risk and
+return. As in @sec-elastic-net, this is the **same problem re-solved** over a grid ---
+exactly the place where the `Parameter` trick from @sec-dpp pays off.
+
+```{r}
+#| label: frontier
+w    <- Variable(n)
+ret  <- t(mu) %*% w
+risk <- quad_form(w, Sigma)               # w' Sigma w, a convex quadratic
+cons <- list(w >= 0, sum(w) == 1)
+
+gammas <- 10^seq(-1, 3, length.out = 40)
+fr <- sapply(gammas, function(g) {
+  prob <- Problem(Maximize(ret - g * risk), cons)
+  psolve(prob)
+  c(risk = sqrt(value(risk)), ret = value(ret), w = value(w))
+})
+```
+
+Note how we read the risk and return back by **directly evaluating** the expressions
+`sqrt(risk)` and `ret` after each solve --- no bookkeeping required. The frontier:
+
+```{r}
+#| label: frontier-plot
+#| fig-cap: "Efficient frontier. Red points are single-asset portfolios; the curve dominates them."
+df  <- data.frame(risk = fr["risk", ], ret = fr["ret", ])
+ind <- data.frame(risk = sqrt(diag(Sigma)), ret = mu, asset = names(mu))
+ggplot(df, aes(risk, ret)) +
+  geom_line(color = "steelblue", linewidth = 1) +
+  geom_point(data = ind, color = "red") +
+  geom_text(data = ind, aes(label = asset), size = 3, vjust = -0.6,
+            check_overlap = TRUE) +
+  labs(x = "Risk (standard deviation of daily return)", y = "Expected daily return") +
+  theme_minimal()
+```
+
+Every point on the blue curve is the best return achievable at that level of risk; the
+individual stocks (red) all sit *below* it --- diversification at work.
+
+## A different risk measure: CVaR
+
+Variance penalizes upside and downside alike. **Conditional Value-at-Risk** (CVaR)
+focuses on the *bad tail*: $\text{CVaR}_\alpha$ is (roughly) the average loss in the
+worst $1-\alpha$ fraction of scenarios. Rockafellar and Uryasev showed it has a
+beautifully simple convex (in fact linear) form using the historical return scenarios
+$r_t$ directly. With losses $L_t = -r_t^\top w$,
+
+$$
+\text{CVaR}_\alpha(w) = \min_{\tau}\ \ \tau + \frac{1}{(1-\alpha)T}\sum_{t=1}^{T}\big(L_t - \tau\big)_+ .
+$$
+
+In CVXR we introduce an auxiliary `VaR` variable $\tau$ and minimize CVaR subject to a
+return target --- a clean linear program:
+
+```{r}
+#| label: cvar
+alpha  <- 0.95
+target <- mean(mu)                        # require at least the average asset's return
+Tn     <- nrow(R)
+
+wv  <- Variable(n)
+VaR <- Variable(1)
+loss <- -R %*% wv                         # vector of T scenario losses
+cvar <- VaR + (1 / ((1 - alpha) * Tn)) * sum(pos(loss - VaR))
+
+prob_cvar <- Problem(Minimize(cvar),
+                     list(sum(wv) == 1, wv >= 0, t(mu) %*% wv >= target))
+psolve(prob_cvar)
+check_solver_status(prob_cvar)
+
+w_cvar <- setNames(round(value(wv), 3), names(mu))
+w_cvar[w_cvar > 0.001]                     # the minimum-CVaR allocation
+```
+
+Same data, same `CVXR` machinery, a different notion of risk --- and a different,
+typically more tail-aware, allocation. Switching risk measures is, once again, just a
+change to the objective.
+
+## Exercise
+
+**Exercise (⭐).** Add a **diversification** rule to the mean-variance problem: no
+single asset may exceed 25% of the budget. Re-solve at $\gamma = 10$ and compare with
+the unconstrained allocation.
+
+::: {.callout-tip collapse="true"}
+## Solution
+A position cap is one linear constraint, `w <= 0.25`:
+```{r}
+#| label: ex-cap
+base <- Problem(Maximize(ret - 10 * risk), cons)
+capd <- Problem(Maximize(ret - 10 * risk), c(cons, list(w <= 0.25)))
+psolve(base); w0 <- value(w)
+psolve(capd); w1 <- value(w)
+data.frame(asset = names(mu),
+           uncapped = round(w0, 3),
+           capped   = round(w1, 3))[round(w0,3) > 0 | round(w1,3) > 0, ]
+```
+The cap spreads weight off the assets that the unconstrained solution concentrated in
+--- a one-line way to encode an investment policy.
+:::
+
+## Takeaways
+
+- **Mean-variance** optimization is a convex quadratic program; sweeping the
+  risk-aversion $\gamma$ traces the **efficient frontier** (a `Parameter` sweep, @sec-dpp).
+- Read risk and return straight off the solved expressions with `value()`.
+- Swapping variance for **CVaR** is just a new objective --- CVXR makes alternative risk
+  measures, position limits, and policy constraints one-liners.
+
+For many more portfolio models (risk parity, Black-Litterman, worst-case, drawdown
+measures), see [Riskfolio-Lib](https://github.com/dcajasn/Riskfolio-Lib) and the
+[CVXR portfolio example](https://cvxr.rbind.io/examples/finance/portfolio-optimization.html).

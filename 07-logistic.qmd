@@ -1,0 +1,140 @@
+# Logistic Regression {#sec-logistic}
+
+<!-- LIVE. Source: cvxr_docs/examples/regression/logistic-regression.qmd.
+     Reinforces the Ch3 DCP/reformulation lesson (logistic atom vs the rejected
+     log(1+exp(.))). Matches stats::glm. Verified vs CVXR 1.9.1. -->
+
+::: callout-note
+## What you'll be able to do
+Fit a binary classifier by maximum likelihood in CVXR, recognize why the natural
+expression is *not* DCP and which atom fixes it, match `stats::glm`, and read off
+predicted probabilities --- then add a penalty for regularized logistic regression.
+:::
+
+```{r}
+#| label: setup
+#| include: false
+library(CVXR)
+source("_check_status.R")
+```
+
+## From regression to classification
+
+So far our responses were continuous. Now $y_i \in \{0, 1\}$ is a **class label**.
+Logistic regression models the probability of class 1 as
+$g_\beta(x) = 1/(1 + e^{-x^\top\beta})$ and fits $\beta$ by maximizing the
+log-likelihood
+
+$$
+\underset{\beta}{\mbox{maximize}}\quad
+\sum_{i=1}^m \Big[\, y_i\, x_i^\top\beta - \log\big(1 + e^{x_i^\top\beta}\big) \Big].
+$$
+
+The first term is linear; the second is a sum of $\log(1 + e^{z})$ terms.
+
+## A DCP snag --- and the atom that fixes it
+
+You might write that second term directly as `log(1 + exp(X %*% beta))`. CVXR will
+**reject it** --- recall @sec-dcp: `exp` is convex, so `1 + exp(...)` is convex, but
+`log` is concave-increasing and needs a *concave* argument. The composition is not
+verifiable:
+
+```{r}
+#| label: nondcp
+beta <- Variable(2)
+X0 <- matrix(rnorm(20), 10, 2)
+is_dcp(Problem(Minimize(sum(log(1 + exp(X0 %*% beta))))))   # FALSE
+```
+
+The function *is* convex; DCP just can't see it through that expression. The fix is
+the dedicated **`logistic`** atom, $\texttt{logistic}(z) = \log(1 + e^{z})$, which DCP
+knows is convex. This is the reformulation habit again --- reach for the atom.
+
+## Fit it
+
+We generate data from a known logistic model and maximize the log-likelihood, writing
+$\sum_i \log(1+e^{x_i^\top\beta})$ as `sum(logistic(X %*% beta))`:
+
+```{r}
+#| label: fit
+set.seed(42)
+m <- 500; n <- 8
+beta_true <- rnorm(n)
+X <- matrix(rnorm(m * n), m, n)
+y <- as.numeric(1 / (1 + exp(-X %*% beta_true)) > runif(m))   # 0/1 labels
+
+beta <- Variable(n)
+loglik <- sum(y * (X %*% beta)) - sum(logistic(X %*% beta))
+prob <- Problem(Maximize(loglik))
+psolve(prob)
+check_solver_status(prob)
+```
+
+It matches `stats::glm` to solver tolerance:
+
+```{r}
+#| label: glm
+g <- glm(y ~ 0 + X, family = "binomial")
+cbind(CVXR = round(value(beta), 4), glm = round(coef(g), 4))
+```
+
+## Anything is a function of the solution
+
+A defining CVXR convenience: once solved, you can evaluate *any* expression in the
+variables with `value()`. The fitted **probabilities** and **log-odds** need no special
+accessor --- just write the formula:
+
+```{r}
+#| label: predict
+log_odds <- value(X %*% beta)             # the linear predictor
+probs    <- 1 / (1 + exp(-log_odds))      # fitted class-1 probabilities
+summary(probs)
+```
+
+## Regularized logistic regression
+
+Because the objective is just an expression, the regularization idea from
+@sec-elastic-net drops straight in. Add an $\ell_1$ penalty for a **sparse** logistic
+fit --- one line:
+
+```{r}
+#| label: penalized
+lambda <- 25
+pen_obj <- loglik - lambda * p_norm(beta, 1)   # penalized log-likelihood
+psolve(Problem(Maximize(pen_obj)))
+round(value(beta), 3)
+```
+
+Larger `lambda` drives more coefficients to zero, just as the lasso did for linear
+regression --- logistic regression and penalized regression are the *same modeling
+vocabulary* applied to a different loss.
+
+## Exercise
+
+**Exercise.** Fit a ridge-penalized ($\ell_2$) logistic regression at the same
+`lambda = 25` and compare its coefficients with the $\ell_1$ fit above. Which zeroes
+coefficients?
+
+::: {.callout-tip collapse="true"}
+## Solution
+```{r}
+#| label: ex-ridge
+l1_fit <- { psolve(Problem(Maximize(loglik - 25 * p_norm(beta, 1))));  value(beta) }
+l2_fit <- { psolve(Problem(Maximize(loglik - 25 * sum_squares(beta)))); value(beta) }
+data.frame(l1 = round(l1_fit, 3), l2 = round(l2_fit, 3))
+```
+The $\ell_2$ penalty *shrinks* every coefficient smoothly but zeroes none; the
+$\ell_1$ penalty sets several exactly to zero. Same trade-off as ridge vs. lasso in
+@sec-elastic-net --- the loss changed, the regularization logic did not.
+:::
+
+## Takeaways
+
+- Logistic regression is **maximum likelihood**, a convex problem CVXR solves directly,
+  matching `stats::glm`.
+- The natural `log(1 + exp(...))` is **non-DCP**; the **`logistic`** atom is the
+  DCP-compliant tool --- reformulation, again.
+- Predicted probabilities and any other quantity are just `value()` of an expression,
+  and penalties from @sec-elastic-net add in one line.
+
+See [Logistic Regression](https://cvxr.rbind.io/examples/regression/logistic-regression.html).

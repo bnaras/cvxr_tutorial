@@ -22,22 +22,28 @@ book:
     - index.qmd
     - part: "Foundations"
       chapters:
-        - 01-gentle-intro.qmd
-        - 02-dcp.qmd
-    - part: "The Regression Spine"
+        - 01-intro.qmd
+        - 02-gentle-intro.qmd
+        - 03-dcp.qmd
+        - 04-problem-types.qmd
+    - part: "Regression and Classification"
       chapters:
-        - 03-elastic-net.qmd
-        - 04-change-the-loss.qmd
-        - 05-dpp.qmd
+        - 05-elastic-net.qmd
+        - 06-change-the-loss.qmd
+        - 07-logistic.qmd
+        - 08-dpp.qmd
+    - part: "Applications"
+      chapters:
+        - 09-portfolio.qmd
+        - 10-mip.qmd
+        - 11-showcase.qmd
     - part: "Frontiers"
       chapters:
-        - 06-mip.qmd
-        - 07-showcase.qmd
-        - 08-dnlp.qmd
-        - 09-dgp-dqcp.qmd
+        - 12-dnlp.qmd
+        - 13-dgp-dqcp.qmd
     - part: "Practice"
       chapters:
-        - 10-byo.qmd
+        - 14-byo.qmd
     - references.qmd
 
 bibliography: [references.bib, cvxr.bib]
