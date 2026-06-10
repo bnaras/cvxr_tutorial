@@ -18,7 +18,7 @@ library(ggplot2)
 
 ## Optimization is everywhere in statistics
 
-Estimation is optimization. We **maximize** a likelihood, **minimize** a loss, or
+Estimation is often optimization. We **maximize** a likelihood, **minimize** a loss, or
 **penalize** a fit to trade bias for variance. Ordinary least squares, ridge and
 lasso, logistic regression, support vector machines, maximum-entropy models,
 portfolio selection --- each is "find the parameter that makes some criterion as
