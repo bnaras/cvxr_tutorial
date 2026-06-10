@@ -1,18 +1,139 @@
 # Mixed-Integer Programming {#sec-mip}
 
-<!-- LIVE hands-on (MILP/MIQP on HiGHS, install-free) + MI-SOCP DEMO via scip.
-     Source: cvxr_docs/examples/basic/miqp.qmd, misc/integer-programming.qmd.
-     HiGHS does MILP/MIQP only (no MI-SOCP); scip handles MI-SOCP as a demo. -->
+<!-- LIVE hands-on: MILP on HiGHS (install-free). DEMO: MI-SOCP via scip.
+     AUDIT (2026-06-09): HiGHS & SCIP do MILP; MIQP needs a commercial solver
+     (GUROBI/CPLEX/XPRESS) and is OUT of scope; MI-SOCP works on SCIP only
+     (HiGHS silently returns 'infeasible' for SOC-in-MIP -> never send it there). -->
 
 ::: callout-note
 ## What you'll be able to do
-Add integer or boolean variables to a model and solve it with HiGHS (MILP/MIQP).
-See a mixed-integer second-order-cone problem solved with SCIP.
+Add **integer** or **boolean** decision variables to a model and solve the
+resulting mixed-integer *linear* program with HiGHS --- no extra install. See a
+mixed-integer *second-order-cone* problem solved with SCIP, and learn which
+mixed-integer problems still need a commercial solver.
 :::
 
-::: callout-important
-## Chapter under construction (Phase 2)
-Hands-on MILP/MIQP runs on HiGHS (a CVXR import). The MI-SOCP showcase uses
-`scip` and is run as a demo (CRAN-reproducible at home).
-See [Mixed-Integer QP](https://cvxr.rbind.io/examples/basic/miqp.html).
+```{r}
+#| label: setup
+#| include: false
+library(CVXR)
+```
+
+## Discrete decisions
+
+So far every variable was continuous. But many real decisions are **discrete**:
+*select this project or not*, *how many units to ship*, *which facility to open*.
+Encoding those as integer or boolean variables turns a convex problem into a
+**mixed-integer** one. These are no longer convex --- they are combinatorial and
+NP-hard in general --- but CVXR hands them to a solver that does branch-and-bound
+over a sequence of convex relaxations. You write the model the same way; you just
+declare some variables `integer = TRUE` or `boolean = TRUE`.
+
+## Hands-on: a 0/1 knapsack (MILP)
+
+The classic discrete problem: choose a subset of items to maximize total value
+without exceeding a budget. With a **linear** objective and **boolean** variables
+this is a mixed-integer *linear* program (MILP) --- squarely within HiGHS, one of
+CVXR's built-in CRAN solvers.
+
+```{r}
+#| label: knapsack-data
+values  <- c(8, 5, 3, 6, 4, 7)   # value of each project
+costs   <- c(5, 3, 2, 4, 3, 5)   # its cost
+budget  <- 11
+projects <- paste0("P", seq_along(values))
+```
+
+```{r}
+#| label: knapsack-solve
+pick <- Variable(length(values), boolean = TRUE)     # 1 = select, 0 = skip
+prob <- Problem(Maximize(sum(values * pick)),
+                list(sum(costs * pick) <= budget))
+psolve(prob, solver = "HIGHS")
+
+selected <- projects[value(pick) > 0.5]
+cat("Selected:", paste(selected, collapse = ", "),
+    "\nTotal value:", sum(values[value(pick) > 0.5]),
+    "  Total cost:", sum(costs[value(pick) > 0.5]), "/", budget, "\n")
+```
+
+The `boolean = TRUE` is the whole story --- it forces each `pick` to 0 or 1. Drop it
+and you would get the (fractional) **LP relaxation**, an upper bound that is often
+not achievable with whole items:
+
+```{r}
+#| label: knapsack-relax
+pick_lp <- Variable(length(values))
+relax <- Problem(Maximize(sum(values * pick_lp)),
+                 list(sum(costs * pick_lp) <= budget, pick_lp >= 0, pick_lp <= 1))
+cat("LP relaxation value:", round(psolve(relax, solver = "HIGHS"), 3),
+    "(>= the integer optimum)\n")
+round(value(pick_lp), 3)
+```
+
+That gap between the relaxation and the integer optimum is exactly what
+branch-and-bound has to close.
+
+## Demo: integer decisions with a cone (MI-SOCP, SCIP)
+
+What if a constraint involves a Euclidean norm --- a *second-order cone* --- *and*
+integer variables? That is a **mixed-integer second-order-cone program (MI-SOCP)**.
+HiGHS cannot do it; the CRAN solver that can is **SCIP**. As a clean illustration,
+find the **integer lattice point** closest (in Euclidean distance) to a target:
+
+```{r}
+#| label: misocp
+#| eval: !expr requireNamespace("scip", quietly = TRUE)
+target <- c(2.7, -1.3, 0.4)
+y <- Variable(3, integer = TRUE)
+t <- Variable()
+prob <- Problem(Minimize(t), list(p_norm(y - target, 2) <= t))
+psolve(prob, solver = "SCIP")
+cat("Closest integer point:", value(y),
+    "  distance:", round(value(t), 3), "\n")
+```
+
+The norm constraint `p_norm(...) <= t` is a second-order cone; combined with the
+integer `y`, only a MI-SOCP solver like SCIP will do.
+
+::: callout-warning
+## Two traps worth remembering
+- **Never send an SOC-containing mixed-integer problem to HiGHS.** It does not error
+  --- it silently returns a *wrong* `infeasible`. Match the solver to the cone.
+- **Mixed-integer *quadratic* programs (MIQP)** --- an integer problem with a
+  quadratic objective, like integer least squares --- are **not** supported by any
+  CRAN solver. They need a commercial one (GUROBI, CPLEX, XPRESS). CVXR will tell you
+  so rather than guess.
 :::
+
+## Exercise
+
+**Exercise.** Add a rule to the knapsack: projects `P1` and `P2` are mutually
+exclusive (at most one may be chosen). Re-solve and see what changes.
+
+::: {.callout-tip collapse="true"}
+## Solution
+A "select at most one" rule is the linear constraint `pick[1] + pick[2] <= 1`:
+```{r}
+#| label: ex-knapsack
+prob2 <- Problem(Maximize(sum(values * pick)),
+                 list(sum(costs * pick) <= budget,
+                      pick[1] + pick[2] <= 1))
+psolve(prob2, solver = "HIGHS")
+projects[value(pick) > 0.5]
+```
+Logical rules like mutual exclusion, prerequisites (`pick[a] <= pick[b]`), or "pick
+exactly k" are all just linear constraints on 0/1 variables.
+:::
+
+## Takeaways
+
+- Declaring a variable `integer = TRUE` or `boolean = TRUE` turns a model into a
+  mixed-integer program --- same modeling, combinatorial solving.
+- **MILP** (linear objective) runs on **HiGHS**, built in and install-free.
+- **MI-SOCP** (a cone plus integers) needs **SCIP**; **MIQP** needs a commercial
+  solver. Pick the solver to match the problem --- and never trust an SOC sent to a
+  pure-MILP solver.
+
+See [Mixed-Integer QP](https://cvxr.rbind.io/examples/basic/miqp.html) and
+[Integer Programming](https://cvxr.rbind.io/examples/misc/integer-programming.html).
