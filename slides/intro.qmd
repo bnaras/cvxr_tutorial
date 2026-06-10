@@ -207,16 +207,18 @@ Disciplined nonlinear programming: [cvxr.rbind.io/examples/dnlp/tutorial](https:
 Everything expanded, with more examples: [cvxr.rbind.io](https://cvxr.rbind.io)
 :::
 
-## Let's begin {.center}
+## Let's begin
 
 Open the book at **A Gentle Introduction** and run the first chunk.
 
 <br>
 
+**Resources**
+
+- The book & all examples: [cvxr.rbind.io](https://cvxr.rbind.io)
+- The package paper: Fu, Narasimhan & Boyd (2020), *JSS* **94**(14)
+- The standard reference: Boyd & Vandenberghe, *Convex Optimization* (2004)
+
+<br>
+
 *Convex Optimization in R Using CVXR* · Fu, Narasimhan & Boyd
-
-[cvxr.rbind.io](https://cvxr.rbind.io) · Fu, Narasimhan & Boyd (2020), *JSS* 94(14)
-
-::: aside
-The standard reference: Boyd & Vandenberghe, *Convex Optimization* (2004).
-:::
