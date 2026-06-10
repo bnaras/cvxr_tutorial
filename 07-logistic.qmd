@@ -78,18 +78,9 @@ g <- glm(y ~ 0 + X, family = "binomial")
 cbind(CVXR = round(value(beta), 4), glm = round(coef(g), 4))
 ```
 
-## Anything is a function of the solution
-
-A defining CVXR convenience: once solved, you can evaluate *any* expression in the
-variables with `value()`. The fitted **probabilities** and **log-odds** need no special
-accessor --- just write the formula:
-
-```{r}
-#| label: predict
-log_odds <- value(X %*% beta)             # the linear predictor
-probs    <- 1 / (1 + exp(-log_odds))      # fitted class-1 probabilities
-summary(probs)
-```
+Just as we read off fitted values for OLS in @sec-gentle-intro, every quantity here is
+`value()` of an expression: the log-odds are `value(X %*% beta)`, and the fitted
+**probabilities** follow from them. You'll compute these in the exercises.
 
 ## Regularized logistic regression
 
@@ -111,10 +102,11 @@ vocabulary* applied to a different loss.
 
 ## Exercises
 
-**Exercise 1.** Put "anything is a function of the solution" to work. Using the
-(unpenalized) fitted model, compute the in-sample **predicted probabilities**, turn
-them into class predictions at a 0.5 threshold, and report the classification accuracy
-and a confusion matrix.
+**Exercise 1.** In @sec-gentle-intro you read off OLS fitted values as
+`value(X %*% beta)`. Do the classification analogue here: from the (unpenalized) fitted
+model, compute the in-sample **predicted probabilities**, turn them into class
+predictions at a 0.5 threshold, and report the classification accuracy and a confusion
+matrix.
 
 ::: {.callout-tip collapse="true"}
 ## Solution

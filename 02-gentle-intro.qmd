@@ -232,6 +232,24 @@ ordinary R numbers --- but `beta` is a CVXR variable. The estimates match `lm()`
 cbind(CVXR = value(beta), lm = coef(ls_fit))
 ```
 
+### Anything is a function of the solution
+
+A solved problem gives you more than the coefficients. Once `beta` has a value, you
+can evaluate **any expression built from it** with `value()`. The **fitted values**
+$X\hat\beta$ and the residuals, for instance, are one line each:
+
+```{r}
+#| label: ols-fitted
+fitted <- value(X %*% beta)        # X times beta-hat
+resid  <- Y - fitted
+head(round(cbind(fitted, resid), 3))
+```
+
+`X %*% beta` is a CVXR *expression*; `value()` evaluates it at the solution, and the
+result is ordinary R you can plot, summarize, or feed onward. This little move ---
+*any quantity you care about is `value()` of an expression* --- is one we will reuse in
+every chapter.
+
 ### So what did we gain?
 
 Fair question --- we replaced one call to `lm()` with several lines, and it even
