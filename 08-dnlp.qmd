@@ -1,17 +1,147 @@
 # Beyond Convex: Nonlinear Programming (Demo) {#sec-dnlp}
 
-<!-- DEMO (instructor-run), CRAN-reproducible at home via Uno + sparsediff;
-     ipopt dropped. Source: cvxr_docs/examples/dnlp/tutorial.qmd, trimmed. -->
+<!-- DEMO (instructor-run), CRAN-reproducible via Uno + sparsediff (ipopt dropped).
+     Source: cvxr_docs/examples/dnlp/tutorial.qmd, trimmed. Feature-gated so the
+     chapter renders with or without the DNLP packages installed. -->
 
 ::: callout-note
 ## What you'll be able to do
-Recognize when a problem is smooth-but-nonconvex, and see how CVXR hands it to a
-nonlinear solver (`Uno`) using automatic differentiation (`sparsediff`).
+Recognize a **smooth but nonconvex** problem, send it down CVXR's nonlinear path
+with `psolve(nlp = TRUE)`, and understand why a nonlinear solve gives only a *local*
+guarantee --- and what to do about it.
 :::
 
 ::: callout-important
-## Demo chapter (Phase 3)
-Run by the instructor; reproduce it at home with
-`install.packages(c("Uno","sparsediff"))` (no `ipopt` needed).
-See [DNLP Tutorial](https://cvxr.rbind.io/examples/dnlp/tutorial.html).
+## This is a demonstration
+The hands-on chapters used only CVXR's four built-in solvers. This frontier needs
+two more CRAN packages --- `sparsediff` (automatic derivatives) and `Uno` (the
+nonlinear solver). We run it as a demo; to reproduce it at home:
+`install.packages(c("sparsediff", "Uno"))`. (The `ipopt` backend is *not* required
+and is not on CRAN.)
 :::
+
+```{r}
+#| label: feature-gate
+#| include: false
+library(CVXR)
+run_ok <- utils::packageVersion("CVXR") >= "1.9.1" &&
+          requireNamespace("sparsediff", quietly = TRUE) &&
+          requireNamespace("Uno", quietly = TRUE)
+knitr::opts_chunk$set(eval = run_ok)
+```
+
+## From convex to merely smooth
+
+Everything so far stayed inside the convex world, where a solution is *guaranteed*
+global. **Disciplined Nonlinear Programming (DNLP)**, new in CVXR 1.9.1, relaxes
+that: it handles **smooth** problems built from differentiable atoms, even when they
+are not convex. You build the problem the usual way, check it with `is_dnlp()`, and
+solve with `psolve(prob, nlp = TRUE)`. Every DCP problem is also a DNLP, so the
+convex world sits inside this larger one.
+
+```{r}
+#| label: available
+c(sparsediff = requireNamespace("sparsediff", quietly = TRUE),
+  Uno        = requireNamespace("Uno", quietly = TRUE))
+```
+
+A convex problem sent down the nonlinear path just works:
+
+```{r}
+#| label: first
+x <- Variable(2)
+prob <- Problem(Minimize(sum_squares(x - c(1, 2))))
+is_dnlp(prob)
+psolve(prob, nlp = TRUE, solver = "UNO", logger = "SILENT")
+value(x)
+```
+
+## A genuinely nonconvex problem
+
+Now something DCP *cannot* express. Maximizing a convex quadratic is nonconvex ---
+but it is smooth, hence a DNLP. A classic instance is maximizing $x^\top A x$ over
+the unit sphere, whose optimum is the **largest eigenvalue of $A$** --- giving us a
+known answer to check against:
+
+$$\text{maximize}\ \ x^\top A x \qquad \text{subject to}\qquad \|x\|_2^2 = 1.$$
+
+```{r}
+#| label: eigen
+set.seed(0)
+n <- 3
+A <- matrix(rnorm(n * n), n); A <- t(A) %*% A   # random PSD matrix
+
+x <- Variable(n)
+prob <- Problem(Maximize(quad_form(x, A)), list(sum_squares(x) == 1))
+c(is_dcp = is_dcp(prob), is_dnlp = is_dnlp(prob))   # not DCP, but DNLP
+
+value(x) <- rep(1, n)                                # a starting point
+opt <- psolve(prob, nlp = TRUE, solver = "UNO", logger = "SILENT")
+c(dnlp = opt, max_eigenvalue = max(eigen(A, only.values = TRUE)$values))
+```
+
+The nonlinear solver lands exactly on the largest eigenvalue --- a nonconvex problem
+solved from R, in the same modeling language.
+
+## The catch: only a *local* guarantee
+
+This power comes with a caveat you must respect. Unlike convex optimization, a
+nonlinear solver returns a **local** optimum that can depend on where it starts ---
+there is no global guarantee. Consider $\sin(x) + \tfrac{1}{10}x^2$ on $[-10, 10]$,
+which has several local minima:
+
+```{r}
+#| label: bestof
+set.seed(1)
+x <- Variable(bounds = list(-10, 10))
+prob <- Problem(Minimize(sin(x) + 0.1 * x^2))
+
+best <- psolve(prob, nlp = TRUE, solver = "UNO", logger = "SILENT", best_of = 5)
+c(best_objective = best, x = value(x))
+```
+
+`best_of = 5` solves from five random starting points and keeps the best --- a simple,
+effective hedge against local minima. The lesson: **convex problems give you the
+global optimum for free; nonconvex ones make you work for it** (good starting points,
+random restarts, and a healthy skepticism of any single solve).
+
+::: callout-warning
+On a nonconvex problem an NLP solver may return a local (not global) optimum, give a
+result that depends on the starting point, or fail to find a feasible point. Supply a
+starting point with `value(x) <- ...`, or use `best_of` to try several.
+:::
+
+## Smooth atoms DCP doesn't have
+
+DNLP adds classically differentiable atoms that are not part of the convex grammar
+--- `sin`, `cos`, `tan`, `sinh`, `tanh`, `asinh`, `atanh`, `normcdf`, `prod` --- and
+lets existing smooth atoms (`exp`, `log`, `quad_form`, `quad_over_lin`, …) be used in
+either curvature direction. Three predicates classify an expression under the smooth
+grammar:
+
+```{r}
+#| label: predicates
+x <- Variable()
+classify <- function(e) c(smooth      = is_smooth(e),
+                          lin_convex  = is_linearizable_convex(e),
+                          lin_concave = is_linearizable_concave(e))
+rbind(`sin(x)`  = classify(sin(x)),
+      `abs(x)`  = classify(abs(x)),
+      `-abs(x)` = classify(-abs(x)))
+```
+
+A smooth atom like `sin(x)` linearizes in *both* directions, so it may appear
+anywhere; nonsmooth convex/concave atoms keep the curvature DCP assigns them.
+
+## Takeaways
+
+- **DNLP** extends CVXR beyond convexity to **smooth** problems via
+  `psolve(nlp = TRUE)`; `is_dnlp()` checks membership, and every DCP problem
+  qualifies.
+- It unlocks genuinely nonconvex models (and smooth atoms like `sin`/`cos`) --- but
+  trades the **global guarantee** for a local one; use starting points and `best_of`.
+- It needs the CRAN packages `sparsediff` + `Uno` (the practical R default; `ipopt`
+  is optional and not on CRAN).
+
+For the full treatment --- duals on the NLP path, random-restart details, the smooth
+atom table --- see the [DNLP Tutorial](https://cvxr.rbind.io/examples/dnlp/tutorial.html).

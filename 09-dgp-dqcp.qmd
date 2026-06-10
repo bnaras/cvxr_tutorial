@@ -1,18 +1,65 @@
 # Further Frontiers: DGP and DQCP {#sec-dgp-dqcp}
 
-<!-- MENTION ONLY (slides + pointers), no live discussion. Source:
-     cvxr_docs/examples/dgp/*, dqcp/*. Kept brief by design. -->
+<!-- MENTION ONLY (pointer chapter), one tiny verified example each. Source:
+     cvxr_docs/examples/dgp/*, dqcp/*. Kept deliberately brief. -->
 
 ::: callout-note
 ## What you'll learn about
-Two more disciplined dialects: **Disciplined Geometric Programming** (DGP) for
-posynomial/log-log-convex problems, and **Disciplined Quasiconvex Programming**
-(DQCP) for quasiconvex objectives.
+Two more "disciplined" dialects beyond DCP --- enough to know they exist and when to
+reach for them. Both are covered in depth on the CVXR website.
 :::
 
-::: callout-important
-## Pointer chapter (Phase 3)
-Mentioned briefly in the session; full treatment on the website.
-See [DGP](https://cvxr.rbind.io/examples/dgp/tutorial.html) and
-[DQCP](https://cvxr.rbind.io/examples/dqcp/tutorial.html).
-:::
+CVXR's convex grammar (DCP) is not the only disciplined rule set. Two siblings extend
+the same idea --- *compose from a library, get a guarantee* --- to other problem
+classes. We mention them briefly here; follow the links for the full treatment.
+
+## Disciplined Geometric Programming (DGP)
+
+Some problems are not convex in the variables but become convex after a
+**log-log** change of variables --- *geometric programs*, built from positive
+variables, monomials, and posynomials. They appear in engineering design, and in
+statistics in problems involving products and ratios of positive quantities. You
+write them naturally and pass `gp = TRUE`. The classic example maximizes the volume
+of a box subject to area limits:
+
+```{r}
+#| label: dgp
+library(CVXR)
+x <- Variable(pos = TRUE); y <- Variable(pos = TRUE); z <- Variable(pos = TRUE)
+prob <- Problem(Maximize(x * y * z),
+                list(2 * (x * z + y * z) <= 10, x * y <= 4))
+psolve(prob, gp = TRUE)
+round(c(x = value(x), y = value(y), z = value(z)), 3)
+```
+
+The objective `x * y * z` multiplies three variables --- not DCP at all --- yet DGP
+solves it to global optimality. See the
+[DGP Tutorial](https://cvxr.rbind.io/examples/dgp/tutorial.html).
+
+## Disciplined Quasiconvex Programming (DQCP)
+
+A **quasiconvex** function has convex sub-level sets but need not be convex itself
+(think of ratios like $\|Ax-b\|/c^\top x$). DCP cannot handle these, but DQCP can,
+via a sequence of convex feasibility problems; you pass `qcp = TRUE`. A tiny example
+minimizes $(a+1)/\sqrt{a}$, which is quasiconvex on $a > 0$:
+
+```{r}
+#| label: dqcp
+a <- Variable(pos = TRUE)
+prob <- Problem(Minimize((a + 1) / sqrt(a)))
+c(is_dqcp = is_dqcp(prob), optimum = psolve(prob, qcp = TRUE), a = value(a))
+```
+
+The minimum is $2$ at $a = 1$, found without you having to know the function was
+quasiconvex. See the
+[DQCP Tutorial](https://cvxr.rbind.io/examples/dqcp/tutorial.html).
+
+## Where this leaves us
+
+You now have the whole map: **DCP** (convex, this book's backbone), **DPP**
+(parametrized, for fast re-solves and derivatives), **DGP** (log-log convex),
+**DQCP** (quasiconvex), and **DNLP** (smooth nonconvex). Each is the same disciplined
+bargain --- follow the grammar, get a solvable problem --- and CVXR checks compliance
+for you with the matching `is_*()` predicate. The website's
+[examples gallery](https://cvxr.rbind.io) has dozens more worked problems across all
+of them.
