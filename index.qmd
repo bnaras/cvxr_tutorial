@@ -50,7 +50,8 @@ data, and comparisons against familiar R routines):
 install.packages(c("CVXR", "scip", "Uno", "sparsediff"))
 
 # Helpers used by the examples
-install.packages(c("ggplot2", "nnls", "glmnet", "boot", "png", "kableExtra"))
+install.packages(c("ggplot2", "tidyr", "nnls", "glmnet",
+                   "boot", "png", "kableExtra", "bench"))
 ```
 
 `CVXR` automatically brings in the four open-source solvers it uses ---

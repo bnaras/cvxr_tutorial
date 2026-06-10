@@ -1,19 +1,169 @@
 # Penalized Regression: Ridge, Lasso, Elastic Net {#sec-elastic-net}
 
-<!-- LIVE. Source: cvxr_docs/examples/regression/elastic-net.qmd,
-     machine-learning/ridge.qmd, machine-learning/lasso.qmd,
-     regression/glmnet-equivalence.qmd. The natural statistician on-ramp:
-     OLS -> ridge -> lasso -> elastic net as one penalty family. glmnet as a
-     one-chunk validation aside. Sets up the lambda sweep paid off in DPP. -->
+<!-- LIVE. Source: cvxr_docs/examples/regression/elastic-net.qmd (+ ridge/lasso,
+     glmnet-equivalence). First rung of the regression spine; foreshadows Ch.4
+     (change the loss) and Ch.5 (DPP sweep). -->
 
 ::: callout-note
 ## What you'll be able to do
-Add an L2, L1, or elastic-net penalty to a regression, see ridge and lasso as
-special cases of one family, and validate against `glmnet`.
+Add an $\ell_2$ (ridge), $\ell_1$ (lasso), or combined (elastic-net) penalty to a
+regression; see ridge and lasso as two ends of **one** penalty family; trace a
+regularization path; and validate against `glmnet`.
 :::
 
-::: callout-important
-## Chapter under construction (Phase 2)
-The first rung of the **regression spine**. Climax is the parameter sweep in
-@sec-dpp. See [Elastic Net](https://cvxr.rbind.io/examples/regression/elastic-net.html).
+```{r}
+#| label: setup
+#| include: false
+library(CVXR)
+library(ggplot2)
+library(tidyr)
+source("_check_status.R")
+```
+
+## Why regularize?
+
+In @sec-gentle-intro we recovered coefficients by least squares. When predictors
+are many or correlated, plain least squares **overfits** --- the estimates become
+large and unstable. The cure is to add a **penalty** that discourages large
+coefficients. The two classic penalties are the squared $\ell_2$-norm and the
+$\ell_1$-norm, and the **elastic net** combines them:
+
+$$
+\underset{\beta}{\mbox{minimize}}\quad
+\frac{1}{2m}\|y - X\beta\|_2^2
+\;+\;\lambda\Big(\tfrac{1-\alpha}{2}\|\beta\|_2^2 + \alpha\|\beta\|_1\Big).
+$$
+
+Here $\lambda \ge 0$ sets the overall strength and $\alpha\in[0,1]$ dials between
+the two penalties. The family contains both classics:
+
+- $\alpha = 0$ → **ridge** (shrinks coefficients smoothly),
+- $\alpha = 1$ → **lasso** (drives some coefficients exactly to zero),
+- $0 < \alpha < 1$ → **elastic net** (does both; handles correlated groups).
+
+## One modular penalty
+
+Because CVXR lets us write the penalty as an ordinary R function, the *whole family*
+is a few lines:
+
+```{r}
+#| label: reg-fn
+elastic_reg <- function(beta, lambda = 0, alpha = 0) {
+  ridge <- (1 - alpha) / 2 * sum_squares(beta)
+  lasso <- alpha * p_norm(beta, 1)
+  lambda * (lasso + ridge)
+}
+```
+
+We will add it to a least-squares loss. (Keep an eye on this `loss` line --- in
+@sec-change-the-loss we change *only that line* to get robust and quantile
+regression for free.)
+
+## Some correlated, sparse data
+
+Correlated features are the classic reason to prefer elastic net over pure lasso:
+lasso picks one variable from a correlated group arbitrarily, while elastic net
+lets the group enter or leave together. We build a Toeplitz correlation
+($\rho = 0.8$), $n = 100$, $p = 50$, with 10 truly non-zero coefficients.
+
+```{r}
+#| label: data
+set.seed(1)
+p <- 50; n <- 100
+rho <- 0.8
+Sigma <- rho^abs(outer(seq_len(p), seq_len(p), "-"))
+X <- MASS::mvrnorm(n, mu = rep(0, p), Sigma = Sigma)
+
+beta_true <- rep(0, p)
+beta_true[c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)] <-
+  c(3, -2.5, 2, -1.5, 1, -3, 2.5, -2, 1.5, -1)
+
+signal_sd <- sqrt(drop(t(beta_true) %*% Sigma %*% beta_true))
+y <- X %*% beta_true + rnorm(n, sd = signal_sd / 3)
+y <- y / sqrt(mean(y^2))   # scale so sqrt(mean(y^2)) = 1 (see glmnet note)
+```
+
+## Trace a regularization path
+
+We fit the elastic net ($\alpha = 0.75$) across a grid of $\lambda$, collecting the
+coefficients at each. This is the **modify-and-re-solve** loop again, in a `sapply`:
+
+```{r}
+#| label: path
+lambda_vals <- 10^seq(-2, 0, length.out = 10)
+beta <- Variable(p)
+loss <- sum_squares(y - X %*% beta) / (2 * n)
+alpha <- 0.75
+
+beta_vals <- sapply(lambda_vals, function(lambda) {
+  prob <- Problem(Minimize(loss + elastic_reg(beta, lambda, alpha)))
+  psolve(prob)
+  check_solver_status(prob)
+  value(beta)
+})
+```
+
+As $\lambda$ grows, coefficients shrink toward zero --- the **regularization path**:
+
+```{r}
+#| label: path-plot
+#| fig-cap: "Elastic-net regularization path."
+df_path <- data.frame(lambda = lambda_vals, t(beta_vals)) |>
+  pivot_longer(-lambda, names_to = "Coefficient", values_to = "Value")
+ggplot(df_path, aes(lambda, Value, color = Coefficient)) +
+  geom_line() + scale_x_log10() +
+  labs(x = expression(lambda), y = expression(beta)) +
+  theme_minimal() + guides(color = "none")
+```
+
+## Validate against `glmnet`
+
+A reassuring check: with $y$ scaled so its root-mean-square is 1 (a `glmnet`
+standardization subtlety), the same $\lambda$ grid gives `glmnet` and CVXR the same
+fit. We compare at the strongest penalty:
+
+```{r}
+#| label: glmnet
+library(glmnet)
+g <- glmnet(X, y, family = "gaussian", alpha = alpha,
+            lambda = lambda_vals, standardize = FALSE, intercept = FALSE)
+nz <- which(beta_true != 0)
+cbind(CVXR   = round(beta_vals[nz, 10], 3),
+      glmnet = round(as.numeric(coef(g)[-1, 1])[nz], 3))
+```
+
+Close agreement --- and CVXR got there from the penalty written in plain math,
+with no special-purpose path algorithm.
+
+## Exercise
+
+**Exercise.** Fit pure **ridge** ($\alpha = 0$) and pure **lasso** ($\alpha = 1$)
+at $\lambda = 0.3$. How many coefficients are *exactly* zero under each? (This is
+the defining difference between them.)
+
+::: {.callout-tip collapse="true"}
+## Solution
+```{r}
+#| label: ex-ridge-lasso
+fit_at <- function(a, lambda = 0.3) {
+  prob <- Problem(Minimize(loss + elastic_reg(beta, lambda, a)))
+  psolve(prob); value(beta)
+}
+ridge_b <- fit_at(0)
+lasso_b <- fit_at(1)
+c(ridge_zeros = sum(abs(ridge_b) < 1e-6),
+  lasso_zeros = sum(abs(lasso_b) < 1e-6))
+```
+Ridge shrinks everything but zeroes (almost) nothing; lasso sets many coefficients
+exactly to zero --- that is what makes it a *variable selector*.
 :::
+
+## Takeaways
+
+- Ridge, lasso, and elastic net are **one family**, selected by $\alpha$ --- and in
+  CVXR, one small function.
+- A regularization path is just the **same problem re-solved** over a $\lambda$ grid.
+- CVXR matches `glmnet` while staying fully general: the next chapter changes the
+  *loss*, and @sec-dpp makes this very sweep dramatically faster.
+
+For more, see [Elastic Net](https://cvxr.rbind.io/examples/regression/elastic-net.html).

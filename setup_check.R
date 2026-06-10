@@ -47,6 +47,9 @@ core_ok <- check_pkg("highs",    "1.14")  && core_ok   # CVXR requires highs >= 
 demo_ok <- check_pkg("scip",       "1.10", "demo") && demo_ok   # MI-SOCP demo
 demo_ok <- check_pkg("Uno",        "2.7.3","demo") && demo_ok   # DNLP backend (pulls rmumps)
 demo_ok <- check_pkg("sparsediff", "0.4.0","demo") && demo_ok   # DNLP autodiff
+## Helper packages used by the example chapters (CRAN)
+for (h in c("ggplot2", "tidyr", "nnls", "glmnet", "boot", "png", "kableExtra", "bench"))
+  core_ok <- check_pkg(h) && core_ok
 
 ## --- 3. Functional solve test: the four core solvers ---------------------
 ## Tiny LP: minimize sum(x) s.t. x >= 1, x in R^2  ->  optimal value 2.

@@ -21,7 +21,8 @@ and uses **CRAN solvers only**.
    # Solvers (CVXR auto-pulls clarabel, osqp, scs, highs)
    install.packages(c("CVXR", "scip", "Uno", "sparsediff"))
    # Helpers used by the examples
-   install.packages(c("ggplot2", "nnls", "glmnet", "boot", "png", "kableExtra"))
+   install.packages(c("ggplot2", "tidyr", "nnls", "glmnet",
+                      "boot", "png", "kableExtra", "bench"))
    ```
 
 4. **Check your setup:**

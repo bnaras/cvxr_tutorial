@@ -1,19 +1,165 @@
 # Parameters and Efficient Sweeps (DPP) {#sec-dpp}
 
-<!-- LIVE (CORE). Source: cvxr_docs/examples/dpp/tutorial.qmd,
-     dpp/sensitivity-analysis.qmd. The climax of the regression spine: sweep
-     lambda over the elastic net with Parameter() + compilation caching. The
-     "wow" for advanced attendees, tied to something intro folks already built. -->
+<!-- LIVE (CORE). Source: cvxr_docs/examples/dpp/tutorial.qmd. The climax of the
+     regression spine: turn Ch.3's lambda sweep into a Parameter and reap the
+     compilation-caching speedup. -->
 
 ::: callout-note
 ## What you'll be able to do
-Use `Parameter()` to solve a problem repeatedly over a grid of values (e.g. a
-regularization path) far faster than rebuilding it each time, via DPP compilation
-caching.
+Replace a numeric constant with a `Parameter`, recognize when a parametrized
+problem follows the **DPP** rules, and re-solve it over a grid of values far faster
+than rebuilding the problem each time.
 :::
 
-::: callout-important
-## Chapter under construction (Phase 2)
-The payoff of the regression spine.
-See [DPP Tutorial](https://cvxr.rbind.io/examples/dpp/tutorial.html).
+```{r}
+#| label: setup
+#| include: false
+library(CVXR)
+source("_check_status.R")
+```
+
+## A hidden cost in Chapter 3
+
+In @sec-elastic-net we traced a regularization path by building a **new problem**
+for each $\lambda$ and solving it. That works, but it hides a cost: every solve
+re-runs CVXR's *compilation* --- the translation of your symbolic problem into the
+matrices a solver wants. When you sweep dozens or hundreds of values, you pay that
+toll over and over.
+
+**Parameters** fix this. A `Parameter` is a symbolic placeholder for a constant
+whose value you can change *without rebuilding the problem*. If the problem obeys
+the **Disciplined Parametrized Programming (DPP)** rules, CVXR compiles it **once**,
+caches the parameter-to-data mapping, and later solves just swap in the new number.
+
+## Parameters and the DPP rule
+
+A `Parameter` looks like a variable but stands for data you will supply:
+
+```{r}
+#| label: param
+gamma <- Parameter(nonneg = TRUE)   # a nonnegative constant, value set later
+x <- Variable(5)
+prob <- Problem(Minimize(sum_squares(x - 1) + gamma * p_norm(x, 1)))
+is_dpp(prob)
+```
+
+DPP adds one main restriction to DCP: **you may not multiply two parametrized
+expressions** (a parameter times a parameter, or a parameter times a
+parameter-containing expression). Such a problem is still DCP, just not DPP --- so
+it solves, but without the speedup:
+
+```{r}
+#| label: nondpp
+#| results: hold
+g <- Parameter(nonneg = TRUE); z <- Variable()
+bad <- Problem(Minimize(g * g * z), list(z >= 1))
+cat("Is DPP?", is_dpp(bad), "\n")
+cat("Is DCP?", is_dcp(bad), "\n")
+```
+
+Just like the DCP reformulation skill from @sec-dcp, a non-DPP problem can usually
+be **rewritten** to comply --- here by introducing a helper variable:
+
+```{r}
+#| label: dpp-fix
+#| results: hold
+z <- Variable(); w <- Variable(); g <- Parameter(nonneg = TRUE)
+good <- Problem(Minimize(g * w), list(w == g * z, z >= 1))
+cat("Is DPP?", is_dpp(good), "\n")
+```
+
+## The payoff: re-solve vs. rebuild
+
+How much does skipping recompilation actually save? Let's measure it properly with
+`bench::mark`, which reports the garbage-collection-free **minimum** time --- the
+honest way to compare. We set up a lasso whose penalty weight is a `Parameter`, and
+compare one **DPP re-solve** (change the value, solve again) against one **rebuild**
+(fresh problem with a numeric weight).
+
+```{r}
+#| label: bench-setup
+library(bench)
+set.seed(1)
+n <- 120; m <- 40
+A <- matrix(rnorm(n * m), n, m); b <- rnorm(n)
+x <- Variable(m)
+error <- sum_squares(A %*% x - b)
+
+gamma <- Parameter(nonneg = TRUE)
+param_prob <- Problem(Minimize(error + gamma * p_norm(x, 1)))   # DPP
+
+value(gamma) <- 0.5; psolve(param_prob)   # one-time compile, up front
+```
+
+```{r}
+#| label: bench-run
+bench::mark(
+  `DPP re-solve` = { value(gamma) <- 0.7; psolve(param_prob) },
+  `rebuild`      = { psolve(Problem(Minimize(error + 0.7 * p_norm(x, 1)))) },
+  check = FALSE, min_iterations = 5, filter_gc = FALSE
+)[, c("expression", "min", "median", "mem_alloc")]
+```
+
+On our machine the DPP re-solve is roughly **2–3× faster per solve** and allocates
+less memory --- it reuses the cached compilation instead of redoing it. Over a sweep
+of $K$ values you save that difference $K$ times.
+
+::: callout-note
+## How big is the win, really?
+The saving is exactly the **recompilation you avoid**, so it is largest when
+compilation is a meaningful share of each solve --- small-to-medium problems solved
+*many* times (regularization paths, grid searches, simulations, bootstraps). For
+very large problems the solver itself dominates and the ratio shrinks toward 1×.
+Either way the parametrized code is cleaner, and --- as we note below --- parameters
+are also the gateway to *differentiating through* a problem.
 :::
+
+## Back to the regularization path
+
+This is exactly Chapter 3's sweep, done right. We make $\lambda$ a `Parameter` and
+re-solve --- the path looks identical, but only one compilation happens:
+
+```{r}
+#| label: dpp-path
+lambda_vals <- 10^seq(-3, 1, length.out = 30)
+lambda <- Parameter(nonneg = TRUE)
+beta <- Variable(m)
+path_prob <- Problem(Minimize(error + lambda * p_norm(beta, 1)))
+
+betas <- sapply(lambda_vals, function(l) { value(lambda) <- l; psolve(path_prob); value(beta) })
+dim(betas)   # m coefficients x number of lambda values
+```
+
+Whenever you plan to solve the *same shape* of problem many times --- a path, a
+grid search, a simulation, a bootstrap --- reach for a `Parameter`.
+
+## Exercise
+
+**Exercise (⭐).** The expression `gamma * p_norm(x, 1)` is DPP, but
+`(gamma * gamma) * p_norm(x, 1)` is not. Suppose you really want the penalty weight
+to be $\gamma^2$. How can you keep the problem DPP *and* sweep over $\gamma$?
+
+::: {.callout-tip collapse="true"}
+## Solution
+Do the nonlinear part **in R**, outside the DSL: keep a single parameter that holds
+the value $\gamma^2$, and set it from your $\gamma$ grid.
+```{r}
+#| label: ex-dpp
+w <- Parameter(nonneg = TRUE)            # will hold gamma^2
+prob <- Problem(Minimize(error + w * p_norm(x, 1)))
+is_dpp(prob)
+for (g in lambda_vals) { value(w) <- g^2; psolve(prob) }   # sweep, still DPP
+```
+The rule of thumb: parameters may enter *affinely*; any nonlinear transform of a
+parameter should be computed in R and stored in another parameter.
+:::
+
+## Takeaways
+
+- A **`Parameter`** is a constant you can change without rebuilding the problem.
+- If the problem is **DPP** (`is_dpp()` --- essentially "no parameter × parameter"),
+  CVXR compiles once and re-solves cheaply.
+- Use it for any **repeated solve** --- paths, grid searches, simulations. It is the
+  efficient way to do the sweep you met in @sec-elastic-net.
+
+For more, see the [DPP Tutorial](https://cvxr.rbind.io/examples/dpp/tutorial.html).
