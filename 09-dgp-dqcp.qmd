@@ -23,8 +23,13 @@ write them naturally and pass `gp = TRUE`. The classic example maximizes the vol
 of a box subject to area limits:
 
 ```{r}
-#| label: dgp
+#| label: setup
+#| include: false
 library(CVXR)
+```
+
+```{r}
+#| label: dgp
 x <- Variable(pos = TRUE); y <- Variable(pos = TRUE); z <- Variable(pos = TRUE)
 prob <- Problem(Maximize(x * y * z),
                 list(2 * (x * z + y * z) <= 10, x * y <= 4))

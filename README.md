@@ -22,7 +22,7 @@ and uses **CRAN solvers only**.
    install.packages(c("CVXR", "scip", "Uno", "sparsediff"))
    # Helpers used by the examples
    install.packages(c("ggplot2", "tidyr", "nnls", "glmnet",
-                      "boot", "png", "kableExtra", "bench"))
+                      "boot", "png", "bench"))
    ```
 
 4. **Check your setup:**

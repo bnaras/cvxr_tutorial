@@ -1,7 +1,7 @@
 # Mixed-Integer Programming {#sec-mip}
 
-<!-- LIVE hands-on: MILP on HiGHS (install-free). DEMO: integer least squares
-     via SOC reformulation on scip.
+<!-- LIVE hands-on throughout: MILP on HiGHS (install-free); integer least squares
+     via SOC reformulation on scip (scip is in the setup install line).
      AUDIT (2026-06-09, verified vs Gurobi): MILP runs on HiGHS & SCIP. A quad
      objective + integers (MIQP) routes through CVXR's QP path -> only commercial
      QP solvers; BUT reformulating the quadratic as an SOC epigraph makes it
@@ -77,7 +77,7 @@ round(value(pick_lp), 3)
 That gap between the relaxation and the integer optimum is exactly what
 branch-and-bound has to close.
 
-## Demo: integer least squares, by reformulation (SCIP)
+## Integer least squares, by reformulation (SCIP)
 
 Here is a mixed-integer problem straight out of our regression chapters: **integer
 least squares** --- find *integer* coefficients $x$ minimizing $\|Ax - b\|_2^2$. The

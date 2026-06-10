@@ -51,14 +51,15 @@ install.packages(c("CVXR", "scip", "Uno", "sparsediff"))
 
 # Helpers used by the examples
 install.packages(c("ggplot2", "tidyr", "nnls", "glmnet",
-                   "boot", "png", "kableExtra", "bench"))
+                   "boot", "png", "bench"))
 ```
 
 `CVXR` automatically brings in the four open-source solvers it uses ---
-`clarabel`, `osqp`, `scs`, and `highs`. The `scip`/`Uno`/`sparsediff` trio powers
-two *demonstrations* near the end (mixed-integer second-order-cone programming with
-`scip`, and nonlinear programming with `Uno` + `sparsediff`); the **core hands-on
-chapters need only `CVXR` plus the helpers**.
+`clarabel`, `osqp`, `scs`, and `highs`. The `scip`/`Uno`/`sparsediff` trio powers two
+*hands-on* chapters near the end --- mixed-integer second-order-cone programming with
+`scip` (@sec-mip) and nonlinear programming with `Uno` + `sparsediff` (@sec-dnlp). If
+you ever can't install one of those three, you can still do every other chapter with
+just `CVXR` plus the helpers.
 
 Before the tutorial, please run the included **`setup_check.R`** to confirm your
 machine is ready:

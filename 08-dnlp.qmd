@@ -1,8 +1,8 @@
-# Beyond Convex: Nonlinear Programming (Demo) {#sec-dnlp}
+# Beyond Convex: Nonlinear Programming {#sec-dnlp}
 
-<!-- DEMO (instructor-run), CRAN-reproducible via Uno + sparsediff (ipopt dropped).
-     Source: cvxr_docs/examples/dnlp/tutorial.qmd, trimmed. Feature-gated so the
-     chapter renders with or without the DNLP packages installed. -->
+<!-- HANDS-ON. CRAN: needs Uno + sparsediff (both in the setup install line;
+     ipopt dropped). Source: cvxr_docs/examples/dnlp/tutorial.qmd, trimmed.
+     Feature-gated as a graceful fallback if a participant lacks the packages. -->
 
 ::: callout-note
 ## What you'll be able to do
@@ -11,13 +11,12 @@ with `psolve(nlp = TRUE)`, and understand why a nonlinear solve gives only a *lo
 guarantee --- and what to do about it.
 :::
 
-::: callout-important
-## This is a demonstration
-The hands-on chapters used only CVXR's four built-in solvers. This frontier needs
-two more CRAN packages --- `sparsediff` (automatic derivatives) and `Uno` (the
-nonlinear solver). We run it as a demo; to reproduce it at home:
-`install.packages(c("sparsediff", "Uno"))`. (The `ipopt` backend is *not* required
-and is not on CRAN.)
+::: callout-tip
+## You already have what you need
+This chapter uses two CRAN packages beyond CVXR's built-in solvers --- `sparsediff`
+(automatic derivatives) and `Uno` (the nonlinear solver) --- and you installed both
+in the [setup](index.qmd#installation). So it is **hands-on, like every other
+chapter**. (The `ipopt` backend is optional and not on CRAN; you do not need it.)
 :::
 
 ```{r}
@@ -132,6 +131,47 @@ rbind(`sin(x)`  = classify(sin(x)),
 
 A smooth atom like `sin(x)` linearizes in *both* directions, so it may appear
 anywhere; nonsmooth convex/concave atoms keep the curvature DCP assigns them.
+
+## Exercises
+
+**Exercise 1.** See the local-optimum trap for yourself. Solve
+$\sin(x) + \tfrac{1}{10}x^2$ from a *single* starting point at `x0 = 4`, then
+compare with `best_of = 20`. Do they agree?
+
+::: {.callout-tip collapse="true"}
+## Solution
+```{r}
+#| label: ex-local
+x <- Variable(bounds = list(-10, 10))
+prob <- Problem(Minimize(sin(x) + 0.1 * x^2))
+
+value(x) <- 4                                              # a poor starting point
+one <- psolve(prob, nlp = TRUE, solver = "UNO", logger = "SILENT")
+
+set.seed(2)
+many <- psolve(prob, nlp = TRUE, solver = "UNO", logger = "SILENT", best_of = 20)
+c(from_x0_4 = one, best_of_20 = many)
+```
+The single solve from `x0 = 4` gets **stuck in a nearby local minimum** (objective
+$\approx 0.83$); the random restarts escape it and find the global one
+($\approx -0.79$). This is the whole story of nonconvex optimization in one example.
+:::
+
+**Exercise 2 (⭐).** Turn on `verbose = TRUE` for one of the solves above and read
+UNO's log. How is it different from the convex-solver output you saw in
+@sec-gentle-intro?
+
+::: {.callout-tip collapse="true"}
+## Solution
+```{r}
+#| label: ex-verbose
+#| eval: false
+psolve(prob, nlp = TRUE, solver = "UNO", verbose = TRUE)
+```
+You will see UNO *reformulate* the model and run a nonlinear iteration (a Newton or
+SQP method), rather than the cone solver's interior-point iterations. Same
+`verbose = TRUE` switch, a different engine underneath.
+:::
 
 ## Takeaways
 

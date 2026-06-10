@@ -128,6 +128,31 @@ When you `psolve()` a problem, `status()` is one of:
 
 Always glance at `status()` before trusting a solution.
 
+## Watching the solver work
+
+By default `psolve()` is quiet. But you can ask it to **show its work** by passing
+`verbose = TRUE` --- invaluable when you want to understand what CVXR is doing, or
+diagnose a slow or stalling solve:
+
+```{r}
+#| label: verbose
+psolve(prob1, verbose = TRUE)
+```
+
+The output has three parts, and they preview the rest of this book:
+
+1. **Compilation** --- CVXR translates your problem into a standard form a solver
+   understands. The chain (here `Dcp2Cone -> ... -> ConeMatrixStuffing -> ...`) is
+   the machinery we open up in @sec-dcp; for now, note that *your symbolic problem
+   becomes solver data*.
+2. **Numerical solver** --- the chosen solver's own iteration log, converging to the
+   answer.
+3. **Summary** --- the status, optimal value, and how long compilation vs. solving
+   took.
+
+Turn it on whenever you are curious or stuck; turn it off (the default) once things
+work. Every `psolve()` call in this book accepts it.
+
 ## Modifying and re-solving
 
 CVXR objects are ordinary R objects: you can build new problems from old ones. Here
