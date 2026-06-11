@@ -154,6 +154,44 @@ dim(betas)   # m coefficients x number of lambda values
 Whenever you plan to solve the *same shape* of problem many times --- a path, a
 grid search, a simulation, a bootstrap --- reach for a `Parameter`.
 
+## The other half of the solve: warm starts
+
+Recall that every solve splits into a **compile time** and a **solver time**. DPP
+attacks the *compile* time --- it reuses the canonicalized problem structure so we
+never re-stuff the matrices. But the solver still starts **cold** each time, refining
+an internal guess from scratch until it converges.
+
+A **warm start** attacks the *other* half. A numerical solver is iterative; if you
+hand it a starting point already near the answer, it converges in fewer iterations.
+In a sweep over a fine grid the solution at one $\lambda$ is an excellent guess for
+the next, so the previous answer is exactly the start point we want. In CVXR that is
+one flag --- `warm_start = TRUE` uses the current variable values as the solver's
+initial point:
+
+```{r}
+#| label: warm-sweep
+betas_warm <- sapply(lambda_vals, function(l) {
+  value(lambda) <- l
+  psolve(path_prob, warm_start = TRUE)   # start from the previous lambda's solution
+  value(beta)
+})
+max(abs(betas_warm - betas))             # same path, to solver tolerance
+```
+
+The two ideas are **orthogonal and complementary**, not the same trick:
+
+| | reuses | cuts | wins biggest when |
+|---|---|---|---|
+| **DPP** | the compiled problem structure | *compile* time | compilation dominates --- small problems solved *many* times |
+| **Warm start** | the previous solution | *solver* time | the solver dominates --- large/expensive problems, close-together solves |
+
+DPP does nothing for the solver's iterations; a warm start does nothing for
+compilation. Each pays off precisely where the other does not, so a tight sweep wants
+**both** --- compile once (DPP), then step the solver from each previous answer
+(warm start). Warm-starting is solver-dependent (about 9 of CVXR's 15 solvers support
+it --- OSQP, SCS, Clarabel, MOSEK, Gurobi, PIQP, HiGHS, and more); a solver that
+cannot warm-start simply ignores the flag.
+
 ## Exercise
 
 **Exercise (⭐).** The expression `gamma * p_norm(x, 1)` is DPP, but
@@ -182,5 +220,7 @@ parameter should be computed in R and stored in another parameter.
   CVXR compiles once and re-solves cheaply.
 - Use it for any **repeated solve** --- paths, grid searches, simulations. It is the
   efficient way to do the sweep you met in @sec-elastic-net.
+- **DPP cuts compile time; a warm start cuts solver time.** They are independent ---
+  combine `Parameter`s with `warm_start = TRUE` to speed up both halves of a sweep.
 
 For more, see the [DPP Tutorial](https://cvxr.rbind.io/examples/dpp/tutorial.html).

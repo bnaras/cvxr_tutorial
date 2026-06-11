@@ -26,6 +26,7 @@ underlying models are due to @Markowitz:1952 (mean-variance) and
 #| include: false
 library(CVXR)
 library(ggplot2)
+library(RColorBrewer)
 source("_check_status.R")
 ```
 
@@ -63,19 +64,23 @@ colnames(R)
 ## Trace the efficient frontier
 
 For each $\gamma$ we solve the Markowitz problem and record the realized risk and
-return. As in @sec-elastic-net, this is the **same problem re-solved** over a grid ---
-exactly the place where the `Parameter` trick from @sec-dpp pays off.
+return. This is the **same problem re-solved** over a grid --- exactly where the
+`Parameter` trick from @sec-dpp pays off. We make $\gamma$ a `Parameter`, build the
+problem **once**, and each iteration just sets `value(gamma)` and re-solves, reusing
+the cached compilation instead of canonicalizing from scratch 40 times.
 
 ```{r}
 #| label: frontier
-w    <- Variable(n)
-ret  <- t(mu) %*% w
-risk <- quad_form(w, Sigma)               # w' Sigma w, a convex quadratic
-cons <- list(w >= 0, sum(w) == 1)
+w     <- Variable(n)
+ret   <- t(mu) %*% w
+risk  <- quad_form(w, Sigma)              # w' Sigma w, a convex quadratic
+cons  <- list(w >= 0, sum(w) == 1)
+gamma <- Parameter(nonneg = TRUE)         # the risk-aversion knob, set per solve
+prob  <- Problem(Maximize(ret - gamma * risk), cons)   # built once
 
 gammas <- 10^seq(-1, 3, length.out = 40)
 fr <- sapply(gammas, function(g) {
-  prob <- Problem(Maximize(ret - g * risk), cons)
+  value(gamma) <- g                       # swap in the new gamma; no rebuild
   psolve(prob)
   c(risk = sqrt(value(risk)), ret = value(ret), w = value(w))
 })
@@ -100,6 +105,36 @@ ggplot(df, aes(risk, ret)) +
 
 Every point on the blue curve is the best return achievable at that level of risk; the
 individual stocks (red) all sit *below* it --- diversification at work.
+
+The frontier shows the risk-return *outcome*, but not *what the portfolio holds*. Since
+`fr` already captured the weight vector at every $\gamma$, we can read the composition
+straight back out and watch diversification happen. At a few points along the grid we
+stack each asset's share of the budget:
+
+```{r}
+#| label: frontier-composition
+#| fig-cap: "Portfolio composition along the frontier. Small gamma concentrates the budget in a few assets; large gamma spreads it out --- diversification, made visible."
+markers <- c(1, 10, 20, 30, 40)
+wmat <- fr[grep("^w", rownames(fr)), markers]   # 12 assets x 5 values of gamma
+rownames(wmat) <- names(mu)
+
+comp <- data.frame(
+  gamma  = factor(rep(signif(gammas[markers], 2), each = n),
+                  levels = signif(gammas[markers], 2)),
+  asset  = factor(rep(names(mu), times = length(markers)), levels = names(mu)),
+  weight = as.vector(wmat))
+
+ggplot(comp, aes(gamma, weight, fill = asset)) +
+  geom_col() +
+  scale_fill_manual(values = brewer.pal(n, "Paired")) +
+  labs(x = expression("Risk aversion  " * gamma),
+       y = "Fraction of budget", fill = "Asset") +
+  theme_minimal()
+```
+
+The left-most bar (greedy, low $\gamma$) leans on one or two names; as $\gamma$ grows the
+bars fragment into the full palette. That shift *is* the efficient frontier, seen from
+the portfolio's side.
 
 ## A different risk measure: CVaR
 
@@ -139,6 +174,38 @@ w_cvar[w_cvar > 0.001]                     # the minimum-CVaR allocation
 Same data, same `CVXR` machinery, a different notion of risk --- and a different,
 typically more tail-aware, allocation. Switching risk measures is, once again, just a
 change to the objective.
+
+To see *how* the allocation differs, hold the return target fixed and put the two
+side by side. The fair mean-variance counterpart minimizes variance subject to the same
+return floor, so both bars sit at the same expected return and only the risk measure
+changes:
+
+```{r}
+#| label: cvar-vs-mv
+#| fig-cap: "Same return target, two risk measures. Variance and CVaR reallocate the budget differently."
+## mean-variance allocation at the SAME return target, for an apples-to-apples comparison
+wv_mv   <- Variable(n)
+prob_mv <- Problem(Minimize(quad_form(wv_mv, Sigma)),
+                   list(sum(wv_mv) == 1, wv_mv >= 0, t(mu) %*% wv_mv >= target))
+psolve(prob_mv)
+check_solver_status(prob_mv)
+
+comp2 <- data.frame(
+  measure = factor(rep(c("Mean-variance", "Mean-CVaR"), each = n),
+                   levels = c("Mean-variance", "Mean-CVaR")),
+  asset   = factor(rep(names(mu), 2), levels = names(mu)),
+  weight  = c(value(wv_mv), value(wv)))
+
+ggplot(comp2, aes(measure, weight, fill = asset)) +
+  geom_col() +
+  scale_fill_manual(values = brewer.pal(n, "Paired")) +
+  labs(x = NULL, y = "Fraction of budget", fill = "Asset") +
+  theme_minimal()
+```
+
+Both portfolios earn the same expected return, yet CVaR --- caring only about the bad
+tail --- tilts the budget toward a different mix than variance, which penalizes upside
+and downside alike.
 
 ## Exercise
 

@@ -35,15 +35,19 @@ book:
     - part: "Applications"
       chapters:
         - 09-portfolio.qmd
-        - 10-mip.qmd
-        - 11-showcase.qmd
+        - 10-invcov.qmd
+        - 11-mip.qmd
+        - 12-image.qmd
+        - 13-bootstrap.qmd
     - part: "Frontiers"
       chapters:
-        - 12-dnlp.qmd
-        - 13-dgp-dqcp.qmd
+        - 14-dnlp.qmd
+        - 15-dgp-dqcp.qmd
     - part: "Practice"
       chapters:
-        - 14-byo.qmd
+        - 16-byo.qmd
+  appendices:
+    - appendix-mosek.qmd
     - references.qmd
 
 bibliography: [references.bib, cvxr.bib]
@@ -56,7 +60,7 @@ format:
     toc: true
     toc-depth: 3
     code-copy: true
-    code-overflow: wrap
+    code-overflow: scroll
     highlight-style: github
     link-external-newwindow: true
   pdf:

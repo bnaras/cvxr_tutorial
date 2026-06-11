@@ -1,4 +1,4 @@
-# Further Frontiers: DGP and DQCP {#sec-dgp-dqcp}
+# DGP and DQCP {#sec-dgp-dqcp}
 
 <!-- MENTION ONLY (pointer chapter), one tiny verified example each. Source:
      cvxr_docs/examples/dgp/*, dqcp/*. Kept deliberately brief. -->

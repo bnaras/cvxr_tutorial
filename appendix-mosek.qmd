@@ -1,0 +1,206 @@
+# Using a Commercial Solver: MOSEK {#sec-mosek}
+
+<!-- STATIC solver demo. CVXR's open-source solvers handle everything in this book;
+     this short chapter shows how to plug in MOSEK (free for academics) for the cases
+     where a commercial conic solver helps. The solve chunk is `eval: false` on purpose
+     so the chapter renders without MOSEK installed. The captured output is genuine:
+     a 5x5 nearest-PSD SDP solved with MOSEK 11.1.2 on 2026-06-10. The CVXR summary is
+     real psolve(verbose=TRUE) output; MOSEK's native log is real Rmosek verbose=10
+     output (CVXR will stream it inline under verbose in a future release --- see
+     new_design/features/TODO.md). -->
+
+::: callout-note
+## What you'll be able to do
+Install and license **MOSEK** --- a commercial-grade conic solver that is **free for
+academic use** --- and route any CVXR problem to it by changing a single word. You
+will also see what MOSEK's detailed solver log looks like on a small semidefinite
+program.
+:::
+
+```{r}
+#| label: setup
+#| include: false
+library(CVXR)
+```
+
+## Why a commercial solver?
+
+Every example in this book is solved with the open-source solvers that ship with
+CVXR --- Clarabel, OSQP, SCS, HiGHS --- and for the overwhelming majority of problems
+they are excellent. But commercial solvers can pull ahead on large or numerically hard
+problems, especially **semidefinite** and **second-order-cone** programs, and they
+tend to report richer diagnostics. [MOSEK](https://www.mosek.com) is a standout: a
+mature interior-point solver that is **free for students and academic researchers**.
+
+The good news is that *switching solvers changes nothing about your model.* You write
+the problem exactly as before; you only name a different solver at solve time.
+
+## Getting MOSEK
+
+MOSEK is commercial software, but academic access is free and the setup is quick:
+
+1. **Get a license.** Request a free
+   [personal academic license](https://www.mosek.com/products/academic-licenses/)
+   (or a 30-day commercial trial). Save the license file to `~/mosek/mosek.lic`
+   --- the default location MOSEK searches --- or point the `MOSEKLM_LICENSE_FILE`
+   environment variable at it.
+
+2. **Install the `Rmosek` interface.** `Rmosek` is distributed by MOSEK, not from
+   CRAN, and is built against your local MOSEK installation:
+
+   ```r
+   install.packages("Rmosek", repos = "https://download.mosek.com/stable/rmosek/")
+   library(Rmosek)
+   mosek_attachbuilder()   # locate the MOSEK Optimization Suite
+   install.rmosek()        # build and install the interface
+   ```
+
+   The official, platform-by-platform guide is at
+   [docs.mosek.com](https://docs.mosek.com/latest/rmosek/install-interface.html).
+
+3. **Check it works:**
+
+   ```r
+   library(Rmosek)
+   mosek_version()
+   ```
+
+Once `Rmosek` loads and the license is found, CVXR will discover MOSEK automatically.
+
+## Using MOSEK in CVXR
+
+Selecting MOSEK is a one-word change to `psolve()`:
+
+```r
+psolve(prob, solver = "MOSEK")
+```
+
+That is the whole API. Variables, constraints, the objective, and dual-variable
+recovery are all identical to every other solver --- the solver name is the only thing
+that changes.
+
+## A worked example: the nearest PSD matrix
+
+Here is a small **semidefinite program**, the kind of problem where a commercial conic
+solver earns its keep. Given a symmetric (but indefinite) matrix $M$, we look for the
+positive-semidefinite matrix $X$ closest to it in Frobenius norm:
+
+$$
+\underset{X \succeq 0}{\text{minimize}}\ \ \|X - M\|_F^2 .
+$$
+
+The constraint $X \succeq 0$ ("$X$ is PSD") is declared right on the variable:
+
+```{r}
+#| label: data
+set.seed(1)
+n <- 5
+M <- matrix(rnorm(n * n), n, n)
+M <- (M + t(M)) / 2          # a symmetric --- but indefinite --- target matrix
+round(eigen(M, only.values = TRUE)$values, 3)   # note the negative eigenvalues
+```
+
+The target has negative eigenvalues, so it is not itself PSD. We solve for the closest
+matrix that is, and turn on `verbose = TRUE` to watch MOSEK work:
+
+```{r}
+#| label: mosek-solve
+#| eval: false
+X    <- Variable(c(n, n), PSD = TRUE)            # symmetric PSD matrix variable
+prob <- Problem(Minimize(sum_squares(X - M)))    # nearest PSD matrix, Frobenius norm
+psolve(prob, solver = "MOSEK", verbose = TRUE)
+```
+
+::: callout-tip
+## This chunk is pre-rendered
+The solve above is marked `eval: false` so the book builds without MOSEK installed.
+The output below is the genuine result of running it with MOSEK 11.1.2.
+:::
+
+With `verbose = TRUE`, CVXR reports the compilation and the solve summary --- note that
+the chosen solver is `MOSEK`, and that compile time and solver time are tracked
+separately (@sec-dpp):
+
+```
+────────────────────────────── CVXR v1.9.1 ──────────────────────────────
+ℹ Problem: 1 variable, 0 constraints (DCP)
+ℹ Compilation: "MOSEK" via CVXR::Dcp2Cone -> CVXR::CvxAttr2Constr ->
+               CVXR::ConeMatrixStuffing -> CVXR::Mosek_Solver
+ℹ Compile time: 0.21s
+─────────────────────────── Numerical solver ────────────────────────────
+──────────────────────────────── Summary ────────────────────────────────
+✔ Status: optimal
+✔ Optimal value: 3.6305
+ℹ Compile time: 0.21s
+ℹ Solver time: 0.019s
+```
+
+MOSEK also keeps its **own** detailed log of the solve --- the problem type, the
+interior-point iteration table, and a final optimizer summary. A future CVXR release
+will stream this log inline whenever you pass `verbose = TRUE` (as CVXPY does); here is
+what MOSEK reports for this SDP:
+
+```
+Problem
+  Name                   :
+  Objective sense        : minimize
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 0
+  Affine conic cons.     : 2 (42 rows)
+  Scalar variables       : 16
+  Matrix variables       : 1 (scalarized: 1)
+  Integer variables      : 0
+
+Optimizer  - threads                : 16
+Optimizer  - solved problem         : the primal
+Optimizer  - Constraints            : 26
+Optimizer  - Cones                  : 1
+Optimizer  - Scalar variables       : 28                conic       : 27
+Optimizer  - Semi-definite variables: 1                 scalarized  : 15
+Factor     - nonzeros before factor : 351               after factor: 351
+Factor     - dense dim.             : 0                 flops       : 7.88e+03
+ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME
+0   1.6e+00  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  0.00
+1   4.1e-01  2.5e-01  5.8e-01  -3.80e-01  1.089704904e+00   1.312151618e+00   2.5e-01  0.00
+2   5.9e-02  3.6e-02  1.1e-02  5.00e-01   3.386613408e+00   3.242645938e+00   3.6e-02  0.00
+3   7.4e-03  4.6e-03  5.1e-04  9.41e-01   3.608929356e+00   3.590619106e+00   4.6e-03  0.00
+4   1.0e-03  6.4e-04  3.3e-05  1.01e+00   3.627235469e+00   3.624865947e+00   6.4e-04  0.00
+5   3.2e-05  2.0e-05  2.3e-07  1.00e+00   3.630317873e+00   3.630261513e+00   2.0e-05  0.00
+6   4.0e-06  2.5e-06  1.1e-08  1.00e+00   3.630469253e+00   3.630462235e+00   2.5e-06  0.00
+7   4.0e-07  2.5e-07  3.7e-10  1.00e+00   3.630493170e+00   3.630492590e+00   2.5e-07  0.00
+8   1.2e-08  7.5e-09  2.0e-12  1.00e+00   3.630495992e+00   3.630495975e+00   7.5e-09  0.00
+Optimizer terminated. Time: 0.00
+
+Interior-point solution summary
+  Problem status  : PRIMAL_AND_DUAL_FEASIBLE
+  Solution status : OPTIMAL
+  Primal.  obj: 3.6304959921e+00    nrm: 4e+00    Viol.  var: 0e+00   barvar: 0e+00
+  Dual.    obj: 3.6304959749e+00    nrm: 2e+00    Viol.  var: 2e-11   barvar: 1e-24
+Optimizer summary
+  Optimizer              -                    time: 0.00
+    Interior-point       - iterations : 8     time: 0.00
+    Simplex              - iterations : 0     time: 0.00
+    Mixed integer        - relaxations: 0     time: 0.00
+```
+
+Read the iteration table top to bottom: MOSEK drives the primal/dual feasibility
+residuals (`PFEAS`, `DFEAS`) and the duality gap (`MU`) down toward zero, the primal and
+dual objectives (`POBJ`, `DOBJ`) squeeze together, and after eight interior-point
+iterations they meet at the optimal value **3.6305** --- exactly the number in CVXR's
+summary. The solution $X^\star$ is the original matrix with its negative eigenvalues
+clipped to zero, which is the classic closed form for this problem; CVXR and MOSEK
+recover it numerically without you having to know that.
+
+## Takeaways
+
+- CVXR's bundled open-source solvers cover everything in this book; reach for a
+  **commercial solver** mainly for large or hard **conic / semidefinite** problems.
+- **MOSEK is free for academics.** Get a license, install `Rmosek` from MOSEK's repo,
+  and CVXR finds it automatically.
+- Switching solvers is a **one-word change** --- `psolve(prob, solver = "MOSEK")` ---
+  with no change to the model.
+- `verbose = TRUE` reports CVXR's compile/solve summary; MOSEK additionally produces a
+  detailed interior-point log of its own.
+
+For the full list of solvers CVXR can drive --- open-source and commercial --- and
+their capabilities, see the [CVXR solver documentation](https://cvxr.rbind.io).
