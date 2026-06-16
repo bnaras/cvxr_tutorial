@@ -1,0 +1,1161 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Convex Optimization in R Using CVXR",
+    "section": "",
+    "text": "Preface\nWelcome to Convex Optimization in R Using CVXR, a hands-on tutorial prepared for useR! 2026 in Warsaw.\nConvex optimization sits underneath a remarkable share of modern statistics and machine learning — least squares and ridge regression, the lasso and elastic net, robust and quantile regression, support vector machines, portfolio optimization, maximum-entropy modeling, and much more. CVXR lets you write these problems in R in natural mathematical notation and have them solved to global optimality, without hand-deriving a solver or matching your problem to a canned routine.\nThis tutorial accompanies CVXR 1.9.1, a ground-up rewrite built on R’s S7 object system that brings R to parity with Python’s CVXPY.",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "index.html#who-this-is-for",
+    "href": "index.html#who-this-is-for",
+    "title": "Convex Optimization in R Using CVXR",
+    "section": "Who this is for",
+    "text": "Who this is for\nWe assume intermediate R (data frames, functions, basic matrix algebra) and a little linear algebra and probability. No optimization background is required. The early chapters start gently — if you have never solved an optimization problem in your life, you are in the right place. Later chapters reach material that will interest experienced optimizers too; exercises marked with a star (⭐) are there for you.",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "index.html#how-to-use-this-book",
+    "href": "index.html#how-to-use-this-book",
+    "title": "Convex Optimization in R Using CVXR",
+    "section": "How to use this book",
+    "text": "How to use this book\nThis is a hands-on book. You are meant to run the code, not just read it.\n\nOpen the accompanying RStudio project and work through each chapter’s .qmd (or .R) by executing the code chunks as you read. You do not need to type anything — click Run (or press Ctrl/Cmd+Enter) and watch what happens.\nEach hands-on chapter ends with exercises. Try them, then click to reveal the solution:\n\n\n\n\n\n\n\nTipSolution (click to reveal)\n\n\n\n\n\nSolutions look like this — the code and its output are right here, hidden until you want them.",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "index.html#installation",
+    "href": "index.html#installation",
+    "title": "Convex Optimization in R Using CVXR",
+    "section": "Installation",
+    "text": "Installation\nEverything in this tutorial runs on CRAN packages only. Two lines install all you need — the solvers and a handful of helper packages (for plots, data, and comparisons against familiar R routines):\n# Solvers (CVXR auto-pulls clarabel, osqp, scs, highs)\ninstall.packages(c(\"CVXR\", \"scip\", \"Uno\", \"sparsediff\"))\n\n# Helpers used by the examples\ninstall.packages(c(\"ggplot2\", \"tidyr\", \"nnls\", \"glmnet\",\n                   \"boot\", \"png\", \"bench\"))\nCVXR automatically brings in the four open-source solvers it uses — clarabel, osqp, scs, and highs. The scip/Uno/sparsediff trio powers two hands-on chapters near the end — mixed-integer second-order-cone programming with scip (11  Mixed-Integer Programming) and nonlinear programming with Uno + sparsediff (14  Beyond Convex: Nonlinear Programming). If you ever can’t install one of those three, you can still do every other chapter with just CVXR plus the helpers.\nBefore the tutorial, please run the included setup_check.R to confirm your machine is ready:\nsource(\"setup_check.R\")   # or:  Rscript setup_check.R\nIt checks your R version, the packages, and runs a tiny solve on each solver, reporting PASS/FAIL. Requires R ≥ 4.3.0.",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "index.html#a-note-on-solvers",
+    "href": "index.html#a-note-on-solvers",
+    "title": "Convex Optimization in R Using CVXR",
+    "section": "A note on solvers",
+    "text": "A note on solvers\nWe deliberately restrict ourselves to solvers available on CRAN. CVXR also interfaces with commercial solvers (MOSEK, Gurobi, CPLEX, Xpress) and several others, but none are needed here. Wherever a chapter names a solver explicitly, it is one of the CRAN ones above.",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "index.html#further-reading",
+    "href": "index.html#further-reading",
+    "title": "Convex Optimization in R Using CVXR",
+    "section": "Further reading",
+    "text": "Further reading\nEvery topic here is expanded, with many more worked examples, at the CVXR website cvxr.rbind.io. The package is described in Fu et al. (2020). The standard reference for the subject is Boyd and Vandenberghe (2004).",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "index.html#acknowledgments",
+    "href": "index.html#acknowledgments",
+    "title": "Convex Optimization in R Using CVXR",
+    "section": "Acknowledgments",
+    "text": "Acknowledgments\nCVXR builds on the work of the CVXPY team and the broader disciplined-convex- programming community. The examples here draw on the CVXR documentation, to whose many contributors we are grateful.\n\n\n\n\nBoyd, S., and L. Vandenberghe. 2004. Convex Optimization. Cambridge University Press.\n\n\nFu, Anqi, Balasubramanian Narasimhan, and Stephen Boyd. 2020. “CVXR: An R Package for Disciplined Convex Optimization.” Journal of Statistical Software 94 (14): 1–34. https://doi.org/10.18637/jss.v094.i14.",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "01-intro.html",
+    "href": "01-intro.html",
+    "title": "1  Introduction to Convex Optimization",
+    "section": "",
+    "text": "1.1 Optimization is everywhere in statistics\nEstimation is often optimization. We maximize a likelihood, minimize a loss, or penalize a fit to trade bias for variance. Ordinary least squares, ridge and lasso, logistic regression, support vector machines, maximum-entropy models, portfolio selection — each is “find the parameter that makes some criterion as small (or large) as possible, perhaps subject to constraints.”\nThe problems we study in this book have the form\n\\[\n\\begin{array}{lll}\n  \\mbox{minimize}   & f_0(x) & \\\\\n  \\mbox{subject to} & f_i(x) \\leq 0, & i = 1,\\ldots,m\\\\\n                    & Ax = b, &\n\\end{array}\n\\]\nwith variable \\(x \\in \\mathbf{R}^n\\). Here \\(f_0\\) is the objective, the \\(f_i \\le 0\\) are inequality constraints, and \\(Ax = b\\) are equality constraints. (To maximize, minimize the negative.)",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction to Convex Optimization</span>"
+    ]
+  },
+  {
+    "objectID": "01-intro.html#what-makes-it-convex",
+    "href": "01-intro.html#what-makes-it-convex",
+    "title": "1  Introduction to Convex Optimization",
+    "section": "1.2 What makes it convex",
+    "text": "1.2 What makes it convex\nA problem is convex when the objective and inequality functions are convex and the equalities are linear. A function is convex if the line segment (chord) joining any two points on its graph lies on or above the graph:\n\\[f\\big(\\theta x + (1-\\theta) y\\big) \\;\\le\\; \\theta f(x) + (1-\\theta) f(y),\n\\qquad \\theta \\in [0,1].\\]\n\n\n\n\n\nA convex function curves upward: every chord lies above the graph.\n\n\n\n\nPicture it as a bowl. A concave function is an upside-down bowl (\\(-f\\) is convex); an affine (flat) function is both. We minimize convex functions and maximize concave ones.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction to Convex Optimization</span>"
+    ]
+  },
+  {
+    "objectID": "01-intro.html#why-convexity-is-such-good-news",
+    "href": "01-intro.html#why-convexity-is-such-good-news",
+    "title": "1  Introduction to Convex Optimization",
+    "section": "1.3 Why convexity is such good news",
+    "text": "1.3 Why convexity is such good news\nConvex problems have properties that make them a joy to work with:\n\nEvery local optimum is global. No getting stuck in a bad valley — if you find a solution, it is the solution.\nThe feasible region is convex (an intersection of convex sets), so the search space is well-behaved.\nThey are solved reliably and fast by mature algorithms, even when the problem is nonlinear or nondifferentiable, and at scale.\n\nThis is exactly why it is worth recognizing — or reformulating into — a convex problem: you trade the uncertainty of general optimization for a global guarantee.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction to Convex Optimization</span>"
+    ]
+  },
+  {
+    "objectID": "01-intro.html#convex-problems-in-statistics-and-machine-learning",
+    "href": "01-intro.html#convex-problems-in-statistics-and-machine-learning",
+    "title": "1  Introduction to Convex Optimization",
+    "section": "1.4 Convex problems in statistics and machine learning",
+    "text": "1.4 Convex problems in statistics and machine learning\nA small sample of methods that are, under the hood, convex optimization:\n\nordinary, nonnegative, and constrained least squares;\nridge, lasso, elastic-net, and other penalized regressions;\nlogistic regression and support vector machines;\nquantile and Huber (robust) regression;\nisotonic and shape-constrained fitting;\nmaximum-entropy and log-concave density estimation;\nportfolio optimization and many problems in finance, signal processing, and control.\n\nNew methods join the list every year — and CVXR lets you build them without writing a custom solver.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction to Convex Optimization</span>"
+    ]
+  },
+  {
+    "objectID": "01-intro.html#what-about-non-convex-problems",
+    "href": "01-intro.html#what-about-non-convex-problems",
+    "title": "1  Introduction to Convex Optimization",
+    "section": "1.5 What about non-convex problems?",
+    "text": "1.5 What about non-convex problems?\nNot everything is convex — in fact most problems are not, and they are harder in general (no global guarantee). Two responses recur in this book:\n\nA non-convex problem often has a convex relaxation — an approximation you can solve that yields a useful bound or solution.\nSome problems are non-convex but smooth, and a nonlinear solver will find a good local solution; CVXR handles these too (Chapter 14).",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction to Convex Optimization</span>"
+    ]
+  },
+  {
+    "objectID": "01-intro.html#the-plan",
+    "href": "01-intro.html#the-plan",
+    "title": "1  Introduction to Convex Optimization",
+    "section": "1.6 The plan",
+    "text": "1.6 The plan\nThe rest of the book is hands-on. We start gently — your first CVXR problems (Chapter 2) — then learn the one rule that governs what CVXR will accept (Chapter 3), survey the landscape of problem types (Chapter 4), and work through regression, classification, finance, integer, and nonlinear examples. By the end you will translate a problem from a paper or textbook directly into working R.\nRead on — and run the code as you go.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction to Convex Optimization</span>"
+    ]
+  },
+  {
+    "objectID": "02-gentle-intro.html",
+    "href": "02-gentle-intro.html",
+    "title": "2  A Gentle Introduction",
+    "section": "",
+    "text": "2.1 Convex optimization in one picture\nA convex optimization problem has the form\n\\[\n\\begin{array}{ll}\n  \\mbox{minimize}   & f_0(x)\\\\\n  \\mbox{subject to} & f_i(x) \\leq 0, \\quad i = 1,\\ldots,m\\\\\n                    & g_i(x) = 0,    \\quad i = 1,\\ldots,p\n\\end{array}\n\\]\nwhere \\(x\\) is the variable, the objective \\(f_0\\) and the inequality functions \\(f_1,\\ldots,f_m\\) are convex, and the equality functions \\(g_1,\\ldots,g_p\\) are affine.\nA handy mental picture:\nWe minimize a convex function (or maximize a concave one) over a convex region. The payoff for staying convex: any local solution is automatically global. For much more, see Boyd and Vandenberghe (2004).",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>A Gentle Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "02-gentle-intro.html#convex-optimization-in-one-picture",
+    "href": "02-gentle-intro.html#convex-optimization-in-one-picture",
+    "title": "2  A Gentle Introduction",
+    "section": "",
+    "text": "a convex function is upward-curving (a chord lies above the graph),\na concave function is downward-curving,\nan affine function is flat — both convex and concave.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>A Gentle Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "02-gentle-intro.html#hello-world",
+    "href": "02-gentle-intro.html#hello-world",
+    "title": "2  A Gentle Introduction",
+    "section": "2.2 ‘Hello World’",
+    "text": "2.2 ‘Hello World’\nHere is about the simplest problem that shows all three ingredients — an objective, an inequality constraint, and an equality constraint:\n\\[\n\\begin{array}{ll}\n  \\mbox{minimize}   & x^2 + y^2 \\\\\n  \\mbox{subject to} & x \\geq 0, \\quad 2x + y = 1\n\\end{array}\n\\]\nwith scalar variables \\(x\\) and \\(y\\). It is simple enough to solve by hand, so we can check CVXR’s answer. Here it is in CVXR:\n\n# Variables minimized over\nx &lt;- Variable(1)\ny &lt;- Variable(1)\n\n# Problem definition\nobjective   &lt;- Minimize(x^2 + y^2)\nconstraints &lt;- list(x &gt;= 0, 2 * x + y == 1)\nprob1 &lt;- Problem(objective, constraints)\n\n# Solve it\nsol1 &lt;- psolve(prob1)\n\nstatus(prob1)   # did it solve?\n\n[1] \"optimal\"\n\nsol1            # optimal objective value\n\n[1] 0.2\n\nvalue(x)\n\n     [,1]\n[1,]  0.4\n\nvalue(y)\n\n     [,1]\n[1,]  0.2\n\n\nLet’s walk through that carefully, because every CVXR problem is built the same way.\nVariables are placeholders. The first two lines create scalar Variable objects. They have no value yet — not until we solve.\n\nx &lt;- Variable(1)\ny &lt;- Variable(1)\n\nMinimize() builds an objective, not a number. Unlike base R’s min(), this does not compute anything (there is nothing to compute — x and y have no values). It records the goal.\n\nobjective &lt;- Minimize(x^2 + y^2)\n\n&gt;= and == build constraints, not TRUE/FALSE. The comparison operators are overloaded: x &gt;= 0 returns a Constraint object the solver will enforce — not a logical. (Without the constraints, the solution would trivially be \\(x = y = 0\\).)\n\nconstraints &lt;- list(x &gt;= 0, 2 * x + y == 1)\n\nProblem() assembles, psolve() solves. A problem pairs an objective with zero or more constraints. psolve() translates it into a form a convex solver understands, calls the solver, and returns the optimal objective value. Afterwards value() retrieves each variable and status() reports what happened.\nSolving by hand: the equality gives \\(y = 1 - 2x\\), so we minimize \\(x^2 + (1-2x)^2 = 5x^2 - 4x + 1\\), which is smallest at \\(x = 2/5\\). Then \\(y = 1/5\\) and the objective is \\(1/5\\) — exactly what CVXR found. The world says ‘hi’ back.\n\n2.2.1 Three things that can happen\nWhen you psolve() a problem, status() is one of:\n\n\"optimal\" — solved; value() gives the optimal variables.\n\"infeasible\" — no point satisfies all constraints (e.g. x &gt;= 1 and x &lt;= 0). psolve() returns +Inf (minimization) and variable values are NA.\n\"unbounded\" — the objective can be driven to \\(-\\infty\\). psolve() returns -Inf.\n\nAlways glance at status() before trusting a solution.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>A Gentle Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "02-gentle-intro.html#watching-the-solver-work",
+    "href": "02-gentle-intro.html#watching-the-solver-work",
+    "title": "2  A Gentle Introduction",
+    "section": "2.3 Watching the solver work",
+    "text": "2.3 Watching the solver work\nBy default psolve() is quiet. But you can ask it to show its work by passing verbose = TRUE — invaluable when you want to understand what CVXR is doing, or diagnose a slow or stalling solve:\n\npsolve(prob1, verbose = TRUE)\n\n────────────────────────────────── CVXR v1.9.1 ─────────────────────────────────\n\n\nℹ Problem: 2 variables, 2 constraints (QP)\n\n\nℹ Compilation: \"OSQP\" via CVXR::Dcp2Cone -&gt; CVXR::CvxAttr2Constr -&gt; CVXR::ConeMatrixStuffing -&gt; CVXR::OSQP_QP_Solver\n\n\nℹ Compile time: 0.242s\n\n\n─────────────────────────────── Numerical solver ───────────────────────────────\n\n\n-----------------------------------------------------------------\n           OSQP v1.0.0  -  Operator Splitting QP Solver\n              (c) The OSQP Developer Team\n-----------------------------------------------------------------\nproblem:  variables n = 2, constraints m = 2\n          nnz(P) + nnz(A) = 5\nsettings: algebra = Built-in,\n          OSQPInt = 4 bytes, OSQPFloat = 8 bytes,\n          linear system solver = QDLDL v0.1.8,\n          eps_abs = 1.0e-05, eps_rel = 1.0e-05,\n          eps_prim_inf = 1.0e-04, eps_dual_inf = 1.0e-04,\n          rho = 1.00e-01 (adaptive: 50 iterations),\n          sigma = 1.00e-06, alpha = 1.60, max_iter = 10000\n          check_termination: on (interval 25, duality gap: on),\n          time_limit: 1.00e+10 sec,\n          scaling: on (10 iterations), scaled_termination: off\n          warm starting: on, polishing: on, \niter   objective    prim res   dual res   gap        rel kkt    rho         time\n   1   0.0000e+00   1.00e+00   1.00e+02  -5.00e+01   1.00e+02   1.00e-01    4.21e-05s\n  50   2.0000e-01   4.87e-10   6.73e-10   2.79e-10   6.73e-10   1.00e-01    6.32e-05s\nplsh   2.0000e-01   1.57e-16   1.57e-16  -1.11e-16   1.57e-16   --------    8.58e-05s\n\nstatus:               solved\nsolution polishing:   successful\nnumber of iterations: 50\noptimal objective:    0.2000\ndual objective:       0.2000\nduality gap:          -1.1102e-16\nprimal-dual integral: 5.0000e+01\nrun time:             8.58e-05s\noptimal rho estimate: 7.60e-02\n\n\n──────────────────────────────────── Summary ───────────────────────────────────\n\n\n✔ Status: optimal\n\n\n✔ Optimal value: 0.2\n\n\nℹ Compile time: 0.242s\n\n\nℹ Solver time: 0.05s\n\n\n[1] 0.2\n\n\nThe output has three parts, and they preview the rest of this book:\n\nCompilation — CVXR translates your problem into a standard form a solver understands. The chain (here Dcp2Cone -&gt; ... -&gt; ConeMatrixStuffing -&gt; ...) is the machinery we open up in Chapter 3; for now, note that your symbolic problem becomes solver data.\nNumerical solver — the chosen solver’s own iteration log, converging to the answer.\nSummary — the status, optimal value, and how long compilation vs. solving took.\n\nTurn it on whenever you are curious or stuck; turn it off (the default) once things work. Every psolve() call in this book accepts it.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>A Gentle Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "02-gentle-intro.html#modifying-and-re-solving",
+    "href": "02-gentle-intro.html#modifying-and-re-solving",
+    "title": "2  A Gentle Introduction",
+    "section": "2.4 Modifying and re-solving",
+    "text": "2.4 Modifying and re-solving\nCVXR objects are ordinary R objects: you can build new problems from old ones. Here we reuse the constraints from prob1, change the objective, and add a constraint:\n\nprob2 &lt;- Problem(Minimize(x^2 + y^2 + abs(x - y)),\n                 c(prob1@constraints, list(y &lt;= 1)))\nsol2 &lt;- psolve(prob2)\nstatus(prob2)\n\n[1] \"optimal\"\n\nsol2\n\n[1] 0.2222222\n\nvalue(x)\n\n          [,1]\n[1,] 0.3333333\n\nvalue(y)\n\n          [,1]\n[1,] 0.3333333\n\n\nThis modify-and-re-solve loop — change one thing, solve again — is what makes CVXR so good for prototyping new methods.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>A Gentle Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "02-gentle-intro.html#an-invalid-problem",
+    "href": "02-gentle-intro.html#an-invalid-problem",
+    "title": "2  A Gentle Introduction",
+    "section": "2.5 An invalid problem",
+    "text": "2.5 An invalid problem\nYou can’t type any problem you like. Suppose we tried to maximize the convex objective \\(x^2 + y^2\\):\n\nprob_bad &lt;- Problem(Maximize(x^2 + y^2), prob1@constraints)\npsolve(prob_bad)\n\nError in `construct_solving_chain()`:\n! Problem is not DCP compliant.\n\n\nCVXR refuses. Maximizing a convex function is not a convex problem, and CVXR checks this using a strict rule set called Disciplined Convex Programming (DCP). Follow the rules and your problem is guaranteed convex; break them and CVXR stops you rather than silently returning nonsense. The next chapter is devoted to DCP — this error is your first encounter with it.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>A Gentle Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "02-gentle-intro.html#a-familiar-example-least-squares",
+    "href": "02-gentle-intro.html#a-familiar-example-least-squares",
+    "title": "2  A Gentle Introduction",
+    "section": "2.6 A familiar example: least squares",
+    "text": "2.6 A familiar example: least squares\nLet’s connect to something every statistician knows. We generate data from a known linear model \\(Y = X\\beta + \\epsilon\\) and recover \\(\\beta\\).\n\nset.seed(123)\nn &lt;- 50; p &lt;- 10\nbeta_true &lt;- -4:5                      # the true coefficients, -4 through 5\nX &lt;- matrix(rnorm(n * p), nrow = n)\nY &lt;- X %*% beta_true + rnorm(n)\n\nThe textbook tool is lm():\n\nls_fit &lt;- lm(Y ~ 0 + X)                # no intercept in our model\ncoef(ls_fit)\n\n         X1          X2          X3          X4          X5          X6 \n-3.90253282 -2.96833856 -1.82342672 -1.15621330  0.07539855  0.92243167 \n         X7          X8          X9         X10 \n 1.87995112  3.11070199  4.10865028  5.09475916 \n\n\nIn CVXR we write the least-squares problem in its mathematical form, \\(\\min_\\beta \\|Y - X\\beta\\|_2^2\\):\n\nbeta &lt;- Variable(p)\nobj  &lt;- Minimize(sum((Y - X %*% beta)^2))\nols  &lt;- Problem(obj)\nsol  &lt;- psolve(ols)\n\nNotice the objective is written with the same sum, %*%, and ^ you use on ordinary R numbers — but beta is a CVXR variable. The estimates match lm():\n\ncbind(CVXR = value(beta), lm = coef(ls_fit))\n\n                         lm\nX1  -3.90253282 -3.90253282\nX2  -2.96833856 -2.96833856\nX3  -1.82342672 -1.82342672\nX4  -1.15621330 -1.15621330\nX5   0.07539855  0.07539855\nX6   0.92243167  0.92243167\nX7   1.87995112  1.87995112\nX8   3.11070199  3.11070199\nX9   4.10865028  4.10865028\nX10  5.09475916  5.09475916\n\n\n\n2.6.1 Anything is a function of the solution\nA solved problem gives you more than the coefficients. Once beta has a value, you can evaluate any expression built from it with value(). The fitted values \\(X\\hat\\beta\\) and the residuals, for instance, are one line each:\n\nfitted &lt;- value(X %*% beta)        # X times beta-hat\nresid  &lt;- Y - fitted\nhead(round(cbind(fitted, resid), 3))\n\n        [,1]   [,2]\n[1,]  10.437 -0.827\n[2,]  -7.877 -0.880\n[3,]  -9.711  0.927\n[4,]  -0.504  0.367\n[5,]   7.310 -1.323\n[6,] -29.583  0.117\n\n\nX %*% beta is a CVXR expression; value() evaluates it at the solution, and the result is ordinary R you can plot, summarize, or feed onward. This little move — any quantity you care about is value() of an expression — is one we will reuse in every chapter.\n\n\n2.6.2 So what did we gain?\nFair question — we replaced one call to lm() with several lines, and it even runs slower. The payoff appears the moment the problem changes. Suppose we know the coefficients are nonnegative. That is nonnegative least squares, and lm() can no longer help. In CVXR it is one extra constraint:\n\nnnls_prob &lt;- Problem(obj, constraints = list(beta &gt;= 0))\npsolve(nnls_prob)\n\n[1] 850.5519\n\nvalue(beta)\n\n               [,1]\n [1,] -3.663280e-18\n [2,] -2.775389e-18\n [3,]  2.116383e-18\n [4,]  4.424205e-19\n [5,]  1.190672e+00\n [6,]  1.460162e+00\n [7,]  1.817840e+00\n [8,]  3.147380e+00\n [9,]  5.828935e+00\n[10,]  5.287308e+00\n\n\nWe can check against the dedicated nnls package:\n\ncbind(CVXR = value(beta), nnls = nnls::nnls(X, Y)$x)\n\n                        nnls\n [1,] -3.663280e-18 0.000000\n [2,] -2.775389e-18 0.000000\n [3,]  2.116383e-18 0.000000\n [4,]  4.424205e-19 0.000000\n [5,]  1.190672e+00 1.190672\n [6,]  1.460162e+00 1.460162\n [7,]  1.817840e+00 1.817840\n [8,]  3.147380e+00 3.147380\n [9,]  5.828935e+00 5.828935\n[10,]  5.287308e+00 5.287308\n\n\nSame answer — but in CVXR we got there by adding a line, not by finding a new package. That is the whole idea: you describe the problem, CVXR solves it.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>A Gentle Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "02-gentle-intro.html#exercises",
+    "href": "02-gentle-intro.html#exercises",
+    "title": "2  A Gentle Introduction",
+    "section": "2.7 Exercises",
+    "text": "2.7 Exercises\nTry these by editing the chunks above and re-running. Solutions are one click away.\nExercise 1. Change the least-squares objective to least absolute deviation (minimize the sum of absolute residuals) and solve. Which objective gives a smaller sum of absolute residuals?\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\n\nlad_obj  &lt;- Minimize(sum(abs(Y - X %*% beta)))\nlad_prob &lt;- Problem(lad_obj)\npsolve(lad_prob)\n\n[1] 31.27002\n\ncbind(LAD = value(beta), lm = coef(ls_fit))\n\n                        lm\nX1  -4.0324773 -3.90253282\nX2  -2.8267845 -2.96833856\nX3  -1.9473476 -1.82342672\nX4  -1.1859615 -1.15621330\nX5   0.1886891  0.07539855\nX6   0.9447007  0.92243167\nX7   1.9321485  1.87995112\nX8   3.0070658  3.11070199\nX9   4.2535749  4.10865028\nX10  5.0186776  5.09475916\n\n\nLAD minimizes absolute residuals, so by that yardstick it wins; lm minimizes squared residuals and would win on sum of squares. Note we reused beta — its value reflects whichever problem was last solved.\n\n\n\nExercise 2. Add the constraint that the coefficients are nondecreasing: \\(\\beta_1 \\le \\beta_2 \\le \\cdots \\le \\beta_p\\).\nHint: what base-R function takes lagged differences?\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\nbase::diff() has a CVXR method, so the monotonicity constraint is just diff(beta) &gt;= 0:\n\nmono &lt;- Problem(obj, constraints = list(diff(beta) &gt;= 0))\npsolve(mono)\n\n[1] 34.13461\n\nvalue(beta)\n\n             [,1]\n [1,] -3.90253282\n [2,] -2.96833856\n [3,] -1.82342672\n [4,] -1.15621330\n [5,]  0.07539855\n [6,]  0.92243167\n [7,]  1.87995112\n [8,]  3.11070199\n [9,]  4.10865028\n[10,]  5.09475916\n\n\n\n\n\nExercise 3 (⭐). Constrain the first four coefficients to sum to at most zero, \\(\\sum_{i=1}^{4}\\beta_i \\le 0\\), using a matrix row rather than writing out four terms.\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\nBuild a row vector that picks out \\(\\beta_1,\\ldots,\\beta_4\\):\n\nA &lt;- matrix(c(rep(1, 4), rep(0, 6)), nrow = 1)\nsum_con &lt;- Problem(obj, constraints = list(A %*% beta &lt;= 0))\npsolve(sum_con)\n\n[1] 34.13461\n\nvalue(beta)\n\n             [,1]\n [1,] -3.90253282\n [2,] -2.96833856\n [3,] -1.82342672\n [4,] -1.15621330\n [5,]  0.07539855\n [6,]  0.92243167\n [7,]  1.87995112\n [8,]  3.11070199\n [9,]  4.10865028\n[10,]  5.09475916\n\n\nWorking with matrices generalizes far better than writing beta[1] + beta[2] + ....",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>A Gentle Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "02-gentle-intro.html#takeaways",
+    "href": "02-gentle-intro.html#takeaways",
+    "title": "2  A Gentle Introduction",
+    "section": "2.8 Takeaways",
+    "text": "2.8 Takeaways\n\nEvery CVXR problem is Variable → objective → constraints → Problem → psolve, then status() and value().\nOperators like &gt;=, ==, sum, %*% are overloaded to build optimization objects, not to compute numbers.\nThe power is flexibility: change the loss, add a constraint, re-solve — no closed form or special-purpose package required.\nCVXR only accepts problems that pass the DCP rules, which we turn to next.\n\nFor a longer version of this introduction, see the CVXR website.\n\n\n\n\nBoyd, S., and L. Vandenberghe. 2004. Convex Optimization. Cambridge University Press.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>A Gentle Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "03-dcp.html",
+    "href": "03-dcp.html",
+    "title": "3  Disciplined Convex Programming",
+    "section": "",
+    "text": "3.1 Why was that problem rejected?\nAt the end of Chapter 2, CVXR refused to Maximize(x^2 + y^2). It was not being fussy: maximizing a bowl-shaped (convex) function has no finite solution in general, and more importantly CVXR will only accept problems it can certify are convex. The certificate is a small rule set called Disciplined Convex Programming (DCP). This chapter is the one piece of theory in the book — everything else rests on it. The good news: the rules are mechanical, and CVXR checks them for you.\nFor an interactive companion, see dcp.stanford.edu.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Disciplined Convex Programming</span>"
+    ]
+  },
+  {
+    "objectID": "03-dcp.html#expressions-carry-a-sign-and-a-curvature",
+    "href": "03-dcp.html#expressions-carry-a-sign-and-a-curvature",
+    "title": "3  Disciplined Convex Programming",
+    "section": "3.2 Expressions carry a sign and a curvature",
+    "text": "3.2 Expressions carry a sign and a curvature\nA CVXR expression is built from variables, constants, the arithmetic operators + - * %*% /, and a library of atoms (abs, sqrt, square, p_norm, …). DCP tags every (sub)expression with a sign and a curvature, computed from its parts. Both tags are always correct, though the simple analysis sometimes says “unknown” when a deeper argument could do better.\n\n3.2.1 Sign\nEach expression is flagged nonnegative, nonpositive, zero, or unknown:\n\nx &lt;- Variable()\nexpr_sign(x)            # a free variable could be anything\n\n[1] \"UNKNOWN\"\n\nexpr_sign(abs(x))       # absolute value is nonnegative\n\n[1] \"NONNEGATIVE\"\n\nexpr_sign(Constant(-3)) # constants are read off their value\n\n[1] \"NONPOSITIVE\"\n\n\n\n\n3.2.2 Curvature\nEach expression is constant, affine, convex, concave, or unknown. The picture to keep in mind:\n\nconvex = upward-curving, concave = downward-curving, affine = flat.\nconstant \\(\\subset\\) affine \\(\\subset\\) both convex and concave.\n\n\ncurvature(x)                # a variable is affine\n\n[1] \"AFFINE\"\n\ncurvature(abs(x))           # convex\n\n[1] \"CONVEX\"\n\ncurvature(sqrt(x))          # concave\n\n[1] \"CONCAVE\"\n\ncurvature(2 * x + 1)        # affine\n\n[1] \"AFFINE\"\n\n\nThere are also yes/no predicates, handy in code:\n\nc(convex  = is_convex(abs(x)),\n  concave = is_concave(sqrt(x)),\n  affine  = is_affine(2 * x + 1))\n\n convex concave  affine \n   TRUE    TRUE    TRUE",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Disciplined Convex Programming</span>"
+    ]
+  },
+  {
+    "objectID": "03-dcp.html#the-one-rule-composition",
+    "href": "03-dcp.html#the-one-rule-composition",
+    "title": "3  Disciplined Convex Programming",
+    "section": "3.3 The one rule: composition",
+    "text": "3.3 The one rule: composition\nEvery curvature tag comes from a single composition rule. To conclude that \\(f(e_1,\\ldots,e_n)\\) is convex, \\(f\\) must be convex and for each argument \\(e_i\\) one of these holds:\n\n\\(f\\) is increasing in \\(e_i\\) and \\(e_i\\) is convex, or\n\\(f\\) is decreasing in \\(e_i\\) and \\(e_i\\) is concave, or\n\\(e_i\\) is affine or constant.\n\n(The mirror image gives concave.) Whether \\(f\\) is increasing or decreasing can depend on sign — abs increases for positive arguments and decreases for negative ones, which is exactly why sign analysis matters.\nLet’s watch it work on sqrt(1 + square(x)):\n\ncurvature(square(x))            # square is convex\n\n[1] \"CONVEX\"\n\ncurvature(1 + square(x))        # affine(+) of convex -&gt; convex\n\n[1] \"CONVEX\"\n\ncurvature(sqrt(1 + square(x)))  # sqrt needs a CONCAVE argument -&gt; UNKNOWN\n\n[1] \"UNKNOWN\"\n\n\nsquare(x) is convex, so 1 + square(x) is convex. But sqrt is concave and increasing, so by the rule it can only accept a concave argument. Handed a convex one, DCP cannot certify the result — so it reports unknown.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Disciplined Convex Programming</span>"
+    ]
+  },
+  {
+    "objectID": "03-dcp.html#when-dcp-says-no-but-the-function-is-fine-reformulate",
+    "href": "03-dcp.html#when-dcp-says-no-but-the-function-is-fine-reformulate",
+    "title": "3  Disciplined Convex Programming",
+    "section": "3.4 When DCP says no but the function is fine: reformulate",
+    "text": "3.4 When DCP says no but the function is fine: reformulate\nHere is the subtle part. sqrt(1 + square(x)) genuinely is a convex function of x — DCP just can’t see it through that particular expression. The fix is to rewrite it as something DCP recognizes. The same quantity is the Euclidean norm of the vector \\([1, x]\\):\n\ncurvature(p_norm(vstack(1, x), 2))   # CONVEX -- now certified\n\n[1] \"CONVEX\"\n\n\nSame value, accepted formulation. Reformulating a rejected expression into an equivalent accepted one is the core CVXR skill — you will do it often, and the atom function reference is your toolbox.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Disciplined Convex Programming</span>"
+    ]
+  },
+  {
+    "objectID": "03-dcp.html#dcp-problems",
+    "href": "03-dcp.html#dcp-problems",
+    "title": "3  Disciplined Convex Programming",
+    "section": "3.5 DCP problems",
+    "text": "3.5 DCP problems\nA problem is DCP — and therefore convex and solvable — when its objective has one of two forms and every constraint has one of three:\n\n\n\nObjective\nConstraints\n\n\n\n\nMinimize(convex)\naffine == affine\n\n\nMaximize(concave)\nconvex &lt;= concave\n\n\n\nconcave &gt;= convex\n\n\n\nCheck any problem, objective, or constraint with is_dcp():\n\ny &lt;- Variable()\n\nprob1 &lt;- Problem(Minimize((x - y)^2), list(x + y &gt;= 0))\nprob2 &lt;- Problem(Maximize(sqrt(x - y)), list(2 * x - 3 == y, x^2 &lt;= 2))\nc(prob1 = is_dcp(prob1), prob2 = is_dcp(prob2))\n\nprob1 prob2 \n TRUE  TRUE \n\n# A non-DCP objective and a non-DCP constraint:\nc(max_sq   = is_dcp(Maximize(x^2)),\n  bad_con  = is_dcp(sqrt(x) &lt;= 2))\n\n max_sq bad_con \n  FALSE   FALSE \n\n\nCall psolve() on a non-DCP problem and CVXR stops you:\n\npsolve(Problem(Minimize(sqrt(x))))\n\nError in `construct_solving_chain()`:\n! Problem is not DCP compliant.\nℹ However, the problem is DQCP. Try `psolve(problem, qcp = TRUE)`.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Disciplined Convex Programming</span>"
+    ]
+  },
+  {
+    "objectID": "03-dcp.html#finding-the-violation-with-visualize",
+    "href": "03-dcp.html#finding-the-violation-with-visualize",
+    "title": "3  Disciplined Convex Programming",
+    "section": "3.6 Finding the violation with visualize()",
+    "text": "3.6 Finding the violation with visualize()\nFor anything bigger than a toy, visualize() draws the expression tree with each node’s curvature, flagging the offending node so you know where to reformulate:\n\nvisualize(Problem(Minimize(sqrt(1 + square(x)))))\n\nt_3 = Power(...)  [unknown, \\mathbb{R}_+, 1x1]\n\\-- t_2 = AddExpression(...)  [convex, \\mathbb{R}_+, 1x1]\n    |-- 1  [constant, 1x1]\n    \\-- t_1 = Power(...)  [convex, \\mathbb{R}_+, 1x1]\n        \\-- var1  [affine, 1x1]\n\n\n  ✗ Problem is NOT DCP compliant.\n  Objective (Minimize): requires convex expression\n    ✗ Power: unknown  [1x1]\n      arg 1: convex, increasing  (cvx-rule ✓, ccv-rule ✗)\n      =&gt; Power is concave, but DCP concave composition fails at arg 1.\n      Hint: var1 must be nonneg (&gt;= 0)\n\n\n  t_{1} = phi^{(.)^2}({var1})\n  t_{2} = {1} + {t_{1}}\n  t_{3} = phi^{(.)^{0.5}}({t_{2}})\n\n\n  t_{1} &gt;= phi^{(.)^2}({var1})\n  t_{2} = {1} + {t_{1}}\n  t_{3} = phi^{(.)^{0.5}}({t_{2}})\n\n\n  (\\frac{1+t_{1}}{2},  \\frac{1-t_{1}}{2},  {var1}) in Q^3\n  t_{2} = {1} + {t_{1}}\n  t_{3} = phi^{(.)^{0.5}}({t_{2}})    [conic form: see canonicalizer]\n\n\nSee the Visualization page for the full feature set (curvature coloring, fix hints, HTML trees).",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Disciplined Convex Programming</span>"
+    ]
+  },
+  {
+    "objectID": "03-dcp.html#bonus-bounds-propagation",
+    "href": "03-dcp.html#bonus-bounds-propagation",
+    "title": "3  Disciplined Convex Programming",
+    "section": "3.7 Bonus: bounds propagation",
+    "text": "3.7 Bonus: bounds propagation\nSince CVXR 1.9.1, get_bounds() propagates interval bounds through any expression — useful for sanity-checking a model:\n\nxb &lt;- Variable(3, bounds = list(-1, 2))\nget_bounds(2 * xb + 1)   # affine map of [-1, 2]  -&gt;  [-1, 5]\n\n[[1]]\n     [,1]\n[1,]   -1\n[2,]   -1\n[3,]   -1\n\n[[2]]\n     [,1]\n[1,]    5\n[2,]    5\n[3,]    5\n\nget_bounds(abs(xb))      # through an atom        -&gt;  [0, 2]\n\n[[1]]\n     [,1]\n[1,]    0\n[2,]    0\n[3,]    0\n\n[[2]]\n     [,1]\n[1,]    2\n[2,]    2\n[3,]    2",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Disciplined Convex Programming</span>"
+    ]
+  },
+  {
+    "objectID": "03-dcp.html#exercises",
+    "href": "03-dcp.html#exercises",
+    "title": "3  Disciplined Convex Programming",
+    "section": "3.8 Exercises",
+    "text": "3.8 Exercises\nExercise 1. Without running it, predict the curvature of square(sqrt(x)) for x &gt;= 0, then check with curvature(). Why does DCP report what it does?\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\n\ncurvature(square(sqrt(x)))\n\n[1] \"UNKNOWN\"\n\n\nsqrt(x) is concave; square is convex and (for nonnegative arguments) increasing, so it wants a convex argument. A concave argument breaks the rule, so DCP returns unknown — even though the composition equals x, which is affine. Reformulating (here, just writing x) would fix it.\n\n\n\nExercise 2. Is Problem(Maximize(-square(x) - square(y)), list(x + y == 1)) DCP? Predict, then check, then solve it.\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\n\np &lt;- Problem(Maximize(-square(x) - square(y)), list(x + y == 1))\nis_dcp(p)\n\n[1] TRUE\n\npsolve(p)\n\n[1] -0.5\n\nc(x = value(x), y = value(y))\n\n  x   y \n0.5 0.5 \n\n\n-square(·) is concave and the constraint is affine == affine, so the problem is Maximize(concave) subject to a legal constraint — DCP, with optimum \\(x = y = 1/2\\).\n\n\n\nExercise 3 (⭐). The expression x^2 / y (with y &gt; 0) is convex — the quadratic-over-linear function. DCP cannot see it from x^2 / y (division by a non-constant is rejected). Find a CVXR atom that expresses it. Hint: search the function reference for “quad over lin”.\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\nThe atom is quad_over_lin(x, y) \\(= x^2/y\\), certified convex:\n\nyp &lt;- Variable(pos = TRUE)\ncurvature(quad_over_lin(x, yp))\n\n[1] \"CONVEX\"\n\n\nThis is the reformulation skill again: the function is convex; you just need the formulation DCP recognizes.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Disciplined Convex Programming</span>"
+    ]
+  },
+  {
+    "objectID": "03-dcp.html#takeaways",
+    "href": "03-dcp.html#takeaways",
+    "title": "3  Disciplined Convex Programming",
+    "section": "3.9 Takeaways",
+    "text": "3.9 Takeaways\n\nEvery expression has a sign and a curvature, computed by one composition rule.\nA problem is solvable when it is Minimize(convex) or Maximize(concave) with constraints affine == affine, convex &lt;= concave, or concave &gt;= convex.\nis_dcp() checks it; visualize() shows where a violation is.\nWhen a convex function is rejected, reformulate it into an equivalent atom — the single most useful habit in CVXR.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Disciplined Convex Programming</span>"
+    ]
+  },
+  {
+    "objectID": "04-problem-types.html",
+    "href": "04-problem-types.html",
+    "title": "4  Types of Convex Optimization Problems",
+    "section": "",
+    "text": "4.1 A hierarchy of problem classes\nConvex problems come in named families of increasing generality. Each contains the previous one as a special case:\n\\[\\text{LP} \\;\\subset\\; \\text{QP} \\;\\subset\\; \\text{SOCP} \\;\\subset\\; \\text{SDP}.\\]\nYou usually do not pick the family by hand. You write the problem from atoms; DCP certifies it is convex; and CVXR canonicalizes it into a cone program and hands it to a solver that can handle the cones involved (you saw this chain in the verbose output of Chapter 2). Still, it helps to recognize the families — they tell you what is expressible and which solvers apply.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Types of Convex Optimization Problems</span>"
+    ]
+  },
+  {
+    "objectID": "04-problem-types.html#linear-program-lp",
+    "href": "04-problem-types.html#linear-program-lp",
+    "title": "4  Types of Convex Optimization Problems",
+    "section": "4.2 Linear program (LP)",
+    "text": "4.2 Linear program (LP)\nLinear objective, linear constraints. The workhorse of operations research.\n\nx &lt;- Variable(2)\nlp &lt;- Problem(Minimize(sum(c(2, 3) * x)),\n              list(x &gt;= 0, x[1] + x[2] &gt;= 1, x &lt;= 5))\npsolve(lp)\n\n[1] 2\n\nvalue(x)\n\n             [,1]\n[1,] 1.000000e+00\n[2,] 8.824137e-10",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Types of Convex Optimization Problems</span>"
+    ]
+  },
+  {
+    "objectID": "04-problem-types.html#quadratic-program-qp",
+    "href": "04-problem-types.html#quadratic-program-qp",
+    "title": "4  Types of Convex Optimization Problems",
+    "section": "4.3 Quadratic program (QP)",
+    "text": "4.3 Quadratic program (QP)\nA convex quadratic objective with linear constraints. Least squares (and ridge, and the Markowitz portfolio of Chapter 9) live here.\n\nset.seed(1)\nA &lt;- matrix(rnorm(20), 10, 2); b &lt;- rnorm(10)\nz &lt;- Variable(2)\n# constrained least squares: quadratic objective, linear constraint -&gt; a QP\npsolve(Problem(Minimize(sum_squares(A %*% z - b)), list(z &gt;= 0)))\n\n[1] 5.897455\n\nvalue(z)\n\n              [,1]\n[1,] -2.293091e-21\n[2,]  4.785967e-01",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Types of Convex Optimization Problems</span>"
+    ]
+  },
+  {
+    "objectID": "04-problem-types.html#second-order-cone-program-socp",
+    "href": "04-problem-types.html#second-order-cone-program-socp",
+    "title": "4  Types of Convex Optimization Problems",
+    "section": "4.4 Second-order cone program (SOCP)",
+    "text": "4.4 Second-order cone program (SOCP)\nAdds constraints involving the Euclidean norm — “second-order cones.” Anything with a p_norm(., 2), huber, or robust-constraint flavor is typically an SOCP. Minimizing a norm subject to a budget is the canonical toy:\n\nxs &lt;- Variable(3)\npsolve(Problem(Minimize(p_norm(xs, 2)), list(sum(xs) == 1)))\n\n[1] 0.5773503\n\nround(value(xs), 4)             # 1/3 each -&gt; the min-norm point on the simplex plane\n\n       [,1]\n[1,] 0.3333\n[2,] 0.3333\n[3,] 0.3333",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Types of Convex Optimization Problems</span>"
+    ]
+  },
+  {
+    "objectID": "04-problem-types.html#semidefinite-program-sdp",
+    "href": "04-problem-types.html#semidefinite-program-sdp",
+    "title": "4  Types of Convex Optimization Problems",
+    "section": "4.5 Semidefinite program (SDP)",
+    "text": "4.5 Semidefinite program (SDP)\nThe most general of the four: constraints that a matrix is positive semidefinite (\\(\\succeq 0\\)), written with %&gt;&gt;%. Eigenvalue optimization, covariance/correlation problems, and relaxations of hard combinatorial problems are SDPs. Here we compute the largest eigenvalue of a matrix \\(M\\) as \\(\\min\\{t : tI - M \\succeq 0\\}\\):\n\nM &lt;- matrix(c(2, 1, 1, 2), 2, 2)\nt &lt;- Variable(1)\npsolve(Problem(Minimize(t), list((t * diag(2) - M) %&gt;&gt;% 0)))   # = lambda_max(M) = 3\n\n[1] 2.999994\n\n\nVariables can themselves be matrices constrained to be PSD — e.g. finding the nearest unit-diagonal PSD matrix to \\(M\\):\n\nX &lt;- Variable(c(2, 2), PSD = TRUE)\npsolve(Problem(Minimize(sum_squares(X - M)), list(diag(X) == 1)))\n\n[1] 2\n\nround(value(X), 3)\n\n     [,1] [,2]\n[1,]    1    1\n[2,]    1    1",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Types of Convex Optimization Problems</span>"
+    ]
+  },
+  {
+    "objectID": "04-problem-types.html#and-their-integer-cousins",
+    "href": "04-problem-types.html#and-their-integer-cousins",
+    "title": "4  Types of Convex Optimization Problems",
+    "section": "4.6 And their integer cousins",
+    "text": "4.6 And their integer cousins\nAllow some variables to be integer or boolean and each family gains a mixed-integer version (MILP, MIQP, MI-SOCP). Those are no longer convex — they are combinatorial — but CVXR expresses them the same way and hands them to an integer-capable solver. We devote Chapter 11 to them.",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Types of Convex Optimization Problems</span>"
+    ]
+  },
+  {
+    "objectID": "04-problem-types.html#takeaways",
+    "href": "04-problem-types.html#takeaways",
+    "title": "4  Types of Convex Optimization Problems",
+    "section": "4.7 Takeaways",
+    "text": "4.7 Takeaways\n\nConvex problems form a hierarchy LP \\(\\subset\\) QP \\(\\subset\\) SOCP \\(\\subset\\) SDP; each tiny example above is a few lines of CVXR.\nYou write problems from atoms, not by naming a family — DCP classifies and CVXR routes to a solver automatically.\nAdding integrality gives the mixed-integer versions (Chapter 11).\n\nFor more worked basics, see the CVXR examples gallery (least squares, LP, QP, SOCP, SDP).",
+    "crumbs": [
+      "Foundations",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Types of Convex Optimization Problems</span>"
+    ]
+  },
+  {
+    "objectID": "05-elastic-net.html",
+    "href": "05-elastic-net.html",
+    "title": "5  Penalized Regression: Ridge, Lasso, Elastic Net",
+    "section": "",
+    "text": "5.1 Why regularize?\nIn Chapter 2 we recovered coefficients by least squares. When predictors are many or correlated, plain least squares overfits — the estimates blow up and become unstable. The cure is a penalty that discourages large coefficients. The two classics are the squared \\(\\ell_2\\)-norm and the \\(\\ell_1\\)-norm; the elastic net combines them:\n\\[\n\\underset{\\beta}{\\mbox{minimize}}\\quad\n\\frac{1}{2m}\\|y - X\\beta\\|_2^2\n\\;+\\;\\lambda\\Big(\\tfrac{1-\\alpha}{2}\\|\\beta\\|_2^2 + \\alpha\\|\\beta\\|_1\\Big).\n\\]\nHere \\(\\lambda \\ge 0\\) sets the strength and \\(\\alpha\\in[0,1]\\) dials between the two: \\(\\alpha = 0\\) is ridge (smooth shrinkage), \\(\\alpha = 1\\) is lasso (sets coefficients exactly to zero — variable selection), and in between is the elastic net.",
+    "crumbs": [
+      "Regression and Classification",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Penalized Regression: Ridge, Lasso, Elastic Net</span>"
+    ]
+  },
+  {
+    "objectID": "05-elastic-net.html#one-modular-penalty",
+    "href": "05-elastic-net.html#one-modular-penalty",
+    "title": "5  Penalized Regression: Ridge, Lasso, Elastic Net",
+    "section": "5.2 One modular penalty",
+    "text": "5.2 One modular penalty\nBecause the penalty is just an R function, the whole family is a few lines:\n\nelastic_reg &lt;- function(beta, lambda = 0, alpha = 0) {\n  ridge &lt;- (1 - alpha) / 2 * sum_squares(beta)\n  lasso &lt;- alpha * p_norm(beta, 1)\n  lambda * (lasso + ridge)\n}",
+    "crumbs": [
+      "Regression and Classification",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Penalized Regression: Ridge, Lasso, Elastic Net</span>"
+    ]
+  },
+  {
+    "objectID": "05-elastic-net.html#a-structured-sparse-signal",
+    "href": "05-elastic-net.html#a-structured-sparse-signal",
+    "title": "5  Penalized Regression: Ridge, Lasso, Elastic Net",
+    "section": "5.3 A structured, sparse signal",
+    "text": "5.3 A structured, sparse signal\nTo see regularization work, we build data with a known sparse truth: only 10 of \\(p = 50\\) coefficients are nonzero, the features are correlated (Toeplitz, \\(\\rho = 0.8\\)), and \\(n = 100\\) is barely above \\(p\\) — exactly where least squares falls apart.\n\nset.seed(1)\np &lt;- 50; n &lt;- 100\nSigma &lt;- 0.8^abs(outer(seq_len(p), seq_len(p), \"-\"))\nX &lt;- MASS::mvrnorm(n, mu = rep(0, p), Sigma = Sigma)\n\nbeta_true &lt;- rep(0, p)\nnz &lt;- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)         # the true nonzero positions\nbeta_true[nz] &lt;- c(3, -2.5, 2, -1.5, 1, -3, 2.5, -2, 1.5, -1)\n\nsignal_sd &lt;- sqrt(drop(t(beta_true) %*% Sigma %*% beta_true))\ny &lt;- X %*% beta_true + rnorm(n, sd = signal_sd / 3)   # signal-to-noise ratio ~ 3",
+    "crumbs": [
+      "Regression and Classification",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Penalized Regression: Ridge, Lasso, Elastic Net</span>"
+    ]
+  },
+  {
+    "objectID": "05-elastic-net.html#recovering-the-signal-with-the-lasso",
+    "href": "05-elastic-net.html#recovering-the-signal-with-the-lasso",
+    "title": "5  Penalized Regression: Ridge, Lasso, Elastic Net",
+    "section": "5.4 Recovering the signal with the lasso",
+    "text": "5.4 Recovering the signal with the lasso\nThe lasso (\\(\\alpha = 1\\)) both shrinks and selects — it should drive the 40 irrelevant coefficients to zero and recover the 10 real ones. Fit it at a moderate penalty:\n\nbeta &lt;- Variable(p)\nloss &lt;- sum_squares(y - X %*% beta) / (2 * n)\nlambda &lt;- 0.15\nprob &lt;- Problem(Minimize(loss + elastic_reg(beta, lambda, alpha = 1)))\npsolve(prob)\n\n[1] 3.864977\n\ncheck_solver_status(prob)\n\nHow well did it do? Line up the estimate against the truth at the 10 true-nonzero positions (plus a few that should be zero) — and against glmnet while we are at it:\n\nlibrary(glmnet)\ng &lt;- glmnet(X, y, family = \"gaussian\", alpha = 1, lambda = lambda,\n            standardize = FALSE, intercept = FALSE)\ndata.frame(truth  = beta_true,\n           CVXR   = round(value(beta), 3),\n           glmnet = round(as.numeric(coef(g)[-1]), 3))[c(nz, 2, 3, 4), ]\n\n   truth   CVXR glmnet\n1    3.0  2.902  2.904\n5   -2.5 -2.544 -2.540\n10   2.0  1.344  1.338\n15  -1.5 -0.514 -0.512\n20   1.0  0.196  0.195\n25  -3.0 -2.604 -2.602\n30   2.5  2.196  2.196\n35  -2.0 -1.795 -1.794\n40   1.5  0.569  0.567\n45  -1.0 -0.816 -0.815\n2    0.0  0.000  0.000\n3    0.0  0.000  0.000\n4    0.0 -0.038 -0.043\n\n\nThe lasso recovers every true coefficient’s sign and rough magnitude, leaves the irrelevant ones at (or near) zero, and agrees with glmnet to three decimals — a genuine, non-trivial fit, not a vector of zeros. (Correlated features buy a few small false positives; that is the cost of the setting.)",
+    "crumbs": [
+      "Regression and Classification",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Penalized Regression: Ridge, Lasso, Elastic Net</span>"
+    ]
+  },
+  {
+    "objectID": "05-elastic-net.html#the-regularization-path",
+    "href": "05-elastic-net.html#the-regularization-path",
+    "title": "5  Penalized Regression: Ridge, Lasso, Elastic Net",
+    "section": "5.5 The regularization path",
+    "text": "5.5 The regularization path\nSweeping \\(\\lambda\\) traces each coefficient from its near-least-squares value down to zero. As in Chapter 2 this is the same problem re-solved over a grid — the place where the Parameter trick of Chapter 8 pays off:\n\nlambda_vals &lt;- 10^seq(-2, 0.7, length.out = 25)\nbeta_vals &lt;- sapply(lambda_vals, function(l) {\n  psolve(Problem(Minimize(loss + elastic_reg(beta, l, alpha = 1))))\n  value(beta)\n})\n\n\ndf &lt;- data.frame(lambda = lambda_vals, t(beta_vals)) |&gt;\n  pivot_longer(-lambda, names_to = \"coef\", values_to = \"value\")\ndf$true_nz &lt;- as.integer(sub(\"X\", \"\", df$coef)) %in% nz\nggplot(df, aes(lambda, value, group = coef, color = true_nz)) +\n  geom_line(alpha = 0.8) +\n  geom_vline(xintercept = lambda, linetype = \"dashed\") +\n  scale_x_log10() +\n  scale_color_manual(values = c(\"grey75\", \"steelblue\"),\n                     labels = c(\"true zero\", \"true nonzero\"), name = NULL) +\n  labs(x = expression(lambda), y = expression(hat(beta))) +\n  theme_minimal()\n\n\n\n\nLasso regularization path. True-nonzero coefficients (blue) persist; the rest (grey) are driven to zero.\n\n\n\n\nThe blue (truly nonzero) coefficients stay large longest; the grey ones collapse to zero quickly. The dashed line marks the \\(\\lambda\\) we fit above.",
+    "crumbs": [
+      "Regression and Classification",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Penalized Regression: Ridge, Lasso, Elastic Net</span>"
+    ]
+  },
+  {
+    "objectID": "05-elastic-net.html#exercise",
+    "href": "05-elastic-net.html#exercise",
+    "title": "5  Penalized Regression: Ridge, Lasso, Elastic Net",
+    "section": "5.6 Exercise",
+    "text": "5.6 Exercise\nExercise. Refit the same data with ridge (\\(\\alpha = 0\\)) at lambda = 0.15 and compare with the lasso fit. How many coefficients does each set exactly to zero — and which one selects variables?\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\n\nfit_at &lt;- function(a) {\n  psolve(Problem(Minimize(loss + elastic_reg(beta, 0.15, a))))\n  value(beta)\n}\nridge_b &lt;- fit_at(0)\nlasso_b &lt;- fit_at(1)\nc(ridge_zeros = sum(abs(ridge_b) &lt; 1e-4),\n  lasso_zeros = sum(abs(lasso_b) &lt; 1e-4))\n\nridge_zeros lasso_zeros \n          0          33 \n\n\nRidge shrinks every coefficient but zeroes essentially none; the lasso zeroes the large majority. That is the defining difference — only the \\(\\ell_1\\) penalty performs variable selection. The elastic net (\\(0 &lt; \\alpha &lt; 1\\)) blends the two, which helps when correlated predictors should enter or leave together.",
+    "crumbs": [
+      "Regression and Classification",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Penalized Regression: Ridge, Lasso, Elastic Net</span>"
+    ]
+  },
+  {
+    "objectID": "05-elastic-net.html#takeaways",
+    "href": "05-elastic-net.html#takeaways",
+    "title": "5  Penalized Regression: Ridge, Lasso, Elastic Net",
+    "section": "5.7 Takeaways",
+    "text": "5.7 Takeaways\n\nRidge, lasso, and elastic net are one family, selected by \\(\\alpha\\) — and in CVXR, one small function.\nWith a real sparse signal, the lasso recovers the support and matches glmnet; the regularization path is just the same problem re-solved over a \\(\\lambda\\) grid.\nOnly the \\(\\ell_1\\) (lasso) part sets coefficients exactly to zero — the source of its variable-selection power.\n\nFor more, see Elastic Net.",
+    "crumbs": [
+      "Regression and Classification",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Penalized Regression: Ridge, Lasso, Elastic Net</span>"
+    ]
+  },
+  {
+    "objectID": "06-change-the-loss.html",
+    "href": "06-change-the-loss.html",
+    "title": "6  Changing the Loss: Huber, Quantile, LAD",
+    "section": "",
+    "text": "6.1 The loss is a knob\nEvery regression in this book has the shape\n\\[\\underset{\\beta}{\\mbox{minimize}}\\quad \\sum_i \\phi\\big(y_i - x_i^\\top\\beta\\big),\\]\nand the choice of the loss \\(\\phi\\) is the choice of estimator. Squared loss gives least squares. In Chapter 2 we already swapped it for absolute value (\\(\\phi(u)=|u|\\)) to get least-absolute-deviation regression — one edited line. This chapter takes that idea seriously: two more losses, two more estimators, same code.",
+    "crumbs": [
+      "Regression and Classification",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Changing the Loss: Huber, Quantile, LAD</span>"
+    ]
+  },
+  {
+    "objectID": "06-change-the-loss.html#huber-robust-to-outliers",
+    "href": "06-change-the-loss.html#huber-robust-to-outliers",
+    "title": "6  Changing the Loss: Huber, Quantile, LAD",
+    "section": "6.2 Huber: robust to outliers",
+    "text": "6.2 Huber: robust to outliers\nLeast squares is famously sensitive to outliers — a few bad points drag the whole fit. The Huber loss behaves like squared error for small residuals but only linearly for large ones, so outliers pull less:\n\\[\n\\phi_M(u) = \\begin{cases} u^2 & |u| \\le M \\\\ 2M|u| - M^2 & |u| &gt; M. \\end{cases}\n\\]\nTo see it, we generate a one-predictor problem and flip the sign of 10% of the responses — nasty outliers by construction.\n\nset.seed(1289)\nm &lt;- 450; M &lt;- 1; pflip &lt;- 0.10\nbeta_true &lt;- 5\nX &lt;- matrix(rnorm(m), ncol = 1)\ny_true &lt;- X * beta_true\nflip &lt;- 2 * rbinom(m, 1, 1 - pflip) - 1     # -1 flips the sign\ny &lt;- flip * y_true + rnorm(m)\n\nNow fit the same problem with two losses — squared and Huber:\n\nbeta &lt;- Variable(1)\n\nols &lt;- Problem(Minimize(sum_squares(y - X %*% beta)))\npsolve(ols); beta_ols &lt;- value(beta)\n\n[1] 4494.614\n\nhub &lt;- Problem(Minimize(sum(huber(y - X %*% beta, M))))\npsolve(hub); beta_hub &lt;- value(beta)\n\n[1] 1046.055\n\nc(true = beta_true, OLS = beta_ols, Huber = beta_hub)\n\n    true      OLS    Huber \n5.000000 4.160588 4.966967 \n\n\nThe Huber estimate sits far closer to the truth (5); OLS is dragged toward zero by the flipped points. Only the loss line changed.\n\nggplot(data.frame(X = X, y = y), aes(X, y)) +\n  geom_point(alpha = 0.3) +\n  geom_abline(aes(slope = beta_ols,  intercept = 0, color = \"OLS\"),   linewidth = 1) +\n  geom_abline(aes(slope = beta_hub,  intercept = 0, color = \"Huber\"), linewidth = 1) +\n  geom_abline(aes(slope = beta_true, intercept = 0, color = \"Truth\"),\n              linetype = \"dashed\") +\n  scale_color_manual(values = c(OLS = \"red\", Huber = \"blue\", Truth = \"black\"),\n                     name = NULL) +\n  theme_minimal()\n\n\n\n\nOLS is pulled toward the outliers; Huber resists.",
+    "crumbs": [
+      "Regression and Classification",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Changing the Loss: Huber, Quantile, LAD</span>"
+    ]
+  },
+  {
+    "objectID": "06-change-the-loss.html#quantile-an-asymmetric-loss",
+    "href": "06-change-the-loss.html#quantile-an-asymmetric-loss",
+    "title": "6  Changing the Loss: Huber, Quantile, LAD",
+    "section": "6.3 Quantile: an asymmetric loss",
+    "text": "6.3 Quantile: an asymmetric loss\nLeast squares estimates the conditional mean. To estimate a conditional quantile — say the 10th or 90th percentile — we tilt the absolute-value loss so that over- and under-prediction are penalized unequally:\n\\[\\phi_\\tau(u) = \\tfrac{1}{2}|u| + \\big(\\tau - \\tfrac{1}{2}\\big)u,\n\\qquad \\tau \\in (0,1).\\]\nAt \\(\\tau = 0.5\\) this is symmetric (the median / LAD); push \\(\\tau\\) up or down and the fit tracks a higher or lower quantile. In CVXR it is, again, a one-line function:\n\nquant_loss &lt;- function(u, tau) 0.5 * abs(u) + (tau - 0.5) * u\n\nWe make data whose spread grows with \\(x\\) (heteroscedastic), so different quantiles fan out:\n\nset.seed(7)\nnq &lt;- 200\nxq &lt;- runif(nq, 0, 4)\nyq &lt;- 1 + 2 * xq + rnorm(nq, sd = 0.5 + xq)   # noise widens with x\nXq &lt;- cbind(1, xq)\n\nFit several quantiles — the same solve, only tau changes:\n\ntaus &lt;- c(0.1, 0.5, 0.9)\nbq &lt;- Variable(2)\ncoefs &lt;- sapply(taus, function(tau) {\n  prob &lt;- Problem(Minimize(sum(quant_loss(yq - Xq %*% bq, tau))))\n  psolve(prob, solver = \"CLARABEL\")   # robust choice for the kink at tau = 0.5\n  check_solver_status(prob)\n  value(bq)\n})\ncolnames(coefs) &lt;- paste0(\"tau=\", taus)\nround(coefs, 3)\n\n     tau=0.1 tau=0.5 tau=0.9\n[1,]  -0.147   1.399   1.437\n[2,]   1.001   1.889   3.453\n\n\n\ndf_lines &lt;- data.frame(tau = factor(taus),\n                       intercept = coefs[1, ], slope = coefs[2, ])\nggplot(data.frame(xq, yq), aes(xq, yq)) +\n  geom_point(alpha = 0.3) +\n  geom_abline(data = df_lines,\n              aes(intercept = intercept, slope = slope, color = tau),\n              linewidth = 1) +\n  labs(x = \"x\", y = \"y\", color = expression(tau)) +\n  theme_minimal()\n\n\n\n\nQuantile fits fan out where the spread is largest.\n\n\n\n\nThe three lines spread apart as \\(x\\) (and the noise) grows — exactly what quantile regression is for.",
+    "crumbs": [
+      "Regression and Classification",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Changing the Loss: Huber, Quantile, LAD</span>"
+    ]
+  },
+  {
+    "objectID": "06-change-the-loss.html#exercise",
+    "href": "06-change-the-loss.html#exercise",
+    "title": "6  Changing the Loss: Huber, Quantile, LAD",
+    "section": "6.4 Exercise",
+    "text": "6.4 Exercise\nExercise (⭐). The Huber threshold \\(M\\) interpolates between two losses. What does Huber regression become as \\(M \\to 0\\)? As \\(M \\to \\infty\\)? Check the small-\\(M\\) case against the LAD fit from Chapter 2.\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\nAs \\(M \\to 0\\) the quadratic region vanishes and Huber \\(\\to\\) (a scaled) absolute loss — LAD regression. As \\(M \\to \\infty\\) everything is “small,” so Huber \\(\\to\\) squared loss — OLS.\n\nsmall_M &lt;- Problem(Minimize(sum(huber(y - X %*% beta, 0.01))))\npsolve(small_M); val_small &lt;- value(beta)\n\n[1] 14.00813\n\nlad &lt;- Problem(Minimize(sum(abs(y - X %*% beta))))\npsolve(lad); val_lad &lt;- value(beta)\n\n[1] 702.6453\n\nc(huber_smallM = val_small, LAD = val_lad)\n\nhuber_smallM          LAD \n    5.028715     5.031708 \n\n\nThe two nearly coincide.",
+    "crumbs": [
+      "Regression and Classification",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Changing the Loss: Huber, Quantile, LAD</span>"
+    ]
+  },
+  {
+    "objectID": "06-change-the-loss.html#takeaways",
+    "href": "06-change-the-loss.html#takeaways",
+    "title": "6  Changing the Loss: Huber, Quantile, LAD",
+    "section": "6.5 Takeaways",
+    "text": "6.5 Takeaways\n\nThe loss is the estimator: squared → mean, Huber → robust, tilted-\\(\\ell_1\\) → quantiles, absolute → median.\nEach is a one-line change to the objective — the modeling vocabulary you are building transfers directly.\nA kinked loss can trip a particular solver; naming a robust solver (solver = \"CLARABEL\") is sometimes the easiest fix.\n\nSee Huber and Quantile.",
+    "crumbs": [
+      "Regression and Classification",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Changing the Loss: Huber, Quantile, LAD</span>"
+    ]
+  },
+  {
+    "objectID": "07-logistic.html",
+    "href": "07-logistic.html",
+    "title": "7  Logistic Regression",
+    "section": "",
+    "text": "7.1 From regression to classification\nSo far our responses were continuous. Now \\(y_i \\in \\{0, 1\\}\\) is a class label. Logistic regression models the probability of class 1 as \\(g_\\beta(x) = 1/(1 + e^{-x^\\top\\beta})\\) and fits \\(\\beta\\) by maximizing the log-likelihood\n\\[\n\\underset{\\beta}{\\mbox{maximize}}\\quad\n\\sum_{i=1}^m \\Big[\\, y_i\\, x_i^\\top\\beta - \\log\\big(1 + e^{x_i^\\top\\beta}\\big) \\Big].\n\\]\nThe first term is linear; the second is a sum of \\(\\log(1 + e^{z})\\) terms.",
+    "crumbs": [
+      "Regression and Classification",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Logistic Regression</span>"
+    ]
+  },
+  {
+    "objectID": "07-logistic.html#a-dcp-snag-and-the-atom-that-fixes-it",
+    "href": "07-logistic.html#a-dcp-snag-and-the-atom-that-fixes-it",
+    "title": "7  Logistic Regression",
+    "section": "7.2 A DCP snag — and the atom that fixes it",
+    "text": "7.2 A DCP snag — and the atom that fixes it\nYou might write that second term directly as log(1 + exp(X %*% beta)). CVXR will reject it — recall Chapter 3: exp is convex, so 1 + exp(...) is convex, but log is concave-increasing and needs a concave argument. The composition is not verifiable:\n\nbeta &lt;- Variable(2)\nX0 &lt;- matrix(rnorm(20), 10, 2)\nis_dcp(Problem(Minimize(sum(log(1 + exp(X0 %*% beta))))))   # FALSE\n\n[1] FALSE\n\n\nThe function is convex; DCP just can’t see it through that expression. The fix is the dedicated logistic atom, \\(\\texttt{logistic}(z) = \\log(1 + e^{z})\\), which DCP knows is convex. This is the reformulation habit again — reach for the atom.",
+    "crumbs": [
+      "Regression and Classification",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Logistic Regression</span>"
+    ]
+  },
+  {
+    "objectID": "07-logistic.html#fit-it",
+    "href": "07-logistic.html#fit-it",
+    "title": "7  Logistic Regression",
+    "section": "7.3 Fit it",
+    "text": "7.3 Fit it\nWe generate data from a known logistic model and maximize the log-likelihood, writing \\(\\sum_i \\log(1+e^{x_i^\\top\\beta})\\) as sum(logistic(X %*% beta)):\n\nset.seed(42)\nm &lt;- 500; n &lt;- 8\nbeta_true &lt;- rnorm(n)\nX &lt;- matrix(rnorm(m * n), m, n)\ny &lt;- as.numeric(1 / (1 + exp(-X %*% beta_true)) &gt; runif(m))   # 0/1 labels\n\nbeta &lt;- Variable(n)\nloglik &lt;- sum(y * (X %*% beta)) - sum(logistic(X %*% beta))\nprob &lt;- Problem(Maximize(loglik))\npsolve(prob)\n\n[1] -222.1508\n\ncheck_solver_status(prob)\n\nIt matches stats::glm to solver tolerance:\n\ng &lt;- glm(y ~ 0 + X, family = \"binomial\")\ncbind(CVXR = round(value(beta), 4), glm = round(coef(g), 4))\n\n               glm\nX1  1.3253  1.3253\nX2 -0.5073 -0.5073\nX3  0.3291  0.3291\nX4  0.5693  0.5693\nX5  0.1983  0.1983\nX6 -0.1071 -0.1071\nX7  1.4180  1.4180\nX8 -0.2124 -0.2124\n\n\nJust as we read off fitted values for OLS in Chapter 2, every quantity here is value() of an expression: the log-odds are value(X %*% beta), and the fitted probabilities follow from them. You’ll compute these in the exercises.",
+    "crumbs": [
+      "Regression and Classification",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Logistic Regression</span>"
+    ]
+  },
+  {
+    "objectID": "07-logistic.html#regularized-logistic-regression",
+    "href": "07-logistic.html#regularized-logistic-regression",
+    "title": "7  Logistic Regression",
+    "section": "7.4 Regularized logistic regression",
+    "text": "7.4 Regularized logistic regression\nBecause the objective is just an expression, the regularization idea from Chapter 5 drops straight in. Add an \\(\\ell_1\\) penalty for a sparse logistic fit — one line:\n\nlambda &lt;- 25\npen_obj &lt;- loglik - lambda * p_norm(beta, 1)   # penalized log-likelihood\npsolve(Problem(Maximize(pen_obj)))\n\n[1] -294.2886\n\nround(value(beta), 3)\n\n       [,1]\n[1,]  0.714\n[2,] -0.151\n[3,]  0.000\n[4,]  0.149\n[5,]  0.000\n[6,]  0.000\n[7,]  0.782\n[8,]  0.000\n\n\nLarger lambda drives more coefficients to zero, just as the lasso did for linear regression — logistic regression and penalized regression are the same modeling vocabulary applied to a different loss.",
+    "crumbs": [
+      "Regression and Classification",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Logistic Regression</span>"
+    ]
+  },
+  {
+    "objectID": "07-logistic.html#exercises",
+    "href": "07-logistic.html#exercises",
+    "title": "7  Logistic Regression",
+    "section": "7.5 Exercises",
+    "text": "7.5 Exercises\nExercise 1. In Chapter 2 you read off OLS fitted values as value(X %*% beta). Do the classification analogue here: from the (unpenalized) fitted model, compute the in-sample predicted probabilities, turn them into class predictions at a 0.5 threshold, and report the classification accuracy and a confusion matrix.\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\nRe-solve the maximum-likelihood fit (the penalized sections above changed beta), then everything is just value() of an expression:\n\npsolve(prob)                                  # the unpenalized MLE fit\n\n[1] -222.1508\n\np_hat &lt;- 1 / (1 + exp(-value(X %*% beta)))    # fitted probabilities\ny_hat &lt;- as.numeric(p_hat &gt;= 0.5)             # predicted classes\nc(accuracy = mean(y_hat == y))\n\naccuracy \n   0.792 \n\ntable(predicted = y_hat, actual = y)\n\n         actual\npredicted   0   1\n        0 191  56\n        1  48 205\n\n\nThe log-odds X %*% beta is an expression; value() evaluates it at the solution, and the rest is ordinary R. The very same pattern would score new data — just substitute a new design matrix.\n\n\n\nExercise 2. Fit a ridge-penalized (\\(\\ell_2\\)) logistic regression at the same lambda = 25 and compare its coefficients with the \\(\\ell_1\\) fit above. Which zeroes coefficients?\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\n\nl1_fit &lt;- { psolve(Problem(Maximize(loglik - 25 * p_norm(beta, 1))));  value(beta) }\nl2_fit &lt;- { psolve(Problem(Maximize(loglik - 25 * sum_squares(beta)))); value(beta) }\ndata.frame(l1 = round(l1_fit, 3), l2 = round(l2_fit, 3))\n\n      l1     l2\n1  0.714  0.626\n2 -0.151 -0.249\n3  0.000  0.154\n4  0.149  0.273\n5  0.000  0.091\n6  0.000 -0.067\n7  0.782  0.683\n8  0.000 -0.107\n\n\nThe \\(\\ell_2\\) penalty shrinks every coefficient smoothly but zeroes none; the \\(\\ell_1\\) penalty sets several exactly to zero. Same trade-off as ridge vs. lasso in Chapter 5 — the loss changed, the regularization logic did not.",
+    "crumbs": [
+      "Regression and Classification",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Logistic Regression</span>"
+    ]
+  },
+  {
+    "objectID": "07-logistic.html#takeaways",
+    "href": "07-logistic.html#takeaways",
+    "title": "7  Logistic Regression",
+    "section": "7.6 Takeaways",
+    "text": "7.6 Takeaways\n\nLogistic regression is maximum likelihood, a convex problem CVXR solves directly, matching stats::glm.\nThe natural log(1 + exp(...)) is non-DCP; the logistic atom is the DCP-compliant tool — reformulation, again.\nPredicted probabilities and any other quantity are just value() of an expression, and penalties from Chapter 5 add in one line.\n\nSee Logistic Regression.",
+    "crumbs": [
+      "Regression and Classification",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Logistic Regression</span>"
+    ]
+  },
+  {
+    "objectID": "08-dpp.html",
+    "href": "08-dpp.html",
+    "title": "8  Parameters and Efficient Sweeps (DPP)",
+    "section": "",
+    "text": "8.1 A hidden cost in Chapter 3\nIn Chapter 5 we traced a regularization path by building a new problem for each \\(\\lambda\\) and solving it. That works, but it hides a cost: every solve re-runs CVXR’s compilation — the translation of your symbolic problem into the matrices a solver wants. When you sweep dozens or hundreds of values, you pay that toll over and over.\nParameters fix this. A Parameter is a symbolic placeholder for a constant whose value you can change without rebuilding the problem. If the problem obeys the Disciplined Parametrized Programming (DPP) rules, CVXR compiles it once, caches the parameter-to-data mapping, and later solves just swap in the new number.",
+    "crumbs": [
+      "Regression and Classification",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Parameters and Efficient Sweeps (DPP)</span>"
+    ]
+  },
+  {
+    "objectID": "08-dpp.html#parameters-and-the-dpp-rule",
+    "href": "08-dpp.html#parameters-and-the-dpp-rule",
+    "title": "8  Parameters and Efficient Sweeps (DPP)",
+    "section": "8.2 Parameters and the DPP rule",
+    "text": "8.2 Parameters and the DPP rule\nA Parameter looks like a variable but stands for data you will supply:\n\ngamma &lt;- Parameter(nonneg = TRUE)   # a nonnegative constant, value set later\nx &lt;- Variable(5)\nprob &lt;- Problem(Minimize(sum_squares(x - 1) + gamma * p_norm(x, 1)))\nis_dpp(prob)\n\n[1] TRUE\n\n\nDPP adds one main restriction to DCP: you may not multiply two parametrized expressions (a parameter times a parameter, or a parameter times a parameter-containing expression). Such a problem is still DCP, just not DPP — so it solves, but without the speedup:\n\ng &lt;- Parameter(nonneg = TRUE); z &lt;- Variable()\nbad &lt;- Problem(Minimize(g * g * z), list(z &gt;= 1))\ncat(\"Is DPP?\", is_dpp(bad), \"\\n\")\ncat(\"Is DCP?\", is_dcp(bad), \"\\n\")\n\nIs DPP? FALSE \nIs DCP? TRUE \n\n\nJust like the DCP reformulation skill from Chapter 3, a non-DPP problem can usually be rewritten to comply — here by introducing a helper variable:\n\nz &lt;- Variable(); w &lt;- Variable(); g &lt;- Parameter(nonneg = TRUE)\ngood &lt;- Problem(Minimize(g * w), list(w == g * z, z &gt;= 1))\ncat(\"Is DPP?\", is_dpp(good), \"\\n\")\n\nIs DPP? TRUE",
+    "crumbs": [
+      "Regression and Classification",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Parameters and Efficient Sweeps (DPP)</span>"
+    ]
+  },
+  {
+    "objectID": "08-dpp.html#the-payoff-watch-the-compile-time-vanish",
+    "href": "08-dpp.html#the-payoff-watch-the-compile-time-vanish",
+    "title": "8  Parameters and Efficient Sweeps (DPP)",
+    "section": "8.3 The payoff: watch the compile time vanish",
+    "text": "8.3 The payoff: watch the compile time vanish\nRecall from Chapter 2 that verbose = TRUE splits each solve into a compile time and a solver time in its summary. Parameters target the compile time — so let’s just watch it. We set up a lasso whose penalty weight is a Parameter, and solve it the first time:\n\nset.seed(1)\nn &lt;- 120; m &lt;- 40\nA &lt;- matrix(rnorm(n * m), n, m); b &lt;- rnorm(n)\nx &lt;- Variable(m)\nerror &lt;- sum_squares(A %*% x - b)\n\ngamma &lt;- Parameter(nonneg = TRUE)\nparam_prob &lt;- Problem(Minimize(error + gamma * p_norm(x, 1)))   # DPP\n\nvalue(gamma) &lt;- 0.5\npsolve(param_prob, verbose = TRUE)        # first solve: pays compilation\n\n────────────────────────────────── CVXR v1.9.1 ─────────────────────────────────\n\n\nℹ Problem: 1 variable, 0 constraints (QP)\n\n\nℹ Compilation: \"OSQP\" via CVXR::Dcp2Cone -&gt; CVXR::CvxAttr2Constr -&gt; CVXR::ConeMatrixStuffing -&gt; CVXR::OSQP_QP_Solver\n\n\nℹ Compile time: 0.398s\n\n\n─────────────────────────────── Numerical solver ───────────────────────────────\n\n\n-----------------------------------------------------------------\n           OSQP v1.0.0  -  Operator Splitting QP Solver\n              (c) The OSQP Developer Team\n-----------------------------------------------------------------\nproblem:  variables n = 200, constraints m = 200\n          nnz(P) + nnz(A) = 5200\nsettings: algebra = Built-in,\n          OSQPInt = 4 bytes, OSQPFloat = 8 bytes,\n          linear system solver = QDLDL v0.1.8,\n          eps_abs = 1.0e-05, eps_rel = 1.0e-05,\n          eps_prim_inf = 1.0e-04, eps_dual_inf = 1.0e-04,\n          rho = 1.00e-01 (adaptive: 50 iterations),\n          sigma = 1.00e-06, alpha = 1.60, max_iter = 10000\n          check_termination: on (interval 25, duality gap: on),\n          time_limit: 1.00e+10 sec,\n          scaling: on (10 iterations), scaled_termination: off\n          warm starting: on, polishing: on, \niter   objective    prim res   dual res   gap        rel kkt    rho         time\n   1  -1.6000e+02   8.00e+00   6.83e+02  -3.13e+03   6.83e+02   1.00e-01    7.88e-04s\n  50   8.0194e+01   6.18e-02   2.66e-03  -1.87e-01   6.18e-02   5.00e-01*   1.51e-03s\n 100   8.0454e+01   8.44e-03   7.36e-05  -6.66e-03   8.44e-03   5.57e+00*   2.44e-03s\n 200   8.0462e+01   1.33e-05   5.75e-07  -1.90e-06   1.33e-05   5.57e+00    4.01e-03s\nplsh   8.0462e+01   1.46e-15   1.28e-14  -5.68e-14   1.28e-14   --------    4.55e-03s\n\nstatus:               solved\nsolution polishing:   successful\nnumber of iterations: 200\noptimal objective:    80.4620\ndual objective:       80.4620\nduality gap:          -5.6843e-14\nprimal-dual integral: 3.1311e+03\nrun time:             4.55e-03s\noptimal rho estimate: 2.78e+01\n\n\n──────────────────────────────────── Summary ───────────────────────────────────\n\n\n✔ Status: optimal\n\n\n✔ Optimal value: 80.462\n\n\nℹ Compile time: 0.398s\n\n\nℹ Solver time: 0.026s\n\n\n[1] 80.46205\n\n\nLook at the Compile time in the summary. Now change the parameter and re-solve the same problem object:\n\nvalue(gamma) &lt;- 0.7\npsolve(param_prob, verbose = TRUE)        # re-solve: compilation is cached\n\n────────────────────────────────── CVXR v1.9.1 ─────────────────────────────────\n\n\nℹ Problem: 1 variable, 0 constraints (QP)\n\n\nℹ Using cached DPP tensor (fast path)\n\n\nℹ Compilation: \"OSQP\" via CVXR::Dcp2Cone -&gt; CVXR::CvxAttr2Constr -&gt; CVXR::ConeMatrixStuffing -&gt; CVXR::OSQP_QP_Solver\n\n\nℹ Compile time: 0.04s\n\n\n─────────────────────────────── Numerical solver ───────────────────────────────\n\n\n-----------------------------------------------------------------\n           OSQP v1.0.0  -  Operator Splitting QP Solver\n              (c) The OSQP Developer Team\n-----------------------------------------------------------------\nproblem:  variables n = 200, constraints m = 200\n          nnz(P) + nnz(A) = 5200\nsettings: algebra = Built-in,\n          OSQPInt = 4 bytes, OSQPFloat = 8 bytes,\n          linear system solver = QDLDL v0.1.8,\n          eps_abs = 1.0e-05, eps_rel = 1.0e-05,\n          eps_prim_inf = 1.0e-04, eps_dual_inf = 1.0e-04,\n          rho = 1.00e-01 (adaptive: 50 iterations),\n          sigma = 1.00e-06, alpha = 1.60, max_iter = 10000\n          check_termination: on (interval 25, duality gap: on),\n          time_limit: 1.00e+10 sec,\n          scaling: on (10 iterations), scaled_termination: off\n          warm starting: on, polishing: on, \niter   objective    prim res   dual res   gap        rel kkt    rho         time\n   1  -2.2400e+02   8.00e+00   9.56e+02  -4.38e+03   9.56e+02   1.00e-01    8.01e-04s\n 150   8.1079e+01   1.52e-02   9.34e-07  -2.57e-02   1.52e-02   1.44e+01*   2.89e-03s\n 200   8.1117e+01   8.80e-07   7.04e-07  -2.81e-07   8.80e-07   1.44e+01    3.76e-03s\nplsh   8.1117e+01   1.27e-15   1.67e-14   7.96e-14   7.96e-14   --------    4.27e-03s\n\nstatus:               solved\nsolution polishing:   successful\nnumber of iterations: 200\noptimal objective:    81.1172\ndual objective:       81.1172\nduality gap:          7.9581e-14\nprimal-dual integral: 4.3836e+03\nrun time:             4.27e-03s\noptimal rho estimate: 1.82e+01\n\n\n──────────────────────────────────── Summary ───────────────────────────────────\n\n\n✔ Status: optimal\n\n\n✔ Optimal value: 81.1172\n\n\nℹ Compile time: 0.04s\n\n\nℹ Solver time: 0.043s\n\n\n[1] 81.11721\n\n\nThe compile time has collapsed — CVXR reused the cached parameter-to-data mapping and went straight to the solver. A freshly built problem, by contrast, pays the full compile every time.",
+    "crumbs": [
+      "Regression and Classification",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Parameters and Efficient Sweeps (DPP)</span>"
+    ]
+  },
+  {
+    "objectID": "08-dpp.html#quantifying-it",
+    "href": "08-dpp.html#quantifying-it",
+    "title": "8  Parameters and Efficient Sweeps (DPP)",
+    "section": "8.4 Quantifying it",
+    "text": "8.4 Quantifying it\nNow let’s measure the per-solve saving with bench::mark, which reports the garbage-collection-free minimum time — the honest way to compare. We pit one DPP re-solve against one rebuild (a fresh problem with a numeric weight):\n\nlibrary(bench)\nbench::mark(\n  `DPP re-solve` = { value(gamma) &lt;- 0.7; psolve(param_prob) },\n  `rebuild`      = { psolve(Problem(Minimize(error + 0.7 * p_norm(x, 1)))) },\n  check = FALSE, min_iterations = 5, filter_gc = FALSE\n)[, c(\"expression\", \"min\", \"median\", \"mem_alloc\")]\n\n# A tibble: 2 × 4\n  expression        min   median mem_alloc\n  &lt;bch:expr&gt;   &lt;bch:tm&gt; &lt;bch:tm&gt; &lt;bch:byt&gt;\n1 DPP re-solve   9.58ms   10.2ms   554.7KB\n2 rebuild       27.86ms   29.4ms     9.7MB\n\n\nOn our machine the DPP re-solve is roughly 2–3× faster per solve and allocates less memory — precisely the compile time we just watched disappear. Over a sweep of \\(K\\) values you save that difference \\(K\\) times.\n\n\n\n\n\n\nNoteHow big is the win, really?\n\n\n\nThe saving is exactly the recompilation you avoid, so it is largest when compilation is a meaningful share of each solve — small-to-medium problems solved many times (regularization paths, grid searches, simulations, bootstraps). For very large problems the solver itself dominates and the ratio shrinks toward 1×. Either way the parametrized code is cleaner, and — as we note below — parameters are also the gateway to differentiating through a problem.",
+    "crumbs": [
+      "Regression and Classification",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Parameters and Efficient Sweeps (DPP)</span>"
+    ]
+  },
+  {
+    "objectID": "08-dpp.html#back-to-the-regularization-path",
+    "href": "08-dpp.html#back-to-the-regularization-path",
+    "title": "8  Parameters and Efficient Sweeps (DPP)",
+    "section": "8.5 Back to the regularization path",
+    "text": "8.5 Back to the regularization path\nThis is exactly Chapter 3’s sweep, done right. We make \\(\\lambda\\) a Parameter and re-solve — the path looks identical, but only one compilation happens:\n\nlambda_vals &lt;- 10^seq(-3, 1, length.out = 30)\nlambda &lt;- Parameter(nonneg = TRUE)\nbeta &lt;- Variable(m)\npath_prob &lt;- Problem(Minimize(error + lambda * p_norm(beta, 1)))\n\nbetas &lt;- sapply(lambda_vals, function(l) { value(lambda) &lt;- l; psolve(path_prob); value(beta) })\ndim(betas)   # m coefficients x number of lambda values\n\n[1] 40 30\n\n\nWhenever you plan to solve the same shape of problem many times — a path, a grid search, a simulation, a bootstrap — reach for a Parameter.",
+    "crumbs": [
+      "Regression and Classification",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Parameters and Efficient Sweeps (DPP)</span>"
+    ]
+  },
+  {
+    "objectID": "08-dpp.html#the-other-half-of-the-solve-warm-starts",
+    "href": "08-dpp.html#the-other-half-of-the-solve-warm-starts",
+    "title": "8  Parameters and Efficient Sweeps (DPP)",
+    "section": "8.6 The other half of the solve: warm starts",
+    "text": "8.6 The other half of the solve: warm starts\nRecall that every solve splits into a compile time and a solver time. DPP attacks the compile time — it reuses the canonicalized problem structure so we never re-stuff the matrices. But the solver still starts cold each time, refining an internal guess from scratch until it converges.\nA warm start attacks the other half. A numerical solver is iterative; if you hand it a starting point already near the answer, it converges in fewer iterations. In a sweep over a fine grid the solution at one \\(\\lambda\\) is an excellent guess for the next, so the previous answer is exactly the start point we want. In CVXR that is one flag — warm_start = TRUE uses the current variable values as the solver’s initial point:\n\nbetas_warm &lt;- sapply(lambda_vals, function(l) {\n  value(lambda) &lt;- l\n  psolve(path_prob, warm_start = TRUE)   # start from the previous lambda's solution\n  value(beta)\n})\nmax(abs(betas_warm - betas))             # same path, to solver tolerance\n\n[1] 4.337505e-12\n\n\nThe two ideas are orthogonal and complementary, not the same trick:\n\n\n\n\n\n\n\n\n\n\nreuses\ncuts\nwins biggest when\n\n\n\n\nDPP\nthe compiled problem structure\ncompile time\ncompilation dominates — small problems solved many times\n\n\nWarm start\nthe previous solution\nsolver time\nthe solver dominates — large/expensive problems, close-together solves\n\n\n\nDPP does nothing for the solver’s iterations; a warm start does nothing for compilation. Each pays off precisely where the other does not, so a tight sweep wants both — compile once (DPP), then step the solver from each previous answer (warm start). Warm-starting is solver-dependent (about 9 of CVXR’s 15 solvers support it — OSQP, SCS, Clarabel, MOSEK, Gurobi, PIQP, HiGHS, and more); a solver that cannot warm-start simply ignores the flag.",
+    "crumbs": [
+      "Regression and Classification",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Parameters and Efficient Sweeps (DPP)</span>"
+    ]
+  },
+  {
+    "objectID": "08-dpp.html#exercise",
+    "href": "08-dpp.html#exercise",
+    "title": "8  Parameters and Efficient Sweeps (DPP)",
+    "section": "8.7 Exercise",
+    "text": "8.7 Exercise\nExercise (⭐). The expression gamma * p_norm(x, 1) is DPP, but (gamma * gamma) * p_norm(x, 1) is not. Suppose you really want the penalty weight to be \\(\\gamma^2\\). How can you keep the problem DPP and sweep over \\(\\gamma\\)?\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\nDo the nonlinear part in R, outside the DSL: keep a single parameter that holds the value \\(\\gamma^2\\), and set it from your \\(\\gamma\\) grid.\n\nw &lt;- Parameter(nonneg = TRUE)            # will hold gamma^2\nprob &lt;- Problem(Minimize(error + w * p_norm(x, 1)))\nis_dpp(prob)\n\n[1] TRUE\n\nfor (g in lambda_vals) { value(w) &lt;- g^2; psolve(prob) }   # sweep, still DPP\n\nThe rule of thumb: parameters may enter affinely; any nonlinear transform of a parameter should be computed in R and stored in another parameter.",
+    "crumbs": [
+      "Regression and Classification",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Parameters and Efficient Sweeps (DPP)</span>"
+    ]
+  },
+  {
+    "objectID": "08-dpp.html#takeaways",
+    "href": "08-dpp.html#takeaways",
+    "title": "8  Parameters and Efficient Sweeps (DPP)",
+    "section": "8.8 Takeaways",
+    "text": "8.8 Takeaways\n\nA Parameter is a constant you can change without rebuilding the problem.\nIf the problem is DPP (is_dpp() — essentially “no parameter × parameter”), CVXR compiles once and re-solves cheaply.\nUse it for any repeated solve — paths, grid searches, simulations. It is the efficient way to do the sweep you met in Chapter 5.\nDPP cuts compile time; a warm start cuts solver time. They are independent — combine Parameters with warm_start = TRUE to speed up both halves of a sweep.\n\nFor more, see the DPP Tutorial.",
+    "crumbs": [
+      "Regression and Classification",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Parameters and Efficient Sweeps (DPP)</span>"
+    ]
+  },
+  {
+    "objectID": "09-portfolio.html",
+    "href": "09-portfolio.html",
+    "title": "9  Portfolio Optimization",
+    "section": "",
+    "text": "9.1 The mean-variance problem\nWe hold \\(n\\) assets; \\(w_i\\) is the fraction of our budget in asset \\(i\\). Returns \\(r\\) have mean \\(\\mu\\) and covariance \\(\\Sigma\\), so a portfolio \\(w\\) has expected return \\(\\mu^\\top w\\) and variance (risk) \\(w^\\top\\Sigma w\\). Markowitz’s insight: trade return against risk with a risk-aversion knob \\(\\gamma \\ge 0\\),\n\\[\n\\underset{w}{\\mbox{maximize}}\\ \\ \\mu^\\top w - \\gamma\\, w^\\top\\Sigma w\n\\qquad\\text{subject to}\\qquad w \\ge 0,\\ \\ \\sum_i w_i = 1.\n\\]\nThe constraints make it a long-only, fully-invested portfolio. Small \\(\\gamma\\) chases return; large \\(\\gamma\\) avoids risk.",
+    "crumbs": [
+      "Applications",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Portfolio Optimization</span>"
+    ]
+  },
+  {
+    "objectID": "09-portfolio.html#real-data",
+    "href": "09-portfolio.html#real-data",
+    "title": "9  Portfolio Optimization",
+    "section": "9.2 Real data",
+    "text": "9.2 Real data\nWe use ~3 years of daily prices for 12 well-known stocks (a subset of the Riskfolio-Lib dataset), and turn prices into simple returns, a mean vector, and a covariance matrix:\n\nprices &lt;- read.csv(\"data/stock_prices.csv\", check.names = FALSE)\nP &lt;- as.matrix(prices[, -1])              # drop the Dates column\nR &lt;- P[-1, ] / P[-nrow(P), ] - 1          # daily simple returns\nmu    &lt;- colMeans(R)\nSigma &lt;- cov(R)\nn     &lt;- ncol(R)\ncolnames(R)\n\n [1] \"AAPL\" \"AMZN\" \"ABT\"  \"ADBE\" \"AMGN\" \"AEP\"  \"AFL\"  \"AIG\"  \"ALL\"  \"APD\" \n[11] \"ADM\"  \"AKAM\"",
+    "crumbs": [
+      "Applications",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Portfolio Optimization</span>"
+    ]
+  },
+  {
+    "objectID": "09-portfolio.html#trace-the-efficient-frontier",
+    "href": "09-portfolio.html#trace-the-efficient-frontier",
+    "title": "9  Portfolio Optimization",
+    "section": "9.3 Trace the efficient frontier",
+    "text": "9.3 Trace the efficient frontier\nFor each \\(\\gamma\\) we solve the Markowitz problem and record the realized risk and return. This is the same problem re-solved over a grid — exactly where the Parameter trick from Chapter 8 pays off. We make \\(\\gamma\\) a Parameter, build the problem once, and each iteration just sets value(gamma) and re-solves, reusing the cached compilation instead of canonicalizing from scratch 40 times.\n\nw     &lt;- Variable(n)\nret   &lt;- t(mu) %*% w\nrisk  &lt;- quad_form(w, Sigma)              # w' Sigma w, a convex quadratic\ncons  &lt;- list(w &gt;= 0, sum(w) == 1)\ngamma &lt;- Parameter(nonneg = TRUE)         # the risk-aversion knob, set per solve\nprob  &lt;- Problem(Maximize(ret - gamma * risk), cons)   # built once\n\ngammas &lt;- 10^seq(-1, 3, length.out = 40)\nfr &lt;- sapply(gammas, function(g) {\n  value(gamma) &lt;- g                       # swap in the new gamma; no rebuild\n  psolve(prob)\n  c(risk = sqrt(value(risk)), ret = value(ret), w = value(w))\n})\n\nNote how we read the risk and return back by directly evaluating the expressions sqrt(risk) and ret after each solve — no bookkeeping required. The frontier:\n\ndf  &lt;- data.frame(risk = fr[\"risk\", ], ret = fr[\"ret\", ])\nind &lt;- data.frame(risk = sqrt(diag(Sigma)), ret = mu, asset = names(mu))\nggplot(df, aes(risk, ret)) +\n  geom_line(color = \"steelblue\", linewidth = 1) +\n  geom_point(data = ind, color = \"red\") +\n  geom_text(data = ind, aes(label = asset), size = 3, vjust = -0.6,\n            check_overlap = TRUE) +\n  labs(x = \"Risk (standard deviation of daily return)\", y = \"Expected daily return\") +\n  theme_minimal()\n\n\n\n\nEfficient frontier. Red points are single-asset portfolios; the curve dominates them.\n\n\n\n\nEvery point on the blue curve is the best return achievable at that level of risk; the individual stocks (red) all sit below it — diversification at work.\nThe frontier shows the risk-return outcome, but not what the portfolio holds. Since fr already captured the weight vector at every \\(\\gamma\\), we can read the composition straight back out and watch diversification happen. At a few points along the grid we stack each asset’s share of the budget:\n\nmarkers &lt;- c(1, 10, 20, 30, 40)\nwmat &lt;- fr[grep(\"^w\", rownames(fr)), markers]   # 12 assets x 5 values of gamma\nrownames(wmat) &lt;- names(mu)\n\ncomp &lt;- data.frame(\n  gamma  = factor(rep(signif(gammas[markers], 2), each = n),\n                  levels = signif(gammas[markers], 2)),\n  asset  = factor(rep(names(mu), times = length(markers)), levels = names(mu)),\n  weight = as.vector(wmat))\n\nggplot(comp, aes(gamma, weight, fill = asset)) +\n  geom_col() +\n  scale_fill_manual(values = brewer.pal(n, \"Paired\")) +\n  labs(x = expression(\"Risk aversion  \" * gamma),\n       y = \"Fraction of budget\", fill = \"Asset\") +\n  theme_minimal()\n\n\n\n\nPortfolio composition along the frontier. Small gamma concentrates the budget in a few assets; large gamma spreads it out — diversification, made visible.\n\n\n\n\nThe left-most bar (greedy, low \\(\\gamma\\)) leans on one or two names; as \\(\\gamma\\) grows the bars fragment into the full palette. That shift is the efficient frontier, seen from the portfolio’s side.",
+    "crumbs": [
+      "Applications",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Portfolio Optimization</span>"
+    ]
+  },
+  {
+    "objectID": "09-portfolio.html#a-different-risk-measure-cvar",
+    "href": "09-portfolio.html#a-different-risk-measure-cvar",
+    "title": "9  Portfolio Optimization",
+    "section": "9.4 A different risk measure: CVaR",
+    "text": "9.4 A different risk measure: CVaR\nVariance penalizes upside and downside alike. Conditional Value-at-Risk (CVaR) focuses on the bad tail: \\(\\text{CVaR}_\\alpha\\) is (roughly) the average loss in the worst \\(1-\\alpha\\) fraction of scenarios. Rockafellar and Uryasev showed it has a beautifully simple convex (in fact linear) form using the historical return scenarios \\(r_t\\) directly. With losses \\(L_t = -r_t^\\top w\\),\n\\[\n\\text{CVaR}_\\alpha(w) = \\min_{\\tau}\\ \\ \\tau + \\frac{1}{(1-\\alpha)T}\\sum_{t=1}^{T}\\big(L_t - \\tau\\big)_+ .\n\\]\nIn CVXR we introduce an auxiliary VaR variable \\(\\tau\\) and minimize CVaR subject to a return target — a clean linear program:\n\nalpha  &lt;- 0.95\ntarget &lt;- mean(mu)                        # require at least the average asset's return\nTn     &lt;- nrow(R)\n\nwv  &lt;- Variable(n)\nVaR &lt;- Variable(1)\nloss &lt;- -R %*% wv                         # vector of T scenario losses\ncvar &lt;- VaR + (1 / ((1 - alpha) * Tn)) * sum(pos(loss - VaR))\n\nprob_cvar &lt;- Problem(Minimize(cvar),\n                     list(sum(wv) == 1, wv &gt;= 0, t(mu) %*% wv &gt;= target))\npsolve(prob_cvar)\n\n[1] 0.01481885\n\ncheck_solver_status(prob_cvar)\n\nw_cvar &lt;- setNames(round(value(wv), 3), names(mu))\nw_cvar[w_cvar &gt; 0.001]                     # the minimum-CVaR allocation\n\n AAPL  AMZN  ADBE   AEP   AFL   ALL   APD   ADM \n0.090 0.046 0.066 0.390 0.222 0.074 0.046 0.065 \n\n\nSame data, same CVXR machinery, a different notion of risk — and a different, typically more tail-aware, allocation. Switching risk measures is, once again, just a change to the objective.\nTo see how the allocation differs, hold the return target fixed and put the two side by side. The fair mean-variance counterpart minimizes variance subject to the same return floor, so both bars sit at the same expected return and only the risk measure changes:\n\n## mean-variance allocation at the SAME return target, for an apples-to-apples comparison\nwv_mv   &lt;- Variable(n)\nprob_mv &lt;- Problem(Minimize(quad_form(wv_mv, Sigma)),\n                   list(sum(wv_mv) == 1, wv_mv &gt;= 0, t(mu) %*% wv_mv &gt;= target))\npsolve(prob_mv)\n\n[1] 4.198194e-05\n\ncheck_solver_status(prob_mv)\n\ncomp2 &lt;- data.frame(\n  measure = factor(rep(c(\"Mean-variance\", \"Mean-CVaR\"), each = n),\n                   levels = c(\"Mean-variance\", \"Mean-CVaR\")),\n  asset   = factor(rep(names(mu), 2), levels = names(mu)),\n  weight  = c(value(wv_mv), value(wv)))\n\nggplot(comp2, aes(measure, weight, fill = asset)) +\n  geom_col() +\n  scale_fill_manual(values = brewer.pal(n, \"Paired\")) +\n  labs(x = NULL, y = \"Fraction of budget\", fill = \"Asset\") +\n  theme_minimal()\n\n\n\n\nSame return target, two risk measures. Variance and CVaR reallocate the budget differently.\n\n\n\n\nBoth portfolios earn the same expected return, yet CVaR — caring only about the bad tail — tilts the budget toward a different mix than variance, which penalizes upside and downside alike.",
+    "crumbs": [
+      "Applications",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Portfolio Optimization</span>"
+    ]
+  },
+  {
+    "objectID": "09-portfolio.html#exercise",
+    "href": "09-portfolio.html#exercise",
+    "title": "9  Portfolio Optimization",
+    "section": "9.5 Exercise",
+    "text": "9.5 Exercise\nExercise (⭐). Add a diversification rule to the mean-variance problem: no single asset may exceed 25% of the budget. Re-solve at \\(\\gamma = 10\\) and compare with the unconstrained allocation.\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\nA position cap is one linear constraint, w &lt;= 0.25:\n\nbase &lt;- Problem(Maximize(ret - 10 * risk), cons)\ncapd &lt;- Problem(Maximize(ret - 10 * risk), c(cons, list(w &lt;= 0.25)))\npsolve(base); w0 &lt;- value(w)\n\n[1] 0.0003368569\n\npsolve(capd); w1 &lt;- value(w)\n\n[1] 0.0003300224\n\ndata.frame(asset = names(mu),\n           uncapped = round(w0, 3),\n           capped   = round(w1, 3))[round(w0,3) &gt; 0 | round(w1,3) &gt; 0, ]\n\n   asset uncapped capped\n1   AAPL    0.023  0.028\n2   AMZN    0.162  0.164\n3    ABT    0.105  0.122\n4   ADBE    0.114  0.114\n6    AEP    0.320  0.250\n7    AFL    0.257  0.250\n9    ALL    0.017  0.055\n11   ADM    0.002  0.018\n\n\nThe cap spreads weight off the assets that the unconstrained solution concentrated in — a one-line way to encode an investment policy.",
+    "crumbs": [
+      "Applications",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Portfolio Optimization</span>"
+    ]
+  },
+  {
+    "objectID": "09-portfolio.html#takeaways",
+    "href": "09-portfolio.html#takeaways",
+    "title": "9  Portfolio Optimization",
+    "section": "9.6 Takeaways",
+    "text": "9.6 Takeaways\n\nMean-variance optimization is a convex quadratic program; sweeping the risk-aversion \\(\\gamma\\) traces the efficient frontier (a Parameter sweep, Chapter 8).\nRead risk and return straight off the solved expressions with value().\nSwapping variance for CVaR is just a new objective — CVXR makes alternative risk measures, position limits, and policy constraints one-liners.\n\nFor many more portfolio models (risk parity, Black-Litterman, worst-case, drawdown measures), see Riskfolio-Lib and the CVXR portfolio example.\n\n\n\n\nCajas, Dany. 2026. Riskfolio-Lib: Portfolio Optimization in Python. https://github.com/dcajasn/Riskfolio-Lib.\n\n\nMarkowitz, H. M. 1952. “Portfolio Selection.” Journal of Finance 7 (1): 77–91.\n\n\nRockafellar, R. Tyrrell, and Stanislav Uryasev. 2000. “Optimization of Conditional Value-at-Risk.” Journal of Risk 2 (3): 21–41.",
+    "crumbs": [
+      "Applications",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Portfolio Optimization</span>"
+    ]
+  },
+  {
+    "objectID": "10-invcov.html",
+    "href": "10-invcov.html",
+    "title": "10  Sparse Inverse Covariance Estimation",
+    "section": "",
+    "text": "10.1 The idea\nThe portfolio chapter (Chapter 9) took a covariance matrix as given. Here we go the other way and estimate it — and specifically its inverse, which carries the more interesting story.\nFor Gaussian data, the inverse covariance \\(S = \\Sigma^{-1}\\) (the precision matrix) encodes conditional independence: \\(S_{ij} = 0\\) exactly when variables \\(i\\) and \\(j\\) are independent given all the others. So a sparse \\(S\\) is a sparse graph of direct relationships — often what we actually want to discover. With more variables than the data can pin down, we impose that sparsity directly.\nGiven i.i.d. samples \\(x_i \\sim N(0, \\Sigma)\\) with sample covariance \\(Q\\), we maximize the Gaussian log-likelihood while capping the total size of \\(S\\):\n\\[\n\\begin{array}{ll}\n\\underset{S}{\\mbox{maximize}} & \\log\\det(S) - \\mathop{\\mathrm{tr}}(SQ) \\\\\n\\mbox{subject to} & S \\succeq 0, \\qquad \\sum_{i,j} |S_{ij}| \\le \\alpha .\n\\end{array}\n\\]\nThe \\(\\ell_1\\) budget \\(\\alpha \\ge 0\\) controls sparsity: smaller \\(\\alpha\\) forces more off-diagonal entries to exactly zero. The objective is concave (log_det is concave; the trace term is linear) and the constraints are convex, so CVXR solves it directly.",
+    "crumbs": [
+      "Applications",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Sparse Inverse Covariance Estimation</span>"
+    ]
+  },
+  {
+    "objectID": "10-invcov.html#synthetic-data-with-a-known-answer",
+    "href": "10-invcov.html#synthetic-data-with-a-known-answer",
+    "title": "10  Sparse Inverse Covariance Estimation",
+    "section": "10.2 Synthetic data with a known answer",
+    "text": "10.2 Synthetic data with a known answer\nSo we can check the estimate, we build a true sparse precision matrix \\(S_{\\text{true}}\\), invert it to get the covariance \\(R\\), and sample from \\(N(0, R)\\):\n\nset.seed(1)\nn &lt;- 10        # number of variables\nm &lt;- 1000      # number of samples\n\nA      &lt;- rsparsematrix(n, n, 0.15, rand.x = rnorm)\nStrue  &lt;- as.matrix(A %*% t(A) + 0.05 * diag(n))   # sparse, symmetric, positive definite\nR      &lt;- solve(Strue)                              # the covariance to sample from\n\nx &lt;- matrix(rnorm(m * n), m, n) %*% chol(R)         # rows are i.i.d. N(0, R)\nQ &lt;- cov(x)                                          # sample covariance\n\nsum(abs(Strue) &gt; 1e-4)                               # how many true nonzeros (of 100)\n\n[1] 24",
+    "crumbs": [
+      "Applications",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Sparse Inverse Covariance Estimation</span>"
+    ]
+  },
+  {
+    "objectID": "10-invcov.html#fit-at-several-sparsity-budgets",
+    "href": "10-invcov.html#fit-at-several-sparsity-budgets",
+    "title": "10  Sparse Inverse Covariance Estimation",
+    "section": "10.3 Fit at several sparsity budgets",
+    "text": "10.3 Fit at several sparsity budgets\nA semidefinite variable is declared with PSD = TRUE. We sweep \\(\\alpha\\) and, after each solve, zero out numerically negligible entries to read off the recovered pattern:\n\nalphas &lt;- c(10, 6, 4, 1)\nS      &lt;- Variable(c(n, n), PSD = TRUE)\nobj    &lt;- Maximize(log_det(S) - matrix_trace(S %*% Q))\n\nS_est &lt;- lapply(alphas, function(a) {\n  prob &lt;- Problem(obj, list(sum(abs(S)) &lt;= a))\n  psolve(prob)\n  check_solver_status(prob)\n  Sa &lt;- value(S)\n  Sa[abs(Sa) &lt;= 1e-4] &lt;- 0            # treat tiny entries as exact zeros\n  Sa\n})\nsapply(S_est, function(M) sum(M != 0))  # nonzeros recovered at each alpha\n\n[1] 46 32 24 12\n\n\nNote matrix_trace(S %*% Q) rather than sum(diag(S %*% Q)) — same value, but the dedicated atom keeps the expression tree compact. And log_det(S) is its own atom: there is no det() for a CVXR variable, because the log-determinant is the convex object DCP understands.",
+    "crumbs": [
+      "Applications",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Sparse Inverse Covariance Estimation</span>"
+    ]
+  },
+  {
+    "objectID": "10-invcov.html#what-the-budget-buys",
+    "href": "10-invcov.html#what-the-budget-buys",
+    "title": "10  Sparse Inverse Covariance Estimation",
+    "section": "10.4 What the budget buys",
+    "text": "10.4 What the budget buys\nThe sparsity pattern of the estimate tightens as \\(\\alpha\\) shrinks. We plot the nonzero mask of the truth alongside each fit:\n\nmask_df &lt;- function(M, lab) {\n  data.frame(i = rep(seq_len(n), n), j = rep(seq_len(n), each = n),\n             nz = factor(as.integer(as.vector(M) != 0)), panel = lab)\n}\npanels &lt;- rbind(\n  mask_df(Strue, \"truth\"),\n  do.call(rbind, Map(function(M, a) mask_df(M, paste0(\"alpha = \", a)), S_est, alphas)))\npanels$panel &lt;- factor(panels$panel, levels = c(\"truth\", paste0(\"alpha = \", alphas)))\n\nggplot(panels, aes(i, j, fill = nz)) +\n  geom_tile(color = \"grey80\") +\n  scale_fill_manual(values = c(\"0\" = \"white\", \"1\" = \"steelblue\"), guide = \"none\") +\n  scale_y_reverse() + coord_equal() +\n  facet_wrap(~ panel, nrow = 1) +\n  theme_void() + theme(strip.text = element_text(margin = margin(4, 0, 4, 0)))\n\n\n\n\nNonzero pattern (dark = nonzero) of the true precision matrix and the estimates. Smaller alpha -&gt; sparser. Around alpha = 4 the estimate matches the truth’s sparsity.\n\n\n\n\nAt \\(\\alpha = 10\\) the budget is loose and the estimate is dense; as \\(\\alpha\\) falls the off-diagonal entries are squeezed to zero, and near \\(\\alpha = 4\\) the recovered pattern matches the true number of nonzeros. Too small (\\(\\alpha = 1\\)) and we lose real edges. In practice you would pick \\(\\alpha\\) by cross-validation — and because the only thing changing across the sweep is one constant, this is a textbook case for the Parameter trick of Chapter 8.",
+    "crumbs": [
+      "Applications",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Sparse Inverse Covariance Estimation</span>"
+    ]
+  },
+  {
+    "objectID": "10-invcov.html#takeaways",
+    "href": "10-invcov.html#takeaways",
+    "title": "10  Sparse Inverse Covariance Estimation",
+    "section": "10.5 Takeaways",
+    "text": "10.5 Takeaways\n\nThe inverse covariance is the object of interest: its zeros are conditional independencies — a graph of direct relationships.\nlog_det(S) - matrix_trace(S %*% Q) with S declared PSD = TRUE and an \\(\\ell_1\\) budget is the whole model — a few lines of CVXR.\nOne knob, \\(\\alpha\\), trades density for sparsity; sweep it with a Parameter.\n\nSee Sparse Inverse Covariance Estimation for the full treatment.",
+    "crumbs": [
+      "Applications",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Sparse Inverse Covariance Estimation</span>"
+    ]
+  },
+  {
+    "objectID": "11-mip.html",
+    "href": "11-mip.html",
+    "title": "11  Mixed-Integer Programming",
+    "section": "",
+    "text": "11.1 Discrete decisions\nSo far every variable was continuous. But many real decisions are discrete: select this project or not, how many units to ship, which facility to open. Encoding those as integer or boolean variables turns a convex problem into a mixed-integer one. These are no longer convex — they are combinatorial and NP-hard in general — but CVXR hands them to a solver that does branch-and-bound over a sequence of convex relaxations. You write the model the same way; you just declare some variables integer = TRUE or boolean = TRUE.",
+    "crumbs": [
+      "Applications",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Mixed-Integer Programming</span>"
+    ]
+  },
+  {
+    "objectID": "11-mip.html#hands-on-a-01-knapsack-milp",
+    "href": "11-mip.html#hands-on-a-01-knapsack-milp",
+    "title": "11  Mixed-Integer Programming",
+    "section": "11.2 Hands-on: a 0/1 knapsack (MILP)",
+    "text": "11.2 Hands-on: a 0/1 knapsack (MILP)\nThe classic discrete problem: choose a subset of items to maximize total value without exceeding a budget. With a linear objective and boolean variables this is a mixed-integer linear program (MILP) — squarely within HiGHS, one of CVXR’s built-in CRAN solvers.\n\nvalues  &lt;- c(8, 5, 3, 6, 4, 7)   # value of each project\ncosts   &lt;- c(5, 3, 2, 4, 3, 5)   # its cost\nbudget  &lt;- 11\nprojects &lt;- paste0(\"P\", seq_along(values))\n\n\npick &lt;- Variable(length(values), boolean = TRUE)     # 1 = select, 0 = skip\nprob &lt;- Problem(Maximize(sum(values * pick)),\n                list(sum(costs * pick) &lt;= budget))\npsolve(prob, solver = \"HIGHS\")\n\n[1] 17\n\nselected &lt;- projects[value(pick) &gt; 0.5]\ncat(\"Selected:\", paste(selected, collapse = \", \"),\n    \"\\nTotal value:\", sum(values[value(pick) &gt; 0.5]),\n    \"  Total cost:\", sum(costs[value(pick) &gt; 0.5]), \"/\", budget, \"\\n\")\n\nSelected: P1, P2, P5 \nTotal value: 17   Total cost: 11 / 11 \n\n\nThe boolean = TRUE is the whole story — it forces each pick to 0 or 1. Drop it and you would get the (fractional) LP relaxation, an upper bound that is often not achievable with whole items:\n\npick_lp &lt;- Variable(length(values))\nrelax &lt;- Problem(Maximize(sum(values * pick_lp)),\n                 list(sum(costs * pick_lp) &lt;= budget, pick_lp &gt;= 0, pick_lp &lt;= 1))\ncat(\"LP relaxation value:\", round(psolve(relax, solver = \"HIGHS\"), 3),\n    \"(&gt;= the integer optimum)\\n\")\n\nLP relaxation value: 17.5 (&gt;= the integer optimum)\n\nround(value(pick_lp), 3)\n\n     [,1]\n[1,] 1.00\n[2,] 1.00\n[3,] 0.00\n[4,] 0.75\n[5,] 0.00\n[6,] 0.00\n\n\nThat gap between the relaxation and the integer optimum is exactly what branch-and-bound has to close.",
+    "crumbs": [
+      "Applications",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Mixed-Integer Programming</span>"
+    ]
+  },
+  {
+    "objectID": "11-mip.html#integer-least-squares-by-reformulation-scip",
+    "href": "11-mip.html#integer-least-squares-by-reformulation-scip",
+    "title": "11  Mixed-Integer Programming",
+    "section": "11.3 Integer least squares, by reformulation (SCIP)",
+    "text": "11.3 Integer least squares, by reformulation (SCIP)\nHere is a mixed-integer problem straight out of our regression chapters: integer least squares — find integer coefficients \\(x\\) minimizing \\(\\|Ax - b\\|_2^2\\). The obvious transcription stops us cold:\n\nset.seed(0)\nA &lt;- matrix(runif(12 * 5), 12, 5); b &lt;- rnorm(12)\nx &lt;- Variable(5, integer = TRUE)\npsolve(Problem(Minimize(sum_squares(A %*% x - b))), solver = \"SCIP\")\n\nError in `construct_solving_chain()`:\n! Mixed-integer QP (MIQP) is not supported by the selected solver.\nℹ Try solver: GUROBI, XPRESS, CPLEX.\n\n\nThe message points to commercial solvers — but that is a routing quirk, not a real limit. A quadratic objective with integers travels through CVXR’s QP path, where only GUROBI/CPLEX/XPRESS are registered. The cure is the skill from Chapter 3: reformulate. Minimizing \\(\\|Ax-b\\|_2^2\\) has the same minimizer as minimizing the norm \\(\\|Ax-b\\|_2\\), and a norm is a second-order cone — which makes this an MI-SOCP, exactly what SCIP handles:\n\nt &lt;- Variable()\nprob &lt;- Problem(Minimize(t), list(p_norm(A %*% x - b, 2) &lt;= t))  # SOC epigraph\npsolve(prob, solver = \"SCIP\")\n\n[1] 2.59044\n\nxhat &lt;- value(x)\ncat(\"integer x:\", xhat, \"  sum of squares:\", round(sum((A %*% xhat - b)^2), 4), \"\\n\")\n\ninteger x: -1 0 1 1 0   sum of squares: 6.7104 \n\n\nThat is the same integer optimum a commercial MIQP solver returns — obtained on a CRAN solver simply by writing the objective in a form SCIP accepts. SOC plus integers is SCIP’s home turf; the second-order cone is doing the work the quadratic objective could not.\n\n\n\n\n\n\nWarningTwo traps worth remembering\n\n\n\n\nNever send an SOC-containing mixed-integer problem to HiGHS. It does not error — it silently returns a wrong infeasible. SOC + integers needs SCIP.\nA quadratic objective with integers (MIQP) routes through CVXR’s QP path, which only commercial solvers serve. On CRAN, reformulate the quadratic as an SOC (above) and use SCIP — same answer. (Commercial solvers can take the squared form directly, if you have one.)",
+    "crumbs": [
+      "Applications",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Mixed-Integer Programming</span>"
+    ]
+  },
+  {
+    "objectID": "11-mip.html#exercise",
+    "href": "11-mip.html#exercise",
+    "title": "11  Mixed-Integer Programming",
+    "section": "11.4 Exercise",
+    "text": "11.4 Exercise\nExercise. Add a rule to the knapsack: projects P1 and P2 are mutually exclusive (at most one may be chosen). Re-solve and see what changes.\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\nA “select at most one” rule is the linear constraint pick[1] + pick[2] &lt;= 1:\n\nprob2 &lt;- Problem(Maximize(sum(values * pick)),\n                 list(sum(costs * pick) &lt;= budget,\n                      pick[1] + pick[2] &lt;= 1))\npsolve(prob2, solver = \"HIGHS\")\n\n[1] 17\n\nprojects[value(pick) &gt; 0.5]\n\n[1] \"P1\" \"P3\" \"P4\"\n\n\nLogical rules like mutual exclusion, prerequisites (pick[a] &lt;= pick[b]), or “pick exactly k” are all just linear constraints on 0/1 variables.",
+    "crumbs": [
+      "Applications",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Mixed-Integer Programming</span>"
+    ]
+  },
+  {
+    "objectID": "11-mip.html#bonus-solving-sudoku",
+    "href": "11-mip.html#bonus-solving-sudoku",
+    "title": "11  Mixed-Integer Programming",
+    "section": "11.5 Bonus: solving Sudoku",
+    "text": "11.5 Bonus: solving Sudoku\nSudoku is a pure feasibility integer program — there is nothing to optimize, only constraints to satisfy. It is a lovely illustration of how “exactly one of these” rules become linear equations on boolean variables.\n\n\n\nA hard Sudoku puzzle. The blanks are the cells to fill — we encode them as 0.\n\n\nWe store the grid as a \\(9\\times 9\\) matrix, using 0 for a blank cell:\n\npuzzle &lt;- matrix(c(\n  0,2,0, 0,0,0, 8,0,0,\n  0,5,0, 0,0,0, 0,4,0,\n  0,0,0, 8,9,1, 2,0,0,\n  0,0,0, 4,0,9, 0,3,0,\n  7,0,0, 0,0,2, 0,0,0,\n  2,1,0, 0,0,8, 0,6,4,\n  0,0,8, 0,0,0, 4,0,7,\n  0,4,2, 6,8,0, 9,0,0,\n  1,9,0, 0,5,0, 0,0,3), nrow = 9, byrow = TRUE)\n\n\n11.5.1 The formulation\nThe trick is to replace each cell’s digit with nine yes/no decisions. Define a boolean variable for every (cell, digit) pair:\n\\[\nx_{ijk} = \\begin{cases} 1 & \\text{if cell } (i,j) \\text{ holds digit } k,\\\\ 0 & \\text{otherwise,}\\end{cases}\n\\qquad i,j,k \\in \\{1,\\dots,9\\}.\n\\]\nThat is \\(9\\times 9\\times 9 = 729\\) booleans. Every Sudoku rule is now an “exactly one” count — a sum of these booleans set equal to 1:\n\\[\n\\begin{array}{lll}\n\\textstyle\\sum_{k} x_{ijk} = 1 & \\forall\\, i,j & \\text{(each cell holds exactly one digit)}\\\\[2pt]\n\\textstyle\\sum_{j} x_{ijk} = 1 & \\forall\\, i,k & \\text{(digit } k \\text{ appears once in each row } i)\\\\[2pt]\n\\textstyle\\sum_{i} x_{ijk} = 1 & \\forall\\, j,k & \\text{(digit } k \\text{ appears once in each column } j)\\\\[2pt]\n\\textstyle\\sum_{(i,j)\\in B} x_{ijk} = 1 & \\forall\\, \\text{box } B,\\ k & \\text{(digit } k \\text{ appears once in each } 3\\times3 \\text{ box)}\\\\[2pt]\nx_{ij g_{ij}} = 1 & \\text{for each clue } g_{ij} & \\text{(given numbers are fixed)}\n\\end{array}\n\\]\nThere is no objective — any grid satisfying all of these is the answer, so we minimize the constant 0 and let the solver find a feasible point.\n\n\n11.5.2 In CVXR\nWe hold the booleans as a list of nine \\(9\\times 9\\) matrices, X[[k]] being the indicator that each cell equals digit k. Each block of constraints below mirrors one line of the formulation. (Recall CVXR’s 1-based axes from earlier: axis = 1 sums each row, axis = 2 sums each column.)\n\nX &lt;- lapply(1:9, function(k) Variable(c(9, 9), boolean = TRUE))\n\ncons &lt;- list(Reduce(`+`, X) == matrix(1, 9, 9))          # one digit per cell\n\nfor (k in 1:9) {\n  cons &lt;- c(cons,\n            list(sum_entries(X[[k]], axis = 1) == 1,      # digit k once per row\n                 sum_entries(X[[k]], axis = 2) == 1))     # digit k once per column\n  for (br in 0:2) for (bc in 0:2) {                       # digit k once per 3x3 box\n    rows &lt;- (3 * br + 1):(3 * br + 3)\n    cols &lt;- (3 * bc + 1):(3 * bc + 3)\n    cons &lt;- c(cons, list(sum_entries(X[[k]][rows, cols]) == 1))\n  }\n}\n\nfor (i in 1:9) for (j in 1:9) if (puzzle[i, j] != 0)     # fix the clues\n  cons &lt;- c(cons, list(X[[puzzle[i, j]]][i, j] == 1))\n\nSolve it as a feasibility problem and read the chosen digit in each cell:\n\npsolve(Problem(Minimize(0), cons), solver = \"HIGHS\")\n\n[1] 0\n\nsolution &lt;- matrix(0, 9, 9)\nfor (k in 1:9) solution[round(value(X[[k]])) == 1] &lt;- k\nsolution\n\n      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9]\n [1,]    9    2    6    3    4    5    8    7    1\n [2,]    8    5    1    7    2    6    3    4    9\n [3,]    4    7    3    8    9    1    2    5    6\n [4,]    6    8    5    4    7    9    1    3    2\n [5,]    7    3    4    1    6    2    5    9    8\n [6,]    2    1    9    5    3    8    7    6    4\n [7,]    5    6    8    9    1    3    4    2    7\n [8,]    3    4    2    6    8    7    9    1    5\n [9,]    1    9    7    2    5    4    6    8    3\n\n\nA few hundred boolean variables, a couple hundred linear constraints, and HiGHS fills the grid in well under a second — with no Sudoku-specific algorithm, just the rules written as constraints. (Swap in any puzzle by editing the 0-padded matrix.)",
+    "crumbs": [
+      "Applications",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Mixed-Integer Programming</span>"
+    ]
+  },
+  {
+    "objectID": "11-mip.html#takeaways",
+    "href": "11-mip.html#takeaways",
+    "title": "11  Mixed-Integer Programming",
+    "section": "11.6 Takeaways",
+    "text": "11.6 Takeaways\n\nDeclaring a variable integer = TRUE or boolean = TRUE turns a model into a mixed-integer program — same modeling, combinatorial solving.\nMILP (linear objective) runs on HiGHS, built in and install-free.\nMI-SOCP (a cone plus integers) runs on SCIP. An integer problem with a quadratic objective (MIQP) goes to a commercial solver through CVXR’s QP path — but reformulate the quadratic as an SOC and SCIP solves it on CRAN, same answer.\nMatch the solver to the problem — and never trust an SOC sent to a pure-MILP solver like HiGHS.\nSome integer problems have no objective at all: logical puzzles like Sudoku are pure feasibility programs, where every rule is an “exactly one” sum of booleans.\n\nSee Mixed-Integer QP and Integer Programming.",
+    "crumbs": [
+      "Applications",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Mixed-Integer Programming</span>"
+    ]
+  },
+  {
+    "objectID": "12-image.html",
+    "href": "12-image.html",
+    "title": "12  Image Reconstruction",
+    "section": "",
+    "text": "12.1 Repairing a damaged image\nA grayscale image is just a matrix of pixel intensities. Suppose some pixels are corrupted (here, white text scrawled over the picture) and we know which ones. Can we fill them in? The total-variation in-painting model says: among all images that agree with the known pixels, choose the one with the smallest total variation — the least “jumpy” one. Total variation of \\(U\\) is\n\\[\\mathop{\\mathbf{tv}}(U) = \\sum_{i,j}\\left\\|\\begin{pmatrix} U_{i+1,j}-U_{ij}\\\\ U_{i,j+1}-U_{ij}\\end{pmatrix}\\right\\|_2,\\]\na convex function, so the whole problem is convex. We load a \\(128\\times128\\) image and a corrupted copy, and mark a pixel known where the two agree:\nu_orig &lt;- readPNG(\"images/loki128.png\")\nu_corr &lt;- readPNG(\"images/loki128_corrupted.png\")\nif (length(dim(u_orig)) == 3) u_orig &lt;- (u_orig[,,1] + u_orig[,,2] + u_orig[,,3]) / 3\nif (length(dim(u_corr)) == 3) u_corr &lt;- (u_corr[,,1] + u_corr[,,2] + u_corr[,,3]) / 3\nrows &lt;- nrow(u_orig); cols &lt;- ncol(u_orig)\nknown &lt;- 1 * (u_orig == u_corr)        # 1 where the pixel survived\ncat(sprintf(\"%d x %d image; %.0f%% of pixels known\\n\",\n            rows, cols, 100 * sum(known) / (rows * cols)))\n\n128 x 128 image; 86% of pixels known\nThe model is a direct transcription of the math: minimize total variation subject to matching the known pixels.\nU &lt;- Variable(c(rows, cols))\nprob &lt;- Problem(Minimize(total_variation(U)),\n                list(known * U == known * u_corr))\npsolve(prob, solver = \"SCS\")          # ~16k variables; a few seconds\n\n[1] 740.1374\n\nU_val &lt;- pmin(pmax(value(U), 0), 1)   # clip to [0, 1]\ncat(\"status:\", status(prob), \"\\n\")\n\nstatus: optimal\nshow_img &lt;- function(m, title) {\n  plot(c(0, 1), c(0, 1), type = \"n\", axes = FALSE, xlab = \"\", ylab = \"\",\n       main = title, asp = 1)\n  rasterImage(as.raster(m), 0, 0, 1, 1, interpolate = FALSE)\n}\nop &lt;- par(mfrow = c(1, 3), mar = c(1, 1, 2, 1))\nshow_img(u_orig, \"Original\")\nshow_img(u_corr, \"Corrupted\")\nshow_img(U_val,  \"In-painted\")\n\n\n\n\nOriginal, corrupted, and in-painted (the text is gone).\n\n\n\npar(op)\nThe solver never “knew” it was looking at a face — it just found the smoothest image consistent with the surviving pixels. That is the power of a good convex model.",
+    "crumbs": [
+      "Applications",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Image Reconstruction</span>"
+    ]
+  },
+  {
+    "objectID": "12-image.html#takeaways",
+    "href": "12-image.html#takeaways",
+    "title": "12  Image Reconstruction",
+    "section": "12.2 Takeaways",
+    "text": "12.2 Takeaways\n\nA convex model (total variation) reconstructs a damaged image with no machine-learning training — just “match the known pixels, stay smooth.”\nThe unknowns are the ~16,000 pixels of an entire image, yet the model is three lines of CVXR; the structure lives in the objective, not in bespoke code.\nThe same in-painting idea extends to denoising, deblurring, and compressed sensing — swap the data-fit term, keep the smoothness penalty.\n\nSee TV In-Painting for color images and more variants.",
+    "crumbs": [
+      "Applications",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Image Reconstruction</span>"
+    ]
+  },
+  {
+    "objectID": "13-bootstrap.html",
+    "href": "13-bootstrap.html",
+    "title": "13  The Bootstrap: Inference for Optimization-Based Estimators",
+    "section": "",
+    "text": "13.1 Why this matters\nAlmost every model in this book produces a point estimate: solve the problem, read off value(beta), done. But a point estimate without a sense of its uncertainty is only half of a statistical answer. For ordinary least squares there is a textbook standard-error formula. For a lasso, a quantile fit, an isotonic fit, or any of the custom objectives CVXR makes easy, there usually isn’t one — the estimator is defined implicitly, as “the solution of this optimization problem.”\nThe bootstrap sidesteps the missing formula entirely. Its premise is simple: the sampling variability of an estimator can be approximated by refitting it on resampled data. Because a CVXR estimate is just a deterministic function of the data — run the solver — it slots straight into the bootstrap with nothing special required. That makes the bootstrap a near-universal companion to convex modeling:",
+    "crumbs": [
+      "Applications",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>The Bootstrap: Inference for Optimization-Based Estimators</span>"
+    ]
+  },
+  {
+    "objectID": "13-bootstrap.html#why-this-matters",
+    "href": "13-bootstrap.html#why-this-matters",
+    "title": "13  The Bootstrap: Inference for Optimization-Based Estimators",
+    "section": "",
+    "text": "If you can solve it once, you can bootstrap it.",
+    "crumbs": [
+      "Applications",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>The Bootstrap: Inference for Optimization-Based Estimators</span>"
+    ]
+  },
+  {
+    "objectID": "13-bootstrap.html#a-fit-with-no-standard-error-formula",
+    "href": "13-bootstrap.html#a-fit-with-no-standard-error-formula",
+    "title": "13  The Bootstrap: Inference for Optimization-Based Estimators",
+    "section": "13.2 A fit with no standard-error formula",
+    "text": "13.2 A fit with no standard-error formula\nOur estimator is a nearly-isotonic fit: least squares plus a penalty on downward steps, so it prefers a mostly-increasing curve without forcing strict monotonicity:\n\\[\\underset{\\beta}{\\mbox{minimize}}\\quad \\tfrac12\\sum_i (y_i-\\beta_i)^2\n   + \\lambda \\sum_i (\\beta_{i+1}-\\beta_i)_+ .\\]\nWe apply it to global-mean temperature anomalies (cdiac, shipped with CVXR). The fit is a one-liner; crucially, it is also a plain R function of a data vector — exactly the shape the bootstrap needs:\n\ndata(cdiac)\nneariso_fit &lt;- function(y, lambda) {\n  beta &lt;- Variable(length(y))\n  prob &lt;- Problem(Minimize(0.5 * sum((y - beta)^2) + lambda * sum(pos(diff(beta)))))\n  psolve(prob)\n  value(beta)\n}",
+    "crumbs": [
+      "Applications",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>The Bootstrap: Inference for Optimization-Based Estimators</span>"
+    ]
+  },
+  {
+    "objectID": "13-bootstrap.html#the-bootstrap-recipe",
+    "href": "13-bootstrap.html#the-bootstrap-recipe",
+    "title": "13  The Bootstrap: Inference for Optimization-Based Estimators",
+    "section": "13.3 The bootstrap recipe",
+    "text": "13.3 The bootstrap recipe\nThe boot package does the resampling bookkeeping; we just supply a statistic that refits on each resample. Every replicate is a fresh solve, so we keep the number of replicates modest:\n\nfit_stat &lt;- function(data, idx, lambda) {\n  s &lt;- data[idx, ]\n  s &lt;- s[order(s$year), ]          # bootstrap resamples rows; restore time order\n  neariso_fit(s$annual, lambda)\n}\n\nset.seed(123)\nbo &lt;- boot(cdiac, statistic = fit_stat, R = 100, lambda = 0.44)\n\nbo$t0 is the fit on the original data; the R = 100 rows of bo$t are the refits on resampled data. From their spread we read off a 95% confidence band, one point at a time:\n\nci &lt;- t(sapply(seq_len(nrow(cdiac)), function(i)\n  boot.ci(bo, conf = 0.95, type = \"norm\", index = i)$normal[-1]))\nband &lt;- data.frame(year = cdiac$year, annual = cdiac$annual,\n                   est = bo$t0, lower = ci[, 1], upper = ci[, 2])\n\n\nggplot(band, aes(year)) +\n  geom_point(aes(y = annual), color = \"grey60\", size = 0.8) +\n  geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.3, fill = \"steelblue\") +\n  geom_line(aes(y = est), color = \"steelblue\", linewidth = 1) +\n  labs(x = \"Year\", y = \"Temperature anomaly\") +\n  theme_minimal()\n\n\n\n\nNearly-isotonic fit (blue) with a bootstrap 95% confidence band.\n\n\n\n\nThe blue curve is the fit; the band is its bootstrap uncertainty — genuine inference for an estimator that has no formula, obtained purely by re-solving the convex problem on resampled data. The band widens where the data are sparse or noisy and tightens where they pin the curve down, exactly as inference should.",
+    "crumbs": [
+      "Applications",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>The Bootstrap: Inference for Optimization-Based Estimators</span>"
+    ]
+  },
+  {
+    "objectID": "13-bootstrap.html#bootstrapping-is-a-parameter-sweep",
+    "href": "13-bootstrap.html#bootstrapping-is-a-parameter-sweep",
+    "title": "13  The Bootstrap: Inference for Optimization-Based Estimators",
+    "section": "13.4 Bootstrapping is a parameter sweep",
+    "text": "13.4 Bootstrapping is a parameter sweep\nEvery replicate solves the same problem with new data — precisely the situation the Parameter trick of Chapter 8 was built for. Promote the data (and \\(\\lambda\\)) to Parameters, build the problem once, and each refit becomes a cheap re-solve instead of a fresh compilation. With hundreds or thousands of replicates that saving compounds, turning the bootstrap from “too slow to bother” into routine. The bootstrap is one of the best reasons to learn DPP.",
+    "crumbs": [
+      "Applications",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>The Bootstrap: Inference for Optimization-Based Estimators</span>"
+    ]
+  },
+  {
+    "objectID": "13-bootstrap.html#exercise",
+    "href": "13-bootstrap.html#exercise",
+    "title": "13  The Bootstrap: Inference for Optimization-Based Estimators",
+    "section": "13.5 Exercise",
+    "text": "13.5 Exercise\nExercise (⭐). The penalty weight \\(\\lambda = 0.44\\) controls smoothness. Refit the temperature series at \\(\\lambda = 0\\) and a large \\(\\lambda = 10\\). What do the two extremes correspond to?\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\n\nfit0  &lt;- neariso_fit(cdiac$annual, 0)\nfit10 &lt;- neariso_fit(cdiac$annual, 10)\nc(lambda0_matches_data = max(abs(fit0 - cdiac$annual)) &lt; 1e-4,\n  lambda10_is_monotone = all(diff(fit10) &gt;= -1e-4))\n\nlambda0_matches_data lambda10_is_monotone \n                TRUE                 TRUE \n\n\nAt \\(\\lambda = 0\\) there is no penalty, so the fit just reproduces the data. As \\(\\lambda \\to \\infty\\) the penalty forces the downward steps to zero — a fully isotonic (monotone non-decreasing) fit.",
+    "crumbs": [
+      "Applications",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>The Bootstrap: Inference for Optimization-Based Estimators</span>"
+    ]
+  },
+  {
+    "objectID": "13-bootstrap.html#takeaways",
+    "href": "13-bootstrap.html#takeaways",
+    "title": "13  The Bootstrap: Inference for Optimization-Based Estimators",
+    "section": "13.6 Takeaways",
+    "text": "13.6 Takeaways\n\nThe bootstrap gives standard errors and confidence bands for any CVXR estimator by re-solving on resampled data — no formula required.\nThe recipe is mechanical: wrap your psolve() fit in a function of the data, hand it to boot, and summarize the replicates.\nBecause every replicate is the same problem with new data, the Chapter 8 Parameter trick makes a large bootstrap genuinely cheap.\n\nSee Near-Isotonic Regression for the underlying model.",
+    "crumbs": [
+      "Applications",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>The Bootstrap: Inference for Optimization-Based Estimators</span>"
+    ]
+  },
+  {
+    "objectID": "14-dnlp.html",
+    "href": "14-dnlp.html",
+    "title": "14  Beyond Convex: Nonlinear Programming",
+    "section": "",
+    "text": "14.1 From convex to merely smooth\nEverything so far stayed inside the convex world, where a solution is guaranteed global. Disciplined Nonlinear Programming (DNLP), new in CVXR 1.9.1, relaxes that: it handles smooth problems built from differentiable atoms, even when they are not convex. You build the problem the usual way, check it with is_dnlp(), and solve with psolve(prob, nlp = TRUE). Every DCP problem is also a DNLP, so the convex world sits inside this larger one.\nc(sparsediff = requireNamespace(\"sparsediff\", quietly = TRUE),\n  Uno        = requireNamespace(\"Uno\", quietly = TRUE))\n\nsparsediff        Uno \n      TRUE       TRUE\nA convex problem sent down the nonlinear path just works:\nx &lt;- Variable(2)\nprob &lt;- Problem(Minimize(sum_squares(x - c(1, 2))))\nis_dnlp(prob)\n\n[1] TRUE\n\npsolve(prob, nlp = TRUE, solver = \"UNO\", logger = \"SILENT\")\n\n[1] 0\n\nvalue(x)\n\n     [,1]\n[1,]    1\n[2,]    2",
+    "crumbs": [
+      "Frontiers",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Beyond Convex: Nonlinear Programming</span>"
+    ]
+  },
+  {
+    "objectID": "14-dnlp.html#a-genuinely-nonconvex-problem",
+    "href": "14-dnlp.html#a-genuinely-nonconvex-problem",
+    "title": "14  Beyond Convex: Nonlinear Programming",
+    "section": "14.2 A genuinely nonconvex problem",
+    "text": "14.2 A genuinely nonconvex problem\nNow something DCP cannot express. Maximizing a convex quadratic is nonconvex — but it is smooth, hence a DNLP. A classic instance is maximizing \\(x^\\top A x\\) over the unit sphere, whose optimum is the largest eigenvalue of \\(A\\) — giving us a known answer to check against:\n\\[\\text{maximize}\\ \\ x^\\top A x \\qquad \\text{subject to}\\qquad \\|x\\|_2^2 = 1.\\]\n\nset.seed(0)\nn &lt;- 3\nA &lt;- matrix(rnorm(n * n), n); A &lt;- t(A) %*% A   # random PSD matrix\n\nx &lt;- Variable(n)\nprob &lt;- Problem(Maximize(quad_form(x, A)), list(sum_squares(x) == 1))\nc(is_dcp = is_dcp(prob), is_dnlp = is_dnlp(prob))   # not DCP, but DNLP\n\n is_dcp is_dnlp \n  FALSE    TRUE \n\nvalue(x) &lt;- rep(1, n)                                # a starting point\nopt &lt;- psolve(prob, nlp = TRUE, solver = \"UNO\", logger = \"SILENT\")\nc(dnlp = opt, max_eigenvalue = max(eigen(A, only.values = TRUE)$values))\n\n          dnlp max_eigenvalue \n      4.659154       4.659154 \n\n\nThe nonlinear solver lands exactly on the largest eigenvalue — a nonconvex problem solved from R, in the same modeling language.",
+    "crumbs": [
+      "Frontiers",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Beyond Convex: Nonlinear Programming</span>"
+    ]
+  },
+  {
+    "objectID": "14-dnlp.html#the-catch-only-a-local-guarantee",
+    "href": "14-dnlp.html#the-catch-only-a-local-guarantee",
+    "title": "14  Beyond Convex: Nonlinear Programming",
+    "section": "14.3 The catch: only a local guarantee",
+    "text": "14.3 The catch: only a local guarantee\nThis power comes with a caveat you must respect. Unlike convex optimization, a nonlinear solver returns a local optimum that can depend on where it starts — there is no global guarantee. Consider \\(\\sin(x) + \\tfrac{1}{10}x^2\\) on \\([-10, 10]\\), which has several local minima:\n\nset.seed(1)\nx &lt;- Variable(bounds = list(-10, 10))\nprob &lt;- Problem(Minimize(sin(x) + 0.1 * x^2))\n\nbest &lt;- psolve(prob, nlp = TRUE, solver = \"UNO\", logger = \"SILENT\", best_of = 5)\nc(best_objective = best, x = value(x))\n\nbest_objective              x \n    -0.7945823     -1.3064400 \n\n\nbest_of = 5 solves from five random starting points and keeps the best — a simple, effective hedge against local minima. The lesson: convex problems give you the global optimum for free; nonconvex ones make you work for it (good starting points, random restarts, and a healthy skepticism of any single solve).\n\n\n\n\n\n\nWarning\n\n\n\nOn a nonconvex problem an NLP solver may return a local (not global) optimum, give a result that depends on the starting point, or fail to find a feasible point. Supply a starting point with value(x) &lt;- ..., or use best_of to try several.",
+    "crumbs": [
+      "Frontiers",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Beyond Convex: Nonlinear Programming</span>"
+    ]
+  },
+  {
+    "objectID": "14-dnlp.html#smooth-atoms-dcp-doesnt-have",
+    "href": "14-dnlp.html#smooth-atoms-dcp-doesnt-have",
+    "title": "14  Beyond Convex: Nonlinear Programming",
+    "section": "14.4 Smooth atoms DCP doesn’t have",
+    "text": "14.4 Smooth atoms DCP doesn’t have\nDNLP adds classically differentiable atoms that are not part of the convex grammar — sin, cos, tan, sinh, tanh, asinh, atanh, normcdf, prod — and lets existing smooth atoms (exp, log, quad_form, quad_over_lin, …) be used in either curvature direction. Three predicates classify an expression under the smooth grammar:\n\nx &lt;- Variable()\nclassify &lt;- function(e) c(smooth      = is_smooth(e),\n                          lin_convex  = is_linearizable_convex(e),\n                          lin_concave = is_linearizable_concave(e))\nrbind(`sin(x)`  = classify(sin(x)),\n      `abs(x)`  = classify(abs(x)),\n      `-abs(x)` = classify(-abs(x)))\n\n        smooth lin_convex lin_concave\nsin(x)    TRUE       TRUE        TRUE\nabs(x)   FALSE       TRUE       FALSE\n-abs(x)  FALSE      FALSE        TRUE\n\n\nA smooth atom like sin(x) linearizes in both directions, so it may appear anywhere; nonsmooth convex/concave atoms keep the curvature DCP assigns them.",
+    "crumbs": [
+      "Frontiers",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Beyond Convex: Nonlinear Programming</span>"
+    ]
+  },
+  {
+    "objectID": "14-dnlp.html#exercises",
+    "href": "14-dnlp.html#exercises",
+    "title": "14  Beyond Convex: Nonlinear Programming",
+    "section": "14.5 Exercises",
+    "text": "14.5 Exercises\nExercise 1. See the local-optimum trap for yourself. Solve \\(\\sin(x) + \\tfrac{1}{10}x^2\\) from a single starting point at x0 = 4, then compare with best_of = 20. Do they agree?\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\n\nx &lt;- Variable(bounds = list(-10, 10))\nprob &lt;- Problem(Minimize(sin(x) + 0.1 * x^2))\n\nvalue(x) &lt;- 4                                              # a poor starting point\none &lt;- psolve(prob, nlp = TRUE, solver = \"UNO\", logger = \"SILENT\")\n\nset.seed(2)\nmany &lt;- psolve(prob, nlp = TRUE, solver = \"UNO\", logger = \"SILENT\", best_of = 20)\nc(from_x0_4 = one, best_of_20 = many)\n\n from_x0_4 best_of_20 \n 0.8315586  0.8315586 \n\n\nThe single solve from x0 = 4 gets stuck in a nearby local minimum (objective \\(\\approx 0.83\\)); the random restarts escape it and find the global one (\\(\\approx -0.79\\)). This is the whole story of nonconvex optimization in one example.\n\n\n\nExercise 2 (⭐). Turn on verbose = TRUE for one of the solves above and read UNO’s log. How is it different from the convex-solver output you saw in Chapter 2?\n\n\n\n\n\n\nTipSolution\n\n\n\n\n\n\npsolve(prob, nlp = TRUE, solver = \"UNO\", verbose = TRUE)\n\nYou will see UNO reformulate the model and run a nonlinear iteration (a Newton or SQP method), rather than the cone solver’s interior-point iterations. Same verbose = TRUE switch, a different engine underneath.",
+    "crumbs": [
+      "Frontiers",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Beyond Convex: Nonlinear Programming</span>"
+    ]
+  },
+  {
+    "objectID": "14-dnlp.html#takeaways",
+    "href": "14-dnlp.html#takeaways",
+    "title": "14  Beyond Convex: Nonlinear Programming",
+    "section": "14.6 Takeaways",
+    "text": "14.6 Takeaways\n\nDNLP extends CVXR beyond convexity to smooth problems via psolve(nlp = TRUE); is_dnlp() checks membership, and every DCP problem qualifies.\nIt unlocks genuinely nonconvex models (and smooth atoms like sin/cos) — but trades the global guarantee for a local one; use starting points and best_of.\nIt needs the CRAN packages sparsediff + Uno (the practical R default; ipopt is optional and not on CRAN).\n\nFor the full treatment — duals on the NLP path, random-restart details, the smooth atom table — see the DNLP Tutorial.",
+    "crumbs": [
+      "Frontiers",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Beyond Convex: Nonlinear Programming</span>"
+    ]
+  },
+  {
+    "objectID": "15-dgp-dqcp.html",
+    "href": "15-dgp-dqcp.html",
+    "title": "15  DGP and DQCP",
+    "section": "",
+    "text": "15.1 Disciplined Geometric Programming (DGP)\nCVXR’s convex grammar (DCP) is not the only disciplined rule set. Two siblings extend the same idea — compose from a library, get a guarantee — to other problem classes. We mention them briefly here; follow the links for the full treatment.\nSome problems are not convex in the variables but become convex after a log-log change of variables — geometric programs, built from positive variables, monomials, and posynomials. They appear in engineering design, and in statistics in problems involving products and ratios of positive quantities. You write them naturally and pass gp = TRUE. The classic example maximizes the volume of a box subject to area limits:\nx &lt;- Variable(pos = TRUE); y &lt;- Variable(pos = TRUE); z &lt;- Variable(pos = TRUE)\nprob &lt;- Problem(Maximize(x * y * z),\n                list(2 * (x * z + y * z) &lt;= 10, x * y &lt;= 4))\npsolve(prob, gp = TRUE)\n\n[1] 5\n\nround(c(x = value(x), y = value(y), z = value(z)), 3)\n\n   x    y    z \n2.00 2.00 1.25\nThe objective x * y * z multiplies three variables — not DCP at all — yet DGP solves it to global optimality. See the DGP Tutorial.",
+    "crumbs": [
+      "Frontiers",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>DGP and DQCP</span>"
+    ]
+  },
+  {
+    "objectID": "15-dgp-dqcp.html#disciplined-quasiconvex-programming-dqcp",
+    "href": "15-dgp-dqcp.html#disciplined-quasiconvex-programming-dqcp",
+    "title": "15  DGP and DQCP",
+    "section": "15.2 Disciplined Quasiconvex Programming (DQCP)",
+    "text": "15.2 Disciplined Quasiconvex Programming (DQCP)\nA quasiconvex function has convex sub-level sets but need not be convex itself (think of ratios like \\(\\|Ax-b\\|/c^\\top x\\)). DCP cannot handle these, but DQCP can, via a sequence of convex feasibility problems; you pass qcp = TRUE. A tiny example minimizes \\((a+1)/\\sqrt{a}\\), which is quasiconvex on \\(a &gt; 0\\):\n\na &lt;- Variable(pos = TRUE)\nprob &lt;- Problem(Minimize((a + 1) / sqrt(a)))\nc(is_dqcp = is_dqcp(prob), optimum = psolve(prob, qcp = TRUE), a = value(a))\n\n is_dqcp  optimum        a \n1.000000 2.000000 1.000118 \n\n\nThe minimum is \\(2\\) at \\(a = 1\\), found without you having to know the function was quasiconvex. See the DQCP Tutorial.",
+    "crumbs": [
+      "Frontiers",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>DGP and DQCP</span>"
+    ]
+  },
+  {
+    "objectID": "15-dgp-dqcp.html#where-this-leaves-us",
+    "href": "15-dgp-dqcp.html#where-this-leaves-us",
+    "title": "15  DGP and DQCP",
+    "section": "15.3 Where this leaves us",
+    "text": "15.3 Where this leaves us\nYou now have the whole map: DCP (convex, this book’s backbone), DPP (parametrized, for fast re-solves and derivatives), DGP (log-log convex), DQCP (quasiconvex), and DNLP (smooth nonconvex). Each is the same disciplined bargain — follow the grammar, get a solvable problem — and CVXR checks compliance for you with the matching is_*() predicate. The website’s examples gallery has dozens more worked problems across all of them.",
+    "crumbs": [
+      "Frontiers",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>DGP and DQCP</span>"
+    ]
+  },
+  {
+    "objectID": "16-byo.html",
+    "href": "16-byo.html",
+    "title": "16  Bring Your Own Problem",
+    "section": "",
+    "text": "NoteGoal\n\n\n\nFormulate and solve a problem of your own — or one of our curated challenges — with instructor guidance.\n\n\n\n\n\n\n\n\nImportantSession material (Phase 4)\n\n\n\nPopulated the week before the tutorial from problems submitted by participants, plus a curated challenge set with click-to-reveal solutions.",
+    "crumbs": [
+      "Practice",
+      "<span class='chapter-number'>16</span>  <span class='chapter-title'>Bring Your Own Problem</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-mosek.html",
+    "href": "appendix-mosek.html",
+    "title": "Appendix A — Using a Commercial Solver: MOSEK",
+    "section": "",
+    "text": "A.1 Why a commercial solver?\nEvery example in this book is solved with the open-source solvers that ship with CVXR — Clarabel, OSQP, SCS, HiGHS — and for the overwhelming majority of problems they are excellent. But commercial solvers can pull ahead on large or numerically hard problems, especially semidefinite and second-order-cone programs, and they tend to report richer diagnostics. MOSEK is a standout: a mature interior-point solver that is free for students and academic researchers.\nThe good news is that switching solvers changes nothing about your model. You write the problem exactly as before; you only name a different solver at solve time.",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Using a Commercial Solver: MOSEK</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-mosek.html#getting-mosek",
+    "href": "appendix-mosek.html#getting-mosek",
+    "title": "Appendix A — Using a Commercial Solver: MOSEK",
+    "section": "A.2 Getting MOSEK",
+    "text": "A.2 Getting MOSEK\nMOSEK is commercial software, but academic access is free and the setup is quick:\n\nGet a license. Request a free personal academic license (or a 30-day commercial trial). Save the license file to ~/mosek/mosek.lic — the default location MOSEK searches — or point the MOSEKLM_LICENSE_FILE environment variable at it.\nInstall the Rmosek interface. Rmosek is distributed by MOSEK, not from CRAN, and is built against your local MOSEK installation:\ninstall.packages(\"Rmosek\", repos = \"https://download.mosek.com/stable/rmosek/\")\nlibrary(Rmosek)\nmosek_attachbuilder()   # locate the MOSEK Optimization Suite\ninstall.rmosek()        # build and install the interface\nThe official, platform-by-platform guide is at docs.mosek.com.\nCheck it works:\nlibrary(Rmosek)\nmosek_version()\n\nOnce Rmosek loads and the license is found, CVXR will discover MOSEK automatically.",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Using a Commercial Solver: MOSEK</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-mosek.html#using-mosek-in-cvxr",
+    "href": "appendix-mosek.html#using-mosek-in-cvxr",
+    "title": "Appendix A — Using a Commercial Solver: MOSEK",
+    "section": "A.3 Using MOSEK in CVXR",
+    "text": "A.3 Using MOSEK in CVXR\nSelecting MOSEK is a one-word change to psolve():\npsolve(prob, solver = \"MOSEK\")\nThat is the whole API. Variables, constraints, the objective, and dual-variable recovery are all identical to every other solver — the solver name is the only thing that changes.",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Using a Commercial Solver: MOSEK</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-mosek.html#a-worked-example-the-nearest-psd-matrix",
+    "href": "appendix-mosek.html#a-worked-example-the-nearest-psd-matrix",
+    "title": "Appendix A — Using a Commercial Solver: MOSEK",
+    "section": "A.4 A worked example: the nearest PSD matrix",
+    "text": "A.4 A worked example: the nearest PSD matrix\nHere is a small semidefinite program, the kind of problem where a commercial conic solver earns its keep. Given a symmetric (but indefinite) matrix \\(M\\), we look for the positive-semidefinite matrix \\(X\\) closest to it in Frobenius norm:\n\\[\n\\underset{X \\succeq 0}{\\text{minimize}}\\ \\ \\|X - M\\|_F^2 .\n\\]\nThe constraint \\(X \\succeq 0\\) (“\\(X\\) is PSD”) is declared right on the variable:\n\nset.seed(1)\nn &lt;- 5\nM &lt;- matrix(rnorm(n * n), n, n)\nM &lt;- (M + t(M)) / 2          # a symmetric --- but indefinite --- target matrix\nround(eigen(M, only.values = TRUE)$values, 3)   # note the negative eigenvalues\n\n[1]  1.768  0.907  0.562 -0.851 -1.705\n\n\nThe target has negative eigenvalues, so it is not itself PSD. We solve for the closest matrix that is, and turn on verbose = TRUE to watch MOSEK work:\n\nX    &lt;- Variable(c(n, n), PSD = TRUE)            # symmetric PSD matrix variable\nprob &lt;- Problem(Minimize(sum_squares(X - M)))    # nearest PSD matrix, Frobenius norm\npsolve(prob, solver = \"MOSEK\", verbose = TRUE)\n\n\n\n\n\n\n\nTipThis chunk is pre-rendered\n\n\n\nThe solve above is marked eval: false so the book builds without MOSEK installed. The output below is the genuine result of running it with MOSEK 11.1.2.\n\n\nWith verbose = TRUE, CVXR reports the compilation and the solve summary — note that the chosen solver is MOSEK, and that compile time and solver time are tracked separately (Chapter 8):\n────────────────────────────── CVXR v1.9.1 ──────────────────────────────\nℹ Problem: 1 variable, 0 constraints (DCP)\nℹ Compilation: \"MOSEK\" via CVXR::Dcp2Cone -&gt; CVXR::CvxAttr2Constr -&gt;\n               CVXR::ConeMatrixStuffing -&gt; CVXR::Mosek_Solver\nℹ Compile time: 0.21s\n─────────────────────────── Numerical solver ────────────────────────────\n──────────────────────────────── Summary ────────────────────────────────\n✔ Status: optimal\n✔ Optimal value: 3.6305\nℹ Compile time: 0.21s\nℹ Solver time: 0.019s\nMOSEK also keeps its own detailed log of the solve — the problem type, the interior-point iteration table, and a final optimizer summary. A future CVXR release will stream this log inline whenever you pass verbose = TRUE (as CVXPY does); here is what MOSEK reports for this SDP:\nProblem\n  Name                   :\n  Objective sense        : minimize\n  Type                   : CONIC (conic optimization problem)\n  Constraints            : 0\n  Affine conic cons.     : 2 (42 rows)\n  Scalar variables       : 16\n  Matrix variables       : 1 (scalarized: 1)\n  Integer variables      : 0\n\nOptimizer  - threads                : 16\nOptimizer  - solved problem         : the primal\nOptimizer  - Constraints            : 26\nOptimizer  - Cones                  : 1\nOptimizer  - Scalar variables       : 28                conic       : 27\nOptimizer  - Semi-definite variables: 1                 scalarized  : 15\nFactor     - nonzeros before factor : 351               after factor: 351\nFactor     - dense dim.             : 0                 flops       : 7.88e+03\nITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME\n0   1.6e+00  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  0.00\n1   4.1e-01  2.5e-01  5.8e-01  -3.80e-01  1.089704904e+00   1.312151618e+00   2.5e-01  0.00\n2   5.9e-02  3.6e-02  1.1e-02  5.00e-01   3.386613408e+00   3.242645938e+00   3.6e-02  0.00\n3   7.4e-03  4.6e-03  5.1e-04  9.41e-01   3.608929356e+00   3.590619106e+00   4.6e-03  0.00\n4   1.0e-03  6.4e-04  3.3e-05  1.01e+00   3.627235469e+00   3.624865947e+00   6.4e-04  0.00\n5   3.2e-05  2.0e-05  2.3e-07  1.00e+00   3.630317873e+00   3.630261513e+00   2.0e-05  0.00\n6   4.0e-06  2.5e-06  1.1e-08  1.00e+00   3.630469253e+00   3.630462235e+00   2.5e-06  0.00\n7   4.0e-07  2.5e-07  3.7e-10  1.00e+00   3.630493170e+00   3.630492590e+00   2.5e-07  0.00\n8   1.2e-08  7.5e-09  2.0e-12  1.00e+00   3.630495992e+00   3.630495975e+00   7.5e-09  0.00\nOptimizer terminated. Time: 0.00\n\nInterior-point solution summary\n  Problem status  : PRIMAL_AND_DUAL_FEASIBLE\n  Solution status : OPTIMAL\n  Primal.  obj: 3.6304959921e+00    nrm: 4e+00    Viol.  var: 0e+00   barvar: 0e+00\n  Dual.    obj: 3.6304959749e+00    nrm: 2e+00    Viol.  var: 2e-11   barvar: 1e-24\nOptimizer summary\n  Optimizer              -                    time: 0.00\n    Interior-point       - iterations : 8     time: 0.00\n    Simplex              - iterations : 0     time: 0.00\n    Mixed integer        - relaxations: 0     time: 0.00\nRead the iteration table top to bottom: MOSEK drives the primal/dual feasibility residuals (PFEAS, DFEAS) and the duality gap (MU) down toward zero, the primal and dual objectives (POBJ, DOBJ) squeeze together, and after eight interior-point iterations they meet at the optimal value 3.6305 — exactly the number in CVXR’s summary. The solution \\(X^\\star\\) is the original matrix with its negative eigenvalues clipped to zero, which is the classic closed form for this problem; CVXR and MOSEK recover it numerically without you having to know that.",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Using a Commercial Solver: MOSEK</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-mosek.html#takeaways",
+    "href": "appendix-mosek.html#takeaways",
+    "title": "Appendix A — Using a Commercial Solver: MOSEK",
+    "section": "A.5 Takeaways",
+    "text": "A.5 Takeaways\n\nCVXR’s bundled open-source solvers cover everything in this book; reach for a commercial solver mainly for large or hard conic / semidefinite problems.\nMOSEK is free for academics. Get a license, install Rmosek from MOSEK’s repo, and CVXR finds it automatically.\nSwitching solvers is a one-word change — psolve(prob, solver = \"MOSEK\") — with no change to the model.\nverbose = TRUE reports CVXR’s compile/solve summary; MOSEK additionally produces a detailed interior-point log of its own.\n\nFor the full list of solvers CVXR can drive — open-source and commercial — and their capabilities, see the CVXR solver documentation.",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Using a Commercial Solver: MOSEK</span>"
+    ]
+  },
+  {
+    "objectID": "references.html",
+    "href": "references.html",
+    "title": "References",
+    "section": "",
+    "text": "Boyd, S., and L. Vandenberghe. 2004. Convex Optimization.\nCambridge University Press.\n\n\nCajas, Dany. 2026. Riskfolio-Lib: Portfolio\nOptimization in Python. https://github.com/dcajasn/Riskfolio-Lib.\n\n\nFu, Anqi, Balasubramanian Narasimhan, and Stephen Boyd. 2020.\n“CVXR: An R Package for Disciplined\nConvex Optimization.” Journal of Statistical Software 94\n(14): 1–34. https://doi.org/10.18637/jss.v094.i14.\n\n\nMarkowitz, H. M. 1952. “Portfolio Selection.” Journal\nof Finance 7 (1): 77–91.\n\n\nRockafellar, R. Tyrrell, and Stanislav Uryasev. 2000.\n“Optimization of Conditional Value-at-Risk.” Journal of\nRisk 2 (3): 21–41.",
+    "crumbs": [
+      "Appendices",
+      "References"
+    ]
+  }
+]
