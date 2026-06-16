@@ -34,7 +34,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os:
+          - ubuntu-latest
+          - macos-latest
+          # - windows-latest
+          #   TEMPORARILY DISABLED. Ch14's DNLP solves fail on the current CRAN
+          #   Uno Windows binary (2.7.3-1), whose build omits the MUMPS linear
+          #   solver, so the interior-point path errors with "The linear solver
+          #   MUMPS is unknown". Fixed in Uno 2.7.4 (resolve dmumps_c via
+          #   R_GetCCallable; bnaras/Uno#3, merged). RESTORE this leg once Uno
+          #   2.7.4 is on CRAN.
 
     steps:
       - name: Check out repository
