@@ -1,0 +1,76 @@
+name: Render and Publish Book
+
+# Render the Quarto book on a clean Ubuntu runner and deploy the HTML site to
+# the gh-pages branch. Packages are installed straight from CRAN/P3M, mirroring
+# the attendee install line -- so a green build proves the tutorial reproduces
+# off the author's machine.
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+# Allow the built-in GITHUB_TOKEN to push the rendered site to gh-pages.
+permissions:
+  contents: write
+
+# Never run two deploys against the same ref at once.
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: release
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: release
+          use-public-rspm: true
+
+      - name: Install R package dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          # The attendee install line is install.packages(c("CVXR","scip","Uno",
+          # "sparsediff")); CVXR pulls clarabel/osqp/scs/highs automatically. The
+          # rest are the helper packages the chapters library(). pak resolves the
+          # required system libraries (e.g. gfortran for Uno's rmumps dependency).
+          packages: |
+            any::rmarkdown
+            any::knitr
+            any::CVXR
+            any::scip
+            any::Uno
+            any::sparsediff
+            any::ggplot2
+            any::tidyr
+            any::glmnet
+            any::nnls
+            any::boot
+            any::bench
+            any::png
+            any::RColorBrewer
+            any::expm
+            any::MASS
+            any::Matrix
+
+      - name: Render book (HTML)
+        run: quarto render --to html
+
+      - name: Publish to gh-pages
+        uses: quarto-dev/quarto-actions/publish@v2
+        with:
+          target: gh-pages
+          render: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
