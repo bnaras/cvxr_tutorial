@@ -1,9 +1,17 @@
 name: Render and Publish Book
 
-# Render the Quarto book on a clean Ubuntu runner and deploy the HTML site to
-# the gh-pages branch. Packages are installed straight from CRAN/P3M, mirroring
-# the attendee install line -- so a green build proves the tutorial reproduces
-# off the author's machine.
+# Render the Quarto book on clean runners installing packages straight from
+# CRAN/P3M -- the same line attendees run -- so a green build proves the
+# tutorial reproduces off the author's macOS box.
+#
+#   * ubuntu-latest  : render AND deploy the HTML site to gh-pages
+#   * macos-latest   : render only (cross-platform check, no deploy)
+#   * windows-latest : render only (cross-platform check, no deploy)
+#
+# ubuntu is the most different from the author's machine, so it catches the
+# most "works on my machine" drift; mac/Windows cover the OSes attendees
+# actually use. fail-fast is off so a red mac/Windows leg never blocks the
+# ubuntu deploy.
 
 on:
   push:
@@ -14,14 +22,19 @@ on:
 permissions:
   contents: write
 
-# Never run two deploys against the same ref at once.
+# A newer push supersedes an in-progress run (does not cancel matrix legs of
+# the same run).
 concurrency:
   group: publish-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build-deploy:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
       - name: Check out repository
@@ -43,7 +56,7 @@ jobs:
         with:
           # The attendee install line is install.packages(c("CVXR","scip","Uno",
           # "sparsediff")); CVXR pulls clarabel/osqp/scs/highs automatically. The
-          # rest are the helper packages the chapters library(). pak resolves the
+          # rest are the helper packages the chapters library(). pak resolves any
           # required system libraries (e.g. gfortran for Uno's rmumps dependency).
           packages: |
             any::rmarkdown
@@ -67,7 +80,9 @@ jobs:
       - name: Render book (HTML)
         run: quarto render --to html
 
+      # Deploy only from the Linux leg; mac/Windows are render-only checks.
       - name: Publish to gh-pages
+        if: matrix.os == 'ubuntu-latest'
         uses: quarto-dev/quarto-actions/publish@v2
         with:
           target: gh-pages
