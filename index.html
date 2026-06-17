@@ -9,7 +9,7 @@
 <meta name="author" content="Anqi Fu">
 <meta name="author" content="Balasubramanian Narasimhan">
 <meta name="author" content="Stephen Boyd">
-<meta name="dcterms.date" content="2026-06-16">
+<meta name="dcterms.date" content="2026-06-17">
 <meta name="description" content="A hands-on tutorial on disciplined convex optimization in R with CVXR, prepared for useR! 2026 (Warsaw).">
 
 <title>Convex Optimization in R Using CVXR</title>
@@ -365,6 +365,7 @@ div.csl-indent {
   <ul class="collapse">
   <li><a href="#who-this-is-for" id="toc-who-this-is-for" class="nav-link" data-scroll-target="#who-this-is-for">Who this is for</a></li>
   <li><a href="#how-to-use-this-book" id="toc-how-to-use-this-book" class="nav-link" data-scroll-target="#how-to-use-this-book">How to use this book</a></li>
+  <li><a href="#getting-the-materials" id="toc-getting-the-materials" class="nav-link" data-scroll-target="#getting-the-materials">Getting the materials</a></li>
   <li><a href="#installation" id="toc-installation" class="nav-link" data-scroll-target="#installation">Installation</a></li>
   <li><a href="#a-note-on-solvers" id="toc-a-note-on-solvers" class="nav-link" data-scroll-target="#a-note-on-solvers">A note on solvers</a></li>
   <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading">Further reading</a></li>
@@ -403,7 +404,7 @@ div.csl-indent {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">June 16, 2026</p>
+      <p class="date">June 17, 2026</p>
     </div>
   </div>
   
@@ -428,7 +429,7 @@ div.csl-indent {
 <h2 class="anchored" data-anchor-id="how-to-use-this-book">How to use this book</h2>
 <p>This is a <strong>hands-on</strong> book. You are meant to <em>run the code</em>, not just read it.</p>
 <ul>
-<li>Open the accompanying <strong>RStudio project</strong> and work through each chapter’s <code>.qmd</code> (or <code>.R</code>) by <strong>executing the code chunks</strong> as you read. You do not need to type anything — click <em>Run</em> (or press <code>Ctrl/Cmd+Enter</code>) and watch what happens.</li>
+<li>Open the accompanying <strong>project</strong> (see <em>Getting the materials</em> below) and work through each chapter’s <code>.qmd</code> by <strong>executing the code chunks</strong> as you read. You do not need to type anything — click <em>Run</em> (or press <code>Ctrl/Cmd+Enter</code>) and watch what happens.</li>
 <li>Each hands-on chapter ends with <strong>exercises</strong>. Try them, then click to reveal the solution:</li>
 </ul>
 <div class="callout callout-style-default callout-tip callout-titled">
@@ -447,6 +448,17 @@ div.csl-indent {
 </div>
 </div>
 </div>
+</section>
+<section id="getting-the-materials" class="level2">
+<h2 class="anchored" data-anchor-id="getting-the-materials">Getting the materials</h2>
+<p>All the materials — chapter sources, data, and the <code>setup_check.R</code> script below — live in one Git repository: <a href="https://github.com/bnaras/cvxr_tutorial">github.com/bnaras/cvxr_tutorial</a>. Get a copy in whichever way suits you:</p>
+<ul>
+<li><strong>RStudio:</strong> <em>File → New Project → Version Control → Git</em>, paste <code>https://github.com/bnaras/cvxr_tutorial.git</code> as the repository URL, and click <em>Create Project</em>. Then open <code>cvxr-tutorial-2026.Rproj</code>.</li>
+<li><strong>Positron:</strong> open the Command Palette (<code>Ctrl/Cmd+Shift+P</code>), run <em>Git: Clone</em>, paste the same URL, and open the cloned folder.</li>
+<li><strong>Terminal:</strong> <code>git clone https://github.com/bnaras/cvxr_tutorial.git</code>, then open the folder in your editor.</li>
+<li><strong>No Git?</strong> Use the green <em>Code → Download ZIP</em> button on the repository page and unzip it.</li>
+</ul>
+<p>You will also need <strong><a href="https://quarto.org/docs/get-started/">Quarto</a></strong> (≥ 1.4) to render the book or preview chapters. <strong>RStudio bundles Quarto</strong>, so there is nothing extra to install there. <strong>Positron</strong> and plain-terminal users should install the Quarto CLI once from the link above. You can still <em>run individual code chunks</em> without rendering anything — Quarto is only required when you render a whole chapter or the full book (<code>quarto render</code>).</p>
 </section>
 <section id="installation" class="level2">
 <h2 class="anchored" data-anchor-id="installation">Installation</h2>
