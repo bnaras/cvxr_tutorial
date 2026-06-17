@@ -13,8 +13,21 @@ and uses **CRAN solvers only**.
 
 ## For participants
 
-1. **Install R ≥ 4.3.0** and a recent [RStudio](https://posit.co/download/rstudio-desktop/).
-2. Clone or download this repository and open `cvxr-tutorial-2026.Rproj` in RStudio.
+1. **Install R ≥ 4.3.0** and a recent IDE ---
+   [RStudio](https://posit.co/download/rstudio-desktop/) or
+   [Positron](https://positron.posit.co).
+2. **Get the materials** (this repository):
+
+   - **RStudio:** *File → New Project → Version Control → Git*, paste
+     `https://github.com/bnaras/cvxr_tutorial.git`, then open `cvxr-tutorial-2026.Rproj`.
+   - **Positron:** Command Palette → *Git: Clone* → paste the same URL → open the folder.
+   - **Terminal:** `git clone https://github.com/bnaras/cvxr_tutorial.git`
+   - **No Git:** *Code → Download ZIP* on the repo page and unzip.
+
+   You also need the [Quarto CLI](https://quarto.org/docs/get-started/) (≥ 1.4) to
+   render chapters or the whole book. RStudio bundles Quarto; Positron and terminal
+   users install it once from that link. (Running individual code chunks needs no
+   render step.)
 3. Install the packages (CRAN only):
 
    ```r
@@ -53,7 +66,7 @@ needs no LaTeX. Rendered output goes to `_book/`.
 | Path | What |
 |------|------|
 | `index.qmd` | Preface |
-| `01-…`–`10-…qmd` | Chapters (see `_quarto.yml` for the structure) |
+| `01-…`–`16-…qmd` | Chapters (see `_quarto.yml` for the structure) |
 | `setup_check.R` | Pre-tutorial environment check |
 | `_check_status.R` | Helper sourced by example chunks |
 | `references.bib`, `cvxr.bib` | Bibliography |

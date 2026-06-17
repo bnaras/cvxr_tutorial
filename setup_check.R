@@ -12,7 +12,7 @@
 ##
 ## Base R only -- no external dependencies -- so it runs even if a package
 ## failed to install. CORE = the four built-in solvers used by most chapters;
-## EXTRA = scip (ch.6, MI-SOCP) and Uno + sparsediff (ch.8, nonlinear) -- both
+## EXTRA = scip (ch.11, MI-SOCP) and Uno + sparsediff (ch.14, nonlinear) -- both
 ## are hands-on chapters, but if an EXTRA fails you can still do everything else.
 ## ---------------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ line <- function(tag, label, detail = "") cat(sprintf("  [%s] %-28s %s\n", tag, 
 hdr  <- function(x) cat(sprintf("\n== %s ==\n", x))
 
 core_ok  <- TRUE   # CVXR + four built-in solvers + helpers
-extra_ok <- TRUE   # scip (ch.6) and Uno + sparsediff (ch.8)
+extra_ok <- TRUE   # scip (ch.11) and Uno + sparsediff (ch.14)
 
 ## --- 1. R version --------------------------------------------------------
 hdr("R version")
@@ -48,10 +48,10 @@ core_ok <- check_pkg("highs", "1.14")  && core_ok   # CVXR requires highs >= 1.1
 ## Helper packages used by the example chapters (CRAN)
 for (h in c("ggplot2", "tidyr", "nnls", "glmnet", "boot", "png", "bench"))
   core_ok <- check_pkg(h) && core_ok
-## Extra solvers for chapters 6 and 8 (CRAN, in CVXR Enhances -> separate installs)
-extra_ok <- check_pkg("scip",       "1.10")  && extra_ok   # ch.6 MI-SOCP
-extra_ok <- check_pkg("Uno",        "2.7.3") && extra_ok   # ch.8 nonlinear (pulls rmumps)
-extra_ok <- check_pkg("sparsediff", "0.4.0") && extra_ok   # ch.8 autodiff
+## Extra solvers for chapters 11 and 14 (CRAN, in CVXR Enhances -> separate installs)
+extra_ok <- check_pkg("scip",       "1.10")  && extra_ok   # ch.11 MI-SOCP
+extra_ok <- check_pkg("Uno",        "2.7.3") && extra_ok   # ch.14 nonlinear (pulls rmumps)
+extra_ok <- check_pkg("sparsediff", "0.4.0") && extra_ok   # ch.14 autodiff
 
 ## --- 3. Functional solve test: the four core solvers ---------------------
 ## Tiny LP: minimize sum(x) s.t. x >= 1, x in R^2  ->  optimal value 2.
@@ -75,9 +75,9 @@ if (requireNamespace("CVXR", quietly = TRUE)) {
   core_ok <- FALSE
 }
 
-## --- 4. Chapter 6: SCIP integer solve (MI-SOCP-capable interface) --------
+## --- 4. Chapter 11: SCIP integer solve (MI-SOCP-capable interface) -------
 ## Tiny integer LP: minimize sum(x) s.t. x >= 1.5, integer -> value 4.
-hdr("Chapter 6 solver (SCIP integer solve, expect value 4)")
+hdr("Chapter 11 solver (SCIP integer solve, expect value 4)")
 if (requireNamespace("CVXR", quietly = TRUE) &&
     requireNamespace("scip", quietly = TRUE)) {
   xi <- Variable(2, integer = TRUE)
@@ -89,27 +89,27 @@ if (requireNamespace("CVXR", quietly = TRUE) &&
   line(mark(res$ok), "SCIP", res$detail)
   if (!isTRUE(res$ok)) extra_ok <- FALSE
 } else {
-  line("WARN", "SCIP", "scip not installed -- needed for chapter 6")
+  line("WARN", "SCIP", "scip not installed -- needed for chapter 11")
   extra_ok <- FALSE
 }
 
-## --- 5. Chapter 8: DNLP backends present ---------------------------------
-hdr("Chapter 8 backends (Uno + sparsediff)")
+## --- 5. Chapter 14: DNLP backends present --------------------------------
+hdr("Chapter 14 backends (Uno + sparsediff)")
 dnlp_ok <- requireNamespace("Uno", quietly = TRUE) &&
            requireNamespace("sparsediff", quietly = TRUE)
 line(if (dnlp_ok) "PASS" else "WARN", "Uno + sparsediff",
-     if (dnlp_ok) "loadable" else "missing -- needed for chapter 8 (ipopt NOT needed)")
+     if (dnlp_ok) "loadable" else "missing -- needed for chapter 14 (ipopt NOT needed)")
 if (!dnlp_ok) extra_ok <- FALSE
 
 ## --- Summary -------------------------------------------------------------
 hdr("Summary")
 cat(sprintf("  CORE   (most chapters)      : %s\n", if (core_ok)  "READY" else "NOT READY"))
-cat(sprintf("  EXTRAS (chapters 6 and 8)   : %s\n", if (extra_ok) "READY" else "incomplete"))
+cat(sprintf("  EXTRAS (chapters 11 and 14) : %s\n", if (extra_ok) "READY" else "incomplete"))
 if (!core_ok) {
   cat("\n  -> Fix CORE first:\n")
   cat("     install.packages(c(\"CVXR\",\"ggplot2\",\"tidyr\",\"nnls\",\"glmnet\",\"boot\",\"png\",\"bench\"))\n")
 } else if (!extra_ok) {
-  cat("\n  -> Core is ready (most chapters work). For chapters 6 and 8 also:\n")
+  cat("\n  -> Core is ready (most chapters work). For chapters 11 and 14 also:\n")
   cat("     install.packages(c(\"scip\", \"Uno\", \"sparsediff\"))\n")
 } else {
   cat("\n  All set -- every chapter is ready.\n")

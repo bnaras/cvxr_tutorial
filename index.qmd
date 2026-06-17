@@ -27,9 +27,10 @@ that will interest experienced optimizers too; exercises marked with a star
 
 This is a **hands-on** book. You are meant to *run the code*, not just read it.
 
-- Open the accompanying **RStudio project** and work through each chapter's `.qmd`
-  (or `.R`) by **executing the code chunks** as you read. You do not need to type
-  anything --- click *Run* (or press `Ctrl/Cmd+Enter`) and watch what happens.
+- Open the accompanying **project** (see *Getting the materials* below) and work
+  through each chapter's `.qmd` by **executing the code chunks** as you read. You do
+  not need to type anything --- click *Run* (or press `Ctrl/Cmd+Enter`) and watch what
+  happens.
 - Each hands-on chapter ends with **exercises**. Try them, then click to reveal
   the solution:
 
@@ -38,6 +39,30 @@ This is a **hands-on** book. You are meant to *run the code*, not just read it.
 Solutions look like this --- the code and its output are right here, hidden until
 you want them.
 :::
+
+## Getting the materials
+
+All the materials --- chapter sources, data, and the `setup_check.R` script below ---
+live in one Git repository:
+[github.com/bnaras/cvxr_tutorial](https://github.com/bnaras/cvxr_tutorial). Get a copy
+in whichever way suits you:
+
+- **RStudio:** *File → New Project → Version Control → Git*, paste
+  `https://github.com/bnaras/cvxr_tutorial.git` as the repository URL, and click
+  *Create Project*. Then open `cvxr-tutorial-2026.Rproj`.
+- **Positron:** open the Command Palette (`Ctrl/Cmd+Shift+P`), run *Git: Clone*, paste
+  the same URL, and open the cloned folder.
+- **Terminal:** `git clone https://github.com/bnaras/cvxr_tutorial.git`, then open the
+  folder in your editor.
+- **No Git?** Use the green *Code → Download ZIP* button on the repository page and
+  unzip it.
+
+You will also need **[Quarto](https://quarto.org/docs/get-started/)** (≥ 1.4) to render
+the book or preview chapters. **RStudio bundles Quarto**, so there is nothing extra to
+install there. **Positron** and plain-terminal users should install the Quarto CLI
+once from the link above. You can still *run individual code chunks* without rendering
+anything --- Quarto is only required when you render a whole chapter or the full book
+(`quarto render`).
 
 ## Installation
 
