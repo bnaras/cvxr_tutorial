@@ -480,7 +480,7 @@ Is DCP? TRUE </code></pre>
 <pre><code>ℹ Compilation: "OSQP" via CVXR::Dcp2Cone -&gt; CVXR::CvxAttr2Constr -&gt; CVXR::ConeMatrixStuffing -&gt; CVXR::OSQP_QP_Solver</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Compile time: 0.414s</code></pre>
+<pre><code>ℹ Compile time: 0.393s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>─────────────────────────────── Numerical solver ───────────────────────────────</code></pre>
@@ -504,11 +504,11 @@ settings: algebra = Built-in,
           scaling: on (10 iterations), scaled_termination: off
           warm starting: on, polishing: on, 
 iter   objective    prim res   dual res   gap        rel kkt    rho         time
-   1  -1.6000e+02   8.00e+00   6.83e+02  -3.13e+03   6.83e+02   1.00e-01    7.01e-04s
-  50   8.0194e+01   6.18e-02   2.66e-03  -1.87e-01   6.18e-02   5.00e-01*   1.39e-03s
- 100   8.0454e+01   8.44e-03   7.36e-05  -6.66e-03   8.44e-03   5.57e+00*   2.27e-03s
- 200   8.0462e+01   1.33e-05   5.75e-07  -1.90e-06   1.33e-05   5.57e+00    3.80e-03s
-plsh   8.0462e+01   1.46e-15   1.28e-14  -5.68e-14   1.28e-14   --------    4.34e-03s
+   1  -1.6000e+02   8.00e+00   6.83e+02  -3.13e+03   6.83e+02   1.00e-01    7.89e-04s
+  50   8.0194e+01   6.18e-02   2.66e-03  -1.87e-01   6.18e-02   5.00e-01*   1.52e-03s
+ 100   8.0454e+01   8.44e-03   7.36e-05  -6.66e-03   8.44e-03   5.57e+00*   2.40e-03s
+ 200   8.0462e+01   1.33e-05   5.75e-07  -1.90e-06   1.33e-05   5.57e+00    3.97e-03s
+plsh   8.0462e+01   1.46e-15   1.28e-14  -5.68e-14   1.28e-14   --------    4.51e-03s
 
 status:               solved
 solution polishing:   successful
@@ -517,7 +517,7 @@ optimal objective:    80.4620
 dual objective:       80.4620
 duality gap:          -5.6843e-14
 primal-dual integral: 3.1311e+03
-run time:             4.34e-03s
+run time:             4.51e-03s
 optimal rho estimate: 2.78e+01</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
@@ -530,10 +530,10 @@ optimal rho estimate: 2.78e+01</code></pre>
 <pre><code>✔ Optimal value: 80.462</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Compile time: 0.414s</code></pre>
+<pre><code>ℹ Compile time: 0.393s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Solver time: 0.027s</code></pre>
+<pre><code>ℹ Solver time: 0.026s</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 80.46205</code></pre>
@@ -556,7 +556,7 @@ optimal rho estimate: 2.78e+01</code></pre>
 <pre><code>ℹ Compilation: "OSQP" via CVXR::Dcp2Cone -&gt; CVXR::CvxAttr2Constr -&gt; CVXR::ConeMatrixStuffing -&gt; CVXR::OSQP_QP_Solver</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Compile time: 0.041s</code></pre>
+<pre><code>ℹ Compile time: 0.038s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>─────────────────────────────── Numerical solver ───────────────────────────────</code></pre>
@@ -580,10 +580,10 @@ settings: algebra = Built-in,
           scaling: on (10 iterations), scaled_termination: off
           warm starting: on, polishing: on, 
 iter   objective    prim res   dual res   gap        rel kkt    rho         time
-   1  -2.2400e+02   8.00e+00   9.56e+02  -4.38e+03   9.56e+02   1.00e-01    7.76e-04s
- 150   8.1079e+01   1.52e-02   9.34e-07  -2.57e-02   1.52e-02   1.44e+01*   2.88e-03s
- 200   8.1117e+01   8.80e-07   7.04e-07  -2.81e-07   8.80e-07   1.44e+01    3.77e-03s
-plsh   8.1117e+01   1.27e-15   1.67e-14   7.96e-14   7.96e-14   --------    4.29e-03s
+   1  -2.2400e+02   8.00e+00   9.56e+02  -4.38e+03   9.56e+02   1.00e-01    8.55e-04s
+ 150   8.1079e+01   1.52e-02   9.34e-07  -2.57e-02   1.52e-02   1.44e+01*   2.98e-03s
+ 200   8.1117e+01   8.80e-07   7.04e-07  -2.81e-07   8.80e-07   1.44e+01    3.82e-03s
+plsh   8.1117e+01   1.27e-15   1.67e-14   7.96e-14   7.96e-14   --------    4.34e-03s
 
 status:               solved
 solution polishing:   successful
@@ -592,7 +592,7 @@ optimal objective:    81.1172
 dual objective:       81.1172
 duality gap:          7.9581e-14
 primal-dual integral: 4.3836e+03
-run time:             4.29e-03s
+run time:             4.34e-03s
 optimal rho estimate: 1.82e+01</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
@@ -605,10 +605,10 @@ optimal rho estimate: 1.82e+01</code></pre>
 <pre><code>✔ Optimal value: 81.1172</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Compile time: 0.041s</code></pre>
+<pre><code>ℹ Compile time: 0.038s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Solver time: 0.045s</code></pre>
+<pre><code>ℹ Solver time: 0.043s</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 81.11721</code></pre>
@@ -630,8 +630,8 @@ optimal rho estimate: 1.82e+01</code></pre>
 <pre><code># A tibble: 2 × 4
   expression        min   median mem_alloc
   &lt;bch:expr&gt;   &lt;bch:tm&gt; &lt;bch:tm&gt; &lt;bch:byt&gt;
-1 DPP re-solve     11ms   11.5ms   554.7KB
-2 rebuild        30.1ms   31.5ms     9.7MB</code></pre>
+1 DPP re-solve   9.33ms   9.55ms   554.7KB
+2 rebuild       26.65ms  27.29ms     9.7MB</code></pre>
 </div>
 </div>
 <p>On our machine the DPP re-solve is roughly <strong>2–3× faster per solve</strong> and allocates less memory — precisely the compile time we just watched disappear. Over a sweep of <span class="math inline">\(K\)</span> values you save that difference <span class="math inline">\(K\)</span> times.</p>

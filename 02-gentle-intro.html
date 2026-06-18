@@ -544,7 +544,7 @@ window.Quarto = {
 <pre><code>ℹ Compilation: "OSQP" via CVXR::Dcp2Cone -&gt; CVXR::CvxAttr2Constr -&gt; CVXR::ConeMatrixStuffing -&gt; CVXR::OSQP_QP_Solver</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Compile time: 0.253s</code></pre>
+<pre><code>ℹ Compile time: 0.235s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>─────────────────────────────── Numerical solver ───────────────────────────────</code></pre>
@@ -568,9 +568,9 @@ settings: algebra = Built-in,
           scaling: on (10 iterations), scaled_termination: off
           warm starting: on, polishing: on, 
 iter   objective    prim res   dual res   gap        rel kkt    rho         time
-   1   0.0000e+00   1.00e+00   1.00e+02  -5.00e+01   1.00e+02   1.00e-01    4.04e-05s
-  50   2.0000e-01   4.87e-10   6.73e-10   2.79e-10   6.73e-10   1.00e-01    6.14e-05s
-plsh   2.0000e-01   1.57e-16   1.57e-16  -1.11e-16   1.57e-16   --------    8.43e-05s
+   1   0.0000e+00   1.00e+00   1.00e+02  -5.00e+01   1.00e+02   1.00e-01    3.68e-05s
+  50   2.0000e-01   4.87e-10   6.73e-10   2.79e-10   6.73e-10   1.00e-01    5.84e-05s
+plsh   2.0000e-01   1.57e-16   1.57e-16  -1.11e-16   1.57e-16   --------    8.06e-05s
 
 status:               solved
 solution polishing:   successful
@@ -579,7 +579,7 @@ optimal objective:    0.2000
 dual objective:       0.2000
 duality gap:          -1.1102e-16
 primal-dual integral: 5.0000e+01
-run time:             8.43e-05s
+run time:             8.06e-05s
 optimal rho estimate: 7.60e-02</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
@@ -592,10 +592,10 @@ optimal rho estimate: 7.60e-02</code></pre>
 <pre><code>✔ Optimal value: 0.2</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Compile time: 0.253s</code></pre>
+<pre><code>ℹ Compile time: 0.235s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Solver time: 0.049s</code></pre>
+<pre><code>ℹ Solver time: 0.045s</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.2</code></pre>
