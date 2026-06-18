@@ -50,7 +50,7 @@ for (h in c("ggplot2", "tidyr", "nnls", "glmnet", "boot", "png", "bench"))
   core_ok <- check_pkg(h) && core_ok
 ## Extra solvers for chapters 11 and 14 (CRAN, in CVXR Enhances -> separate installs)
 extra_ok <- check_pkg("scip",       "1.10")  && extra_ok   # ch.11 MI-SOCP
-extra_ok <- check_pkg("Uno",        "2.7.3") && extra_ok   # ch.14 nonlinear (pulls rmumps)
+extra_ok <- check_pkg("Uno",        "2.7.4") && extra_ok   # ch.14 nonlinear (pulls rmumps); 2.7.4 carries the Windows MUMPS fix
 extra_ok <- check_pkg("sparsediff", "0.4.0") && extra_ok   # ch.14 autodiff
 
 ## --- 3. Functional solve test: the four core solvers ---------------------
