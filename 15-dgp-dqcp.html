@@ -59,7 +59,26 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -368,7 +387,10 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#disciplined-geometric-programming-dgp" id="toc-disciplined-geometric-programming-dgp" class="nav-link active" data-scroll-target="#disciplined-geometric-programming-dgp"><span class="header-section-number">15.1</span> Disciplined Geometric Programming (DGP)</a></li>
+  <li><a href="#disciplined-geometric-programming-dgp" id="toc-disciplined-geometric-programming-dgp" class="nav-link active" data-scroll-target="#disciplined-geometric-programming-dgp"><span class="header-section-number">15.1</span> Disciplined Geometric Programming (DGP)</a>
+  <ul class="collapse">
+  <li><a href="#a-worked-example-ordering-survival-curves" id="toc-a-worked-example-ordering-survival-curves" class="nav-link" data-scroll-target="#a-worked-example-ordering-survival-curves"><span class="header-section-number">15.1.1</span> A worked example: ordering survival curves</a></li>
+  </ul></li>
   <li><a href="#disciplined-quasiconvex-programming-dqcp" id="toc-disciplined-quasiconvex-programming-dqcp" class="nav-link" data-scroll-target="#disciplined-quasiconvex-programming-dqcp"><span class="header-section-number">15.2</span> Disciplined Quasiconvex Programming (DQCP)</a></li>
   <li><a href="#where-this-leaves-us" id="toc-where-this-leaves-us" class="nav-link" data-scroll-target="#where-this-leaves-us"><span class="header-section-number">15.3</span> Where this leaves us</a></li>
   </ul>
@@ -430,14 +452,121 @@ window.Quarto = {
 </div>
 </div>
 <p>The objective <code>x * y * z</code> multiplies three variables — not DCP at all — yet DGP solves it to global optimality. See the <a href="https://cvxr.rbind.io/examples/dgp/tutorial.html">DGP Tutorial</a>.</p>
+<section id="a-worked-example-ordering-survival-curves" class="level3" data-number="15.1.1">
+<h3 data-number="15.1.1" class="anchored" data-anchor-id="a-worked-example-ordering-survival-curves"><span class="header-section-number">15.1.1</span> A worked example: ordering survival curves</h3>
+<p>DGP is not only for engineering design; it appears in statistics wherever a model is built from products and ratios of positive quantities. Here is one such problem, from <span class="citation" data-cites="LimKimWang:2009">Lim et al. (<a href="references.html#ref-LimKimWang:2009" role="doc-biblioref">2009</a>)</span>.</p>
+<p>Suppose we estimate survival curves <span class="math inline">\(S_1, \ldots, S_N\)</span> for several populations and know on scientific grounds that they are <strong>stochastically ordered</strong>: population <span class="math inline">\(a\)</span> dies earlier than <span class="math inline">\(b\)</span>, meaning <span class="math inline">\(S_a(t) \le S_b(t)\)</span> at every <span class="math inline">\(t\)</span> (written <span class="math inline">\(S_a \preceq
+S_b\)</span>). The unconstrained nonparametric estimates — the Kaplan–Meier curves — often <em>cross</em> where they should not. <span class="citation" data-cites="LimKimWang:2009">Lim et al. (<a href="references.html#ref-LimKimWang:2009" role="doc-biblioref">2009</a>)</span> observed that imposing the ordering turns the estimation into a geometric program, which <code>CVXR</code> solves directly.</p>
+<p>Take <strong>right-censored</strong> data. For population <span class="math inline">\(i\)</span>, at each distinct failure time <span class="math inline">\(t_{ij}\)</span> let <span class="math inline">\(n_{ij}\)</span> subjects be at risk and <span class="math inline">\(d_{ij}\)</span> of them fail. Write the one-step conditional survival probability <span class="math inline">\(p_{ij} = S_i(t_{ij}) / S_i(t_{i,j-1})\)</span> and <span class="math inline">\(q_{ij} =
+1 - p_{ij}\)</span>, so survival is the running product <span class="math inline">\(S_i(t_{ij}) = \prod_{r \le j} p_{ir}\)</span> (the Kaplan–Meier form). The likelihood is the <strong>monomial</strong> <span class="math display">\[
+\mathcal L = \prod_{i} \prod_{j} p_{ij}^{\,n_{ij} - d_{ij}}\, q_{ij}^{\,d_{ij}},
+\]</span> which is log-log affine and so drops straight into a GP. Three ingredients complete the model:</p>
+<ul>
+<li><strong>Sum-to-one</strong>, relaxed from <span class="math inline">\(p_{ij} + q_{ij} = 1\)</span> to the posynomial inequality <span class="math inline">\(p_{ij} + q_{ij} \le 1\)</span> (a GP admits only monomial equalities). It is tight at the optimum, since both exponents are nonnegative.</li>
+<li><strong>Monotonicity</strong> of each survival curve, which is <em>automatic</em> here: <span class="math inline">\(S_i\)</span> is a product of factors <span class="math inline">\(p \le 1\)</span>, so it is nonincreasing with no extra constraint.</li>
+<li><strong>Ordering</strong> <span class="math inline">\(S_a \preceq S_b\)</span>: at each pooled failure time <span class="math inline">\(t\)</span>, the monomial <span class="math inline">\(\bigl(\prod_{t_{ar} \le t} p_{ar}\bigr)\bigl(\prod_{t_{br} \le t} p_{br}\bigr)^{-1}
+\le 1\)</span>.</li>
+</ul>
+<p>Everything is a monomial except the sum-to-one posynomial, so <code>is_dgp()</code> holds. We use the oropharyngeal-carcinoma trial of Kalbfleisch and Prentice, grouping patients by tumor stage <code>T</code> and nodal stage <code>N</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>oropharynx <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"data/oropharynx.rds"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>grp_counts <span class="ot">&lt;-</span> <span class="cf">function</span>(T, N) {                          <span class="co"># discrete-hazard counts</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  s  <span class="ot">&lt;-</span> <span class="fu">subset</span>(oropharynx, tstage <span class="sc">==</span> T <span class="sc">&amp;</span> nstage <span class="sc">==</span> N)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  dt <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">unique</span>(s<span class="sc">$</span>days[s<span class="sc">$</span>status <span class="sc">==</span> <span class="dv">1</span>]))             <span class="co"># distinct failure times</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">t =</span> dt,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">d =</span> <span class="fu">sapply</span>(dt, <span class="cf">function</span>(x) <span class="fu">sum</span>(s<span class="sc">$</span>days <span class="sc">==</span> x <span class="sc">&amp;</span> s<span class="sc">$</span>status <span class="sc">==</span> <span class="dv">1</span>)),  <span class="co"># failures</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">n =</span> <span class="fu">sapply</span>(dt, <span class="cf">function</span>(x) <span class="fu">sum</span>(s<span class="sc">$</span>days <span class="sc">&gt;=</span> x)))                  <span class="co"># at risk</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><code>fit_rc()</code> assembles the monomial likelihood, the relaxed sum-to-one constraints, and one ordering monomial per pooled failure time for each requested pair <code>c(a, b)</code> (meaning <span class="math inline">\(S_a \preceq S_b\)</span>):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fit_rc <span class="ot">&lt;-</span> <span class="cf">function</span>(groups, <span class="at">order =</span> <span class="fu">list</span>()) {</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  G <span class="ot">&lt;-</span> <span class="fu">length</span>(groups)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> <span class="fu">lapply</span>(groups, <span class="cf">function</span>(g) <span class="fu">Variable</span>(<span class="fu">nrow</span>(g), <span class="at">pos =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  q <span class="ot">&lt;-</span> <span class="fu">lapply</span>(groups, <span class="cf">function</span>(g) <span class="fu">Variable</span>(<span class="fu">nrow</span>(g), <span class="at">pos =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  mono <span class="ot">&lt;-</span> <span class="cf">function</span>(v, a) <span class="fu">Reduce</span>(<span class="st">`</span><span class="at">*</span><span class="st">`</span>, <span class="fu">lapply</span>(<span class="fu">which</span>(a <span class="sc">!=</span> <span class="dv">0</span>), <span class="cf">function</span>(j) v[j]<span class="sc">^</span>a[j]))</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  Scum <span class="ot">&lt;-</span> <span class="cf">function</span>(i, ix) <span class="cf">if</span> (<span class="fu">length</span>(ix)) <span class="fu">prod_entries</span>(p[[i]][ix]) <span class="cf">else</span> <span class="dv">1</span>  <span class="co"># empty prod = 1</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  objective <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(<span class="st">`</span><span class="at">*</span><span class="st">`</span>, <span class="fu">lapply</span>(<span class="fu">seq_len</span>(G), <span class="cf">function</span>(i)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">mono</span>(p[[i]], groups[[i]]<span class="sc">$</span>n <span class="sc">-</span> groups[[i]]<span class="sc">$</span>d) <span class="sc">*</span> <span class="fu">mono</span>(q[[i]], groups[[i]]<span class="sc">$</span>d)))</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  constraints <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">seq_len</span>(G), <span class="cf">function</span>(i) p[[i]] <span class="sc">+</span> q[[i]] <span class="sc">&lt;=</span> <span class="dv">1</span>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (o <span class="cf">in</span> order) {                    <span class="co"># S_a(t) &lt;= S_b(t) at every pooled failure time</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    a <span class="ot">&lt;-</span> o[<span class="dv">1</span>]; b <span class="ot">&lt;-</span> o[<span class="dv">2</span>]</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (tk <span class="cf">in</span> <span class="fu">sort</span>(<span class="fu">unique</span>(<span class="fu">c</span>(groups[[a]]<span class="sc">$</span>t, groups[[b]]<span class="sc">$</span>t)))) {</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>      ia <span class="ot">&lt;-</span> <span class="fu">which</span>(groups[[a]]<span class="sc">$</span>t <span class="sc">&lt;=</span> tk); ib <span class="ot">&lt;-</span> <span class="fu">which</span>(groups[[b]]<span class="sc">$</span>t <span class="sc">&lt;=</span> tk)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>      constraints <span class="ot">&lt;-</span> <span class="fu">c</span>(constraints, <span class="fu">Scum</span>(a, ia) <span class="sc">*</span> <span class="fu">Scum</span>(b, ib)<span class="sc">^</span>(<span class="sc">-</span><span class="dv">1</span>) <span class="sc">&lt;=</span> <span class="dv">1</span>)</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  prob <span class="ot">&lt;-</span> <span class="fu">Problem</span>(<span class="fu">Maximize</span>(objective), constraints)</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  val  <span class="ot">&lt;-</span> <span class="fu">psolve</span>(prob, <span class="at">gp =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">check_solver_status</span>(prob)</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">is_dgp =</span> <span class="fu">is_dgp</span>(prob), <span class="at">logLik =</span> <span class="fu">log</span>(val),</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>       <span class="at">S =</span> <span class="fu">lapply</span>(<span class="fu">seq_len</span>(G), <span class="cf">function</span>(i) <span class="fu">cumprod</span>(<span class="fu">value</span>(p[[i]]))))  <span class="co"># S = running product</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>With no ordering the GP must return the ordinary Kaplan–Meier estimator — a reassuring check:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>g   <span class="ot">&lt;-</span> <span class="fu">grp_counts</span>(<span class="dv">3</span>, <span class="dv">3</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">fit_rc</span>(<span class="fu">list</span>(g))</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>km  <span class="ot">&lt;-</span> <span class="fu">survfit</span>(<span class="fu">Surv</span>(days, status) <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">data =</span> <span class="fu">subset</span>(oropharynx, tstage <span class="sc">==</span> <span class="dv">3</span> <span class="sc">&amp;</span> nstage <span class="sc">==</span> <span class="dv">3</span>))</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">max</span>(<span class="fu">abs</span>(fit<span class="sc">$</span>S[[<span class="dv">1</span>]] <span class="sc">-</span> <span class="fu">summary</span>(km, <span class="at">times =</span> g<span class="sc">$</span>t)<span class="sc">$</span>surv))    <span class="co"># ~ 0: GP == Kaplan-Meier</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3.35909e-05</code></pre>
+</div>
+</div>
+<p>Now the ordering. Take the three T = 3 groups differing in nodal involvement, <span class="math inline">\((T,N) = (3,1), (3,2), (3,3)\)</span>, and impose <span class="math inline">\(S_3 \preceq S_2 \preceq S_1\)</span> (more nodal involvement, worse survival):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>g1 <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="st">"(3,1)"</span> <span class="ot">=</span> <span class="fu">grp_counts</span>(<span class="dv">3</span>, <span class="dv">1</span>),</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>           <span class="st">"(3,2)"</span> <span class="ot">=</span> <span class="fu">grp_counts</span>(<span class="dv">3</span>, <span class="dv">2</span>),</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>           <span class="st">"(3,3)"</span> <span class="ot">=</span> <span class="fu">grp_counts</span>(<span class="dv">3</span>, <span class="dv">3</span>))</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>rc_free  <span class="ot">&lt;-</span> <span class="fu">fit_rc</span>(g1)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>rc_order <span class="ot">&lt;-</span> <span class="fu">fit_rc</span>(g1, <span class="fu">list</span>(<span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">2</span>), <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>)))          <span class="co"># S3 &lt;= S2 &lt;= S1</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>step_rc <span class="ot">&lt;-</span> <span class="cf">function</span>(fit, groups, panel)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">do.call</span>(rbind, <span class="fu">lapply</span>(<span class="fu">seq_along</span>(groups), <span class="cf">function</span>(i) {</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    g <span class="ot">&lt;-</span> groups[[i]]; S <span class="ot">&lt;-</span> fit<span class="sc">$</span>S[[i]]</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">data.frame</span>(<span class="at">t =</span> <span class="fu">c</span>(<span class="dv">0</span>, g<span class="sc">$</span>t), <span class="at">S =</span> <span class="fu">c</span>(<span class="dv">1</span>, S),</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>               <span class="at">grp =</span> <span class="fu">paste0</span>(<span class="st">"(T,N)="</span>, <span class="fu">names</span>(groups)[i]), <span class="at">panel =</span> panel)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  }))</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="fu">step_rc</span>(rc_free,  g1, <span class="st">"(a) Kaplan-Meier (unconstrained)"</span>),</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>            <span class="fu">step_rc</span>(rc_order, g1, <span class="st">"(b) ordered: S3 &lt;= S2 &lt;= S1"</span>))</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(t, S, <span class="at">colour =</span> grp)) <span class="sc">+</span> <span class="fu">geom_step</span>(<span class="at">linewidth =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>panel) <span class="sc">+</span> <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1850</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"time (days)"</span>, <span class="at">y =</span> <span class="st">"survival probability"</span>, <span class="at">colour =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"inside"</span>, <span class="at">legend.position.inside =</span> <span class="fu">c</span>(<span class="fl">0.9</span>, <span class="fl">0.8</span>),</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.background =</span> <span class="fu">element_blank</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="15-dgp-dqcp_files/figure-html/surv-fig-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The unconstrained Kaplan–Meier curves cross — <span class="math inline">\((3,2)\)</span> sits above <span class="math inline">\((3,1)\)</span> for much of the range, contradicting <span class="math inline">\(S_2 \le S_1\)</span> — while the ordered fit removes the crossings, reproducing Figure 1 of <span class="citation" data-cites="LimKimWang:2009">Lim et al. (<a href="references.html#ref-LimKimWang:2009" role="doc-biblioref">2009</a>)</span>. The ordering costs only a little likelihood:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">unconstrained =</span> <span class="fu">round</span>(rc_free<span class="sc">$</span>logLik, <span class="dv">2</span>), <span class="at">ordered =</span> <span class="fu">round</span>(rc_order<span class="sc">$</span>logLik, <span class="dv">2</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>unconstrained       ordered 
+      -169.15       -169.24 </code></pre>
+</div>
+</div>
+<p>The website’s <a href="https://cvxr.rbind.io/examples/dgp/survival-ordering.html">survival-ordering example</a> carries this further — partial (non-total) orders, a stronger <strong>uniform</strong> ordering that constrains the hazard ratio, and the <strong>interval-censored</strong> case, where the same GP recipe applies with a different parameterization.</p>
+</section>
 </section>
 <section id="disciplined-quasiconvex-programming-dqcp" class="level2" data-number="15.2">
 <h2 data-number="15.2" class="anchored" data-anchor-id="disciplined-quasiconvex-programming-dqcp"><span class="header-section-number">15.2</span> Disciplined Quasiconvex Programming (DQCP)</h2>
 <p>A <strong>quasiconvex</strong> function has convex sub-level sets but need not be convex itself (think of ratios like <span class="math inline">\(\|Ax-b\|/c^\top x\)</span>). DCP cannot handle these, but DQCP can, via a sequence of convex feasibility problems; you pass <code>qcp = TRUE</code>. A tiny example minimizes <span class="math inline">\((a+1)/\sqrt{a}\)</span>, which is quasiconvex on <span class="math inline">\(a &gt; 0\)</span>:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">Variable</span>(<span class="at">pos =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>prob <span class="ot">&lt;-</span> <span class="fu">Problem</span>(<span class="fu">Minimize</span>((a <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">/</span> <span class="fu">sqrt</span>(a)))</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">is_dqcp =</span> <span class="fu">is_dqcp</span>(prob), <span class="at">optimum =</span> <span class="fu">psolve</span>(prob, <span class="at">qcp =</span> <span class="cn">TRUE</span>), <span class="at">a =</span> <span class="fu">value</span>(a))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">Variable</span>(<span class="at">pos =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>prob <span class="ot">&lt;-</span> <span class="fu">Problem</span>(<span class="fu">Minimize</span>((a <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">/</span> <span class="fu">sqrt</span>(a)))</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">is_dqcp =</span> <span class="fu">is_dqcp</span>(prob), <span class="at">optimum =</span> <span class="fu">psolve</span>(prob, <span class="at">qcp =</span> <span class="cn">TRUE</span>), <span class="at">a =</span> <span class="fu">value</span>(a))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> is_dqcp  optimum        a 
 1.000000 2.000000 1.000118 </code></pre>
@@ -450,6 +579,11 @@ window.Quarto = {
 <p>You now have the whole map: <strong>DCP</strong> (convex, this book’s backbone), <strong>DPP</strong> (parametrized, for fast re-solves and derivatives), <strong>DGP</strong> (log-log convex), <strong>DQCP</strong> (quasiconvex), and <strong>DNLP</strong> (smooth nonconvex). Each is the same disciplined bargain — follow the grammar, get a solvable problem — and CVXR checks compliance for you with the matching <code>is_*()</code> predicate. The website’s <a href="https://cvxr.rbind.io">examples gallery</a> has dozens more worked problems across all of them.</p>
 
 
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-LimKimWang:2009" class="csl-entry" role="listitem">
+Lim, Johan, Seung Jean Kim, and Xinlei Wang. 2009. <span>“Estimating Stochastically Ordered Survival Functions via Geometric Programming.”</span> <em>Journal of Computational and Graphical Statistics</em> 18 (4): 978–94. <a href="https://doi.org/10.1198/jcgs.2009.06140">https://doi.org/10.1198/jcgs.2009.06140</a>.
+</div>
+</div>
 </section>
 
 </main> <!-- /main -->

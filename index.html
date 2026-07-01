@@ -8,8 +8,7 @@
 
 <meta name="author" content="Anqi Fu">
 <meta name="author" content="Balasubramanian Narasimhan">
-<meta name="author" content="Stephen Boyd">
-<meta name="dcterms.date" content="2026-06-18">
+<meta name="dcterms.date" content="2026-07-01">
 <meta name="description" content="A hands-on tutorial on disciplined convex optimization in R with CVXR, prepared for useR! 2026 (Warsaw).">
 
 <title>Convex Optimization in R Using CVXR</title>
@@ -397,14 +396,13 @@ div.csl-indent {
     <div class="quarto-title-meta-contents">
              <p>Anqi Fu </p>
              <p>Balasubramanian Narasimhan </p>
-             <p>Stephen Boyd </p>
           </div>
   </div>
     
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">June 18, 2026</p>
+      <p class="date">July 1, 2026</p>
     </div>
   </div>
   
@@ -453,26 +451,28 @@ div.csl-indent {
 <h2 class="anchored" data-anchor-id="getting-the-materials">Getting the materials</h2>
 <p>All the materials — chapter sources, data, and the <code>setup_check.R</code> script below — live in one Git repository: <a href="https://github.com/bnaras/cvxr_tutorial">github.com/bnaras/cvxr_tutorial</a>. Get a copy in whichever way suits you:</p>
 <ul>
-<li><strong>RStudio:</strong> <em>File → New Project → Version Control → Git</em>, paste <code>https://github.com/bnaras/cvxr_tutorial.git</code> as the repository URL, and click <em>Create Project</em>. Then open <code>cvxr-tutorial-2026.Rproj</code>.</li>
-<li><strong>Positron:</strong> open the Command Palette (<code>Ctrl/Cmd+Shift+P</code>), run <em>Git: Clone</em>, paste the same URL, and open the cloned folder.</li>
+<li><strong><a href="https://posit.co/download/rstudio-desktop/">RStudio</a> (recommended):</strong> <em>File → New Project → Version Control → Git</em>, paste <a href="https://github.com/bnaras/cvxr_tutorial.git"><code>https://github.com/bnaras/cvxr_tutorial.git</code></a> as the repository URL, and click <em>Create Project</em> — RStudio opens the project for you. (If you quit RStudio and come back later, reopen it via the <code>cvxr-tutorial-2026.Rproj</code> file.)</li>
+<li><strong><a href="https://positron.posit.co/">Positron</a>:</strong> open the Command Palette (<code>Ctrl/Cmd+Shift+P</code>), run <em>Git: Clone</em>, paste the same URL, and open the cloned folder.</li>
 <li><strong>Terminal:</strong> <code>git clone https://github.com/bnaras/cvxr_tutorial.git</code>, then open the folder in your editor.</li>
 <li><strong>No Git?</strong> Use the green <em>Code → Download ZIP</em> button on the repository page and unzip it.</li>
 </ul>
+<p><strong>We recommend RStudio</strong> for the tutorial: it bundles Quarto and needs no extra setup, so your time goes to optimization rather than tooling. Positron and other-editor users are of course welcome — you already know your environment. Whichever you use, make your <strong>first step</strong>, the moment the project is open, the setup check in <em>Installation</em> below: it tells you exactly which packages you need and which you already have.</p>
 <p>You will also need <strong><a href="https://quarto.org/docs/get-started/">Quarto</a></strong> (≥ 1.4) to render the book or preview chapters. <strong>RStudio bundles Quarto</strong>, so there is nothing extra to install there. <strong>Positron</strong> and plain-terminal users should install the Quarto CLI once from the link above. You can still <em>run individual code chunks</em> without rendering anything — Quarto is only required when you render a whole chapter or the full book (<code>quarto render</code>).</p>
+<p>Two small things before you start. When you open a chapter such as <code>01-intro.qmd</code>, edit it in <strong>Source</strong> mode, not <strong>Visual</strong> mode: the visual editor can silently rewrite a file’s options (for instance, adding a word-wrap setting to the header), which you don’t want in the shared materials. And we recommend rendering the book <strong>once, ahead of the session</strong>, with <code>quarto render</code> (or, in RStudio, the <strong>Render</strong> button): this caches every chunk’s results via Quarto’s <em>freeze</em>, so nothing has to recompute live during the tutorial, and it confirms your whole setup — packages and solvers — in one shot.</p>
 </section>
 <section id="installation" class="level2">
 <h2 class="anchored" data-anchor-id="installation">Installation</h2>
-<p>Everything in this tutorial runs on <strong>CRAN packages only</strong>. Two lines install all you need — the <strong>solvers</strong> and a handful of <strong>helper packages</strong> (for plots, data, and comparisons against familiar R routines):</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Solvers (CVXR auto-pulls clarabel, osqp, scs, highs)</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">"CVXR"</span>, <span class="st">"scip"</span>, <span class="st">"Uno"</span>, <span class="st">"sparsediff"</span>))</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Helpers used by the examples</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">"ggplot2"</span>, <span class="st">"tidyr"</span>, <span class="st">"nnls"</span>, <span class="st">"glmnet"</span>,</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"boot"</span>, <span class="st">"png"</span>, <span class="st">"bench"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Everything in this tutorial runs on <strong>CRAN packages only</strong>. Your first step, once the project is open, is to run the included <strong><code>setup_check.R</code></strong> — it tells you what you need before you install anything:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"setup_check.R"</span>)   <span class="co"># or:  Rscript setup_check.R</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>For every package it prints a table of <strong>what you have</strong>, your <strong>installed version</strong>, the <strong>minimum needed</strong>, and the <strong>version the tutorial was built with</strong> — so if anything misbehaves later, you can tell at a glance whether a version difference is to blame. It also checks your R version (<strong>R ≥ 4.3.0</strong>) and runs a tiny solve on each solver, reporting <code>PASS</code>/<code>WARN</code>/<code>FAIL</code>.</p>
+<p>Then install whatever it flags. It is all on CRAN — the <strong>solvers</strong> and a handful of <strong>helper packages</strong> (for plots, data, and comparisons against familiar R routines):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Solvers (CVXR auto-pulls clarabel, osqp, scs, highs)</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">"CVXR"</span>, <span class="st">"scip"</span>, <span class="st">"Uno"</span>, <span class="st">"sparsediff"</span>))</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Helpers used by the examples</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">"ggplot2"</span>, <span class="st">"RColorBrewer"</span>, <span class="st">"tidyr"</span>, <span class="st">"nnls"</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"glmnet"</span>, <span class="st">"png"</span>, <span class="st">"bench"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>CVXR</code> automatically brings in the four open-source solvers it uses — <code>clarabel</code>, <code>osqp</code>, <code>scs</code>, and <code>highs</code>. The <code>scip</code>/<code>Uno</code>/<code>sparsediff</code> trio powers two <em>hands-on</em> chapters near the end — mixed-integer second-order-cone programming with <code>scip</code> (<a href="11-mip.html" class="quarto-xref"><span>11&nbsp; Mixed-Integer Programming</span></a>) and nonlinear programming with <code>Uno</code> + <code>sparsediff</code> (<a href="14-dnlp.html" class="quarto-xref"><span>14&nbsp; Beyond Convex: Nonlinear Programming</span></a>). If you ever can’t install one of those three, you can still do every other chapter with just <code>CVXR</code> plus the helpers.</p>
-<p>Before the tutorial, please run the included <strong><code>setup_check.R</code></strong> to confirm your machine is ready:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"setup_check.R"</span>)   <span class="co"># or:  Rscript setup_check.R</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>It checks your R version, the packages, and runs a tiny solve on each solver, reporting <code>PASS</code>/<code>FAIL</code>. Requires <strong>R ≥ 4.3.0</strong>.</p>
 </section>
 <section id="a-note-on-solvers" class="level2">
 <h2 class="anchored" data-anchor-id="a-note-on-solvers">A note on solvers</h2>
