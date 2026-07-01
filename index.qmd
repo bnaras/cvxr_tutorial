@@ -47,15 +47,25 @@ live in one Git repository:
 [github.com/bnaras/cvxr_tutorial](https://github.com/bnaras/cvxr_tutorial). Get a copy
 in whichever way suits you:
 
-- **RStudio:** *File → New Project → Version Control → Git*, paste
-  `https://github.com/bnaras/cvxr_tutorial.git` as the repository URL, and click
-  *Create Project*. Then open `cvxr-tutorial-2026.Rproj`.
-- **Positron:** open the Command Palette (`Ctrl/Cmd+Shift+P`), run *Git: Clone*, paste
-  the same URL, and open the cloned folder.
+- **[RStudio](https://posit.co/download/rstudio-desktop/) (recommended):** *File → New
+  Project → Version Control → Git*, paste
+  [`https://github.com/bnaras/cvxr_tutorial.git`](https://github.com/bnaras/cvxr_tutorial.git)
+  as the repository URL, and click *Create Project* --- RStudio opens the project for
+  you. (If you quit RStudio and come back later, reopen it via the
+  `cvxr-tutorial-2026.Rproj` file.)
+- **[Positron](https://positron.posit.co/):** open the Command Palette
+  (`Ctrl/Cmd+Shift+P`), run *Git: Clone*, paste the same URL, and open the cloned
+  folder.
 - **Terminal:** `git clone https://github.com/bnaras/cvxr_tutorial.git`, then open the
   folder in your editor.
 - **No Git?** Use the green *Code → Download ZIP* button on the repository page and
   unzip it.
+
+**We recommend RStudio** for the tutorial: it bundles Quarto and needs no extra setup,
+so your time goes to optimization rather than tooling. Positron and other-editor users
+are of course welcome --- you already know your environment. Whichever you use, make your
+**first step**, the moment the project is open, the setup check in *Installation* below:
+it tells you exactly which packages you need and which you already have.
 
 You will also need **[Quarto](https://quarto.org/docs/get-started/)** (≥ 1.4) to render
 the book or preview chapters. **RStudio bundles Quarto**, so there is nothing extra to
@@ -64,19 +74,40 @@ once from the link above. You can still *run individual code chunks* without ren
 anything --- Quarto is only required when you render a whole chapter or the full book
 (`quarto render`).
 
+Two small things before you start. When you open a chapter such as `01-intro.qmd`, edit
+it in **Source** mode, not **Visual** mode: the visual editor can silently rewrite a
+file's options (for instance, adding a word-wrap setting to the header), which you don't
+want in the shared materials. And we recommend rendering the book **once, ahead of the
+session**, with `quarto render` (or, in RStudio, the **Render** button): this caches
+every chunk's results via Quarto's *freeze*, so nothing has to recompute live during the
+tutorial, and it confirms your whole setup --- packages and solvers --- in one shot.
+
 ## Installation
 
-Everything in this tutorial runs on **CRAN packages only**. Two lines install all
-you need --- the **solvers** and a handful of **helper packages** (for plots,
-data, and comparisons against familiar R routines):
+Everything in this tutorial runs on **CRAN packages only**. Your first step, once the
+project is open, is to run the included **`setup_check.R`** --- it tells you what you
+need before you install anything:
+
+```r
+source("setup_check.R")   # or:  Rscript setup_check.R
+```
+
+For every package it prints a table of **what you have**, your **installed version**,
+the **minimum needed**, and the **version the tutorial was built with** --- so if
+anything misbehaves later, you can tell at a glance whether a version difference is to
+blame. It also checks your R version (**R ≥ 4.3.0**) and runs a tiny solve on each
+solver, reporting `PASS`/`WARN`/`FAIL`.
+
+Then install whatever it flags. It is all on CRAN --- the **solvers** and a handful of
+**helper packages** (for plots, data, and comparisons against familiar R routines):
 
 ```r
 # Solvers (CVXR auto-pulls clarabel, osqp, scs, highs)
 install.packages(c("CVXR", "scip", "Uno", "sparsediff"))
 
 # Helpers used by the examples
-install.packages(c("ggplot2", "tidyr", "nnls", "glmnet",
-                   "boot", "png", "bench"))
+install.packages(c("ggplot2", "RColorBrewer", "tidyr", "nnls",
+                   "glmnet", "png", "bench"))
 ```
 
 `CVXR` automatically brings in the four open-source solvers it uses ---
@@ -85,16 +116,6 @@ install.packages(c("ggplot2", "tidyr", "nnls", "glmnet",
 `scip` (@sec-mip) and nonlinear programming with `Uno` + `sparsediff` (@sec-dnlp). If
 you ever can't install one of those three, you can still do every other chapter with
 just `CVXR` plus the helpers.
-
-Before the tutorial, please run the included **`setup_check.R`** to confirm your
-machine is ready:
-
-```r
-source("setup_check.R")   # or:  Rscript setup_check.R
-```
-
-It checks your R version, the packages, and runs a tiny solve on each solver,
-reporting `PASS`/`FAIL`. Requires **R ≥ 4.3.0**.
 
 ## A note on solvers
 

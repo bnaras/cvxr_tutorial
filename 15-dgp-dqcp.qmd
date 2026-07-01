@@ -26,6 +26,10 @@ of a box subject to area limits:
 #| label: setup
 #| include: false
 library(CVXR)
+library(ggplot2)
+library(survival)
+source("_check_status.R")
+theme_set(theme_bw())
 ```
 
 ```{r}
@@ -40,6 +44,147 @@ round(c(x = value(x), y = value(y), z = value(z)), 3)
 The objective `x * y * z` multiplies three variables --- not DCP at all --- yet DGP
 solves it to global optimality. See the
 [DGP Tutorial](https://cvxr.rbind.io/examples/dgp/tutorial.html).
+
+### A worked example: ordering survival curves
+
+DGP is not only for engineering design; it appears in statistics wherever a model is
+built from products and ratios of positive quantities. Here is one such problem, from
+@LimKimWang:2009.
+
+Suppose we estimate survival curves $S_1, \ldots, S_N$ for several populations and
+know on scientific grounds that they are **stochastically ordered**: population $a$
+dies earlier than $b$, meaning $S_a(t) \le S_b(t)$ at every $t$ (written $S_a \preceq
+S_b$). The unconstrained nonparametric estimates --- the Kaplan--Meier curves --- often
+*cross* where they should not. @LimKimWang:2009 observed that imposing the ordering
+turns the estimation into a geometric program, which `CVXR` solves directly.
+
+Take **right-censored** data. For population $i$, at each distinct failure time
+$t_{ij}$ let $n_{ij}$ subjects be at risk and $d_{ij}$ of them fail. Write the one-step
+conditional survival probability $p_{ij} = S_i(t_{ij}) / S_i(t_{i,j-1})$ and $q_{ij} =
+1 - p_{ij}$, so survival is the running product $S_i(t_{ij}) = \prod_{r \le j} p_{ir}$
+(the Kaplan--Meier form). The likelihood is the **monomial**
+$$
+\mathcal L = \prod_{i} \prod_{j} p_{ij}^{\,n_{ij} - d_{ij}}\, q_{ij}^{\,d_{ij}},
+$$
+which is log-log affine and so drops straight into a GP. Three ingredients complete the
+model:
+
+- **Sum-to-one**, relaxed from $p_{ij} + q_{ij} = 1$ to the posynomial inequality
+  $p_{ij} + q_{ij} \le 1$ (a GP admits only monomial equalities). It is tight at the
+  optimum, since both exponents are nonnegative.
+- **Monotonicity** of each survival curve, which is *automatic* here: $S_i$ is a
+  product of factors $p \le 1$, so it is nonincreasing with no extra constraint.
+- **Ordering** $S_a \preceq S_b$: at each pooled failure time $t$, the monomial
+  $\bigl(\prod_{t_{ar} \le t} p_{ar}\bigr)\bigl(\prod_{t_{br} \le t} p_{br}\bigr)^{-1}
+  \le 1$.
+
+Everything is a monomial except the sum-to-one posynomial, so `is_dgp()` holds. We use
+the oropharyngeal-carcinoma trial of Kalbfleisch and Prentice, grouping patients by
+tumor stage `T` and nodal stage `N`:
+
+```{r}
+#| label: surv-data
+oropharynx <- readRDS("data/oropharynx.rds")
+
+grp_counts <- function(T, N) {                          # discrete-hazard counts
+  s  <- subset(oropharynx, tstage == T & nstage == N)
+  dt <- sort(unique(s$days[s$status == 1]))             # distinct failure times
+  data.frame(t = dt,
+             d = sapply(dt, function(x) sum(s$days == x & s$status == 1)),  # failures
+             n = sapply(dt, function(x) sum(s$days >= x)))                  # at risk
+}
+```
+
+`fit_rc()` assembles the monomial likelihood, the relaxed sum-to-one constraints, and
+one ordering monomial per pooled failure time for each requested pair `c(a, b)`
+(meaning $S_a \preceq S_b$):
+
+```{r}
+#| label: surv-fit
+fit_rc <- function(groups, order = list()) {
+  G <- length(groups)
+  p <- lapply(groups, function(g) Variable(nrow(g), pos = TRUE))
+  q <- lapply(groups, function(g) Variable(nrow(g), pos = TRUE))
+  mono <- function(v, a) Reduce(`*`, lapply(which(a != 0), function(j) v[j]^a[j]))
+  Scum <- function(i, ix) if (length(ix)) prod_entries(p[[i]][ix]) else 1  # empty prod = 1
+
+  objective <- Reduce(`*`, lapply(seq_len(G), function(i)
+                 mono(p[[i]], groups[[i]]$n - groups[[i]]$d) * mono(q[[i]], groups[[i]]$d)))
+  constraints <- lapply(seq_len(G), function(i) p[[i]] + q[[i]] <= 1)
+
+  for (o in order) {                    # S_a(t) <= S_b(t) at every pooled failure time
+    a <- o[1]; b <- o[2]
+    for (tk in sort(unique(c(groups[[a]]$t, groups[[b]]$t)))) {
+      ia <- which(groups[[a]]$t <= tk); ib <- which(groups[[b]]$t <= tk)
+      constraints <- c(constraints, Scum(a, ia) * Scum(b, ib)^(-1) <= 1)
+    }
+  }
+  prob <- Problem(Maximize(objective), constraints)
+  val  <- psolve(prob, gp = TRUE)
+  check_solver_status(prob)
+  list(is_dgp = is_dgp(prob), logLik = log(val),
+       S = lapply(seq_len(G), function(i) cumprod(value(p[[i]]))))  # S = running product
+}
+```
+
+With no ordering the GP must return the ordinary Kaplan--Meier estimator --- a
+reassuring check:
+
+```{r}
+#| label: surv-km-check
+g   <- grp_counts(3, 3)
+fit <- fit_rc(list(g))
+km  <- survfit(Surv(days, status) ~ 1,
+               data = subset(oropharynx, tstage == 3 & nstage == 3))
+max(abs(fit$S[[1]] - summary(km, times = g$t)$surv))    # ~ 0: GP == Kaplan-Meier
+```
+
+Now the ordering. Take the three T = 3 groups differing in nodal involvement,
+$(T,N) = (3,1), (3,2), (3,3)$, and impose $S_3 \preceq S_2 \preceq S_1$ (more nodal
+involvement, worse survival):
+
+```{r}
+#| label: surv-fig
+#| fig-width: 8
+#| fig-height: 3.3
+g1 <- list("(3,1)" = grp_counts(3, 1),
+           "(3,2)" = grp_counts(3, 2),
+           "(3,3)" = grp_counts(3, 3))
+
+rc_free  <- fit_rc(g1)
+rc_order <- fit_rc(g1, list(c(3, 2), c(2, 1)))          # S3 <= S2 <= S1
+
+step_rc <- function(fit, groups, panel)
+  do.call(rbind, lapply(seq_along(groups), function(i) {
+    g <- groups[[i]]; S <- fit$S[[i]]
+    data.frame(t = c(0, g$t), S = c(1, S),
+               grp = paste0("(T,N)=", names(groups)[i]), panel = panel)
+  }))
+
+df <- rbind(step_rc(rc_free,  g1, "(a) Kaplan-Meier (unconstrained)"),
+            step_rc(rc_order, g1, "(b) ordered: S3 <= S2 <= S1"))
+
+ggplot(df, aes(t, S, colour = grp)) + geom_step(linewidth = 0.6) +
+  facet_wrap(~panel) + coord_cartesian(xlim = c(0, 1850), ylim = c(0, 1)) +
+  labs(x = "time (days)", y = "survival probability", colour = NULL) +
+  theme(legend.position = "inside", legend.position.inside = c(0.9, 0.8),
+        legend.background = element_blank())
+```
+
+The unconstrained Kaplan--Meier curves cross --- $(3,2)$ sits above $(3,1)$ for much of
+the range, contradicting $S_2 \le S_1$ --- while the ordered fit removes the crossings,
+reproducing Figure 1 of @LimKimWang:2009. The ordering costs only a little likelihood:
+
+```{r}
+#| label: surv-ll
+c(unconstrained = round(rc_free$logLik, 2), ordered = round(rc_order$logLik, 2))
+```
+
+The website's
+[survival-ordering example](https://cvxr.rbind.io/examples/dgp/survival-ordering.html)
+carries this further --- partial (non-total) orders, a stronger **uniform** ordering
+that constrains the hazard ratio, and the **interval-censored** case, where the same GP
+recipe applies with a different parameterization.
 
 ## Disciplined Quasiconvex Programming (DQCP)
 

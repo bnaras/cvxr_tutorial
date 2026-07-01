@@ -8,7 +8,6 @@ book:
   author:
     - "Anqi Fu"
     - "Balasubramanian Narasimhan"
-    - "Stephen Boyd"
   date: today
   description: >
     A hands-on tutorial on disciplined convex optimization in R with CVXR,

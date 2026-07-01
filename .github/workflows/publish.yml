@@ -76,7 +76,6 @@ jobs:
             any::bench
             any::png
             any::RColorBrewer
-            any::expm
             any::MASS
             any::Matrix
 
