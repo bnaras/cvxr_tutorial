@@ -420,7 +420,7 @@ window.Quarto = {
 <p>So far our responses were continuous. Now <span class="math inline">\(y_i \in \{0, 1\}\)</span> is a <strong>class label</strong>. Logistic regression models the probability of class 1 as <span class="math inline">\(g_\beta(x) = 1/(1 + e^{-x^\top\beta})\)</span> and fits <span class="math inline">\(\beta\)</span> by maximizing the log-likelihood</p>
 <p><span class="math display">\[
 \underset{\beta}{\mbox{maximize}}\quad
-\sum_{i=1}^m \Big[\, y_i\, x_i^\top\beta - \log\big(1 + e^{x_i^\top\beta}\big) \Big].
+\sum_{i=1}^n \Big[\, y_i\, x_i^\top\beta - \log\big(1 + e^{x_i^\top\beta}\big) \Big].
 \]</span></p>
 <p>The first term is linear; the second is a sum of <span class="math inline">\(\log(1 + e^{z})\)</span> terms.</p>
 </section>
@@ -442,12 +442,12 @@ window.Quarto = {
 <p>We generate data from a known logistic model and maximize the log-likelihood, writing <span class="math inline">\(\sum_i \log(1+e^{x_i^\top\beta})\)</span> as <code>sum(logistic(X %*% beta))</code>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="dv">500</span>; n <span class="ot">&lt;-</span> <span class="dv">8</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>beta_true <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(m <span class="sc">*</span> n), m, n)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="dv">1</span> <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">+</span> <span class="fu">exp</span>(<span class="sc">-</span>X <span class="sc">%*%</span> beta_true)) <span class="sc">&gt;</span> <span class="fu">runif</span>(m))   <span class="co"># 0/1 labels</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">500</span>; p <span class="ot">&lt;-</span> <span class="dv">8</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>beta_true <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(p)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(n <span class="sc">*</span> p), n, p)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="dv">1</span> <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">+</span> <span class="fu">exp</span>(<span class="sc">-</span>X <span class="sc">%*%</span> beta_true)) <span class="sc">&gt;</span> <span class="fu">runif</span>(n))   <span class="co"># 0/1 labels</span></span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>beta <span class="ot">&lt;-</span> <span class="fu">Variable</span>(n)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>beta <span class="ot">&lt;-</span> <span class="fu">Variable</span>(p)</span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>loglik <span class="ot">&lt;-</span> <span class="fu">sum</span>(y <span class="sc">*</span> (X <span class="sc">%*%</span> beta)) <span class="sc">-</span> <span class="fu">sum</span>(<span class="fu">logistic</span>(X <span class="sc">%*%</span> beta))</span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>prob <span class="ot">&lt;-</span> <span class="fu">Problem</span>(<span class="fu">Maximize</span>(loglik))</span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">psolve</span>(prob)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>

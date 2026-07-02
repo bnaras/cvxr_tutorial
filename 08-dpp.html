@@ -370,7 +370,7 @@ window.Quarto = {
   <ul>
   <li><a href="#a-hidden-cost-in-chapter-3" id="toc-a-hidden-cost-in-chapter-3" class="nav-link active" data-scroll-target="#a-hidden-cost-in-chapter-3"><span class="header-section-number">8.1</span> A hidden cost in Chapter 3</a></li>
   <li><a href="#parameters-and-the-dpp-rule" id="toc-parameters-and-the-dpp-rule" class="nav-link" data-scroll-target="#parameters-and-the-dpp-rule"><span class="header-section-number">8.2</span> Parameters and the DPP rule</a></li>
-  <li><a href="#the-payoff-watch-the-compile-time-vanish" id="toc-the-payoff-watch-the-compile-time-vanish" class="nav-link" data-scroll-target="#the-payoff-watch-the-compile-time-vanish"><span class="header-section-number">8.3</span> The payoff: watch the compile time vanish</a></li>
+  <li><a href="#the-payoff-watch-the-compile-time-drop" id="toc-the-payoff-watch-the-compile-time-drop" class="nav-link" data-scroll-target="#the-payoff-watch-the-compile-time-drop"><span class="header-section-number">8.3</span> The payoff: watch the compile time drop</a></li>
   <li><a href="#quantifying-it" id="toc-quantifying-it" class="nav-link" data-scroll-target="#quantifying-it"><span class="header-section-number">8.4</span> Quantifying it</a></li>
   <li><a href="#back-to-the-regularization-path" id="toc-back-to-the-regularization-path" class="nav-link" data-scroll-target="#back-to-the-regularization-path"><span class="header-section-number">8.5</span> Back to the regularization path</a></li>
   <li><a href="#the-other-half-of-the-solve-warm-starts" id="toc-the-other-half-of-the-solve-warm-starts" class="nav-link" data-scroll-target="#the-other-half-of-the-solve-warm-starts"><span class="header-section-number">8.6</span> The other half of the solve: warm starts</a></li>
@@ -455,14 +455,14 @@ Is DCP? TRUE </code></pre>
 </div>
 </div>
 </section>
-<section id="the-payoff-watch-the-compile-time-vanish" class="level2" data-number="8.3">
-<h2 data-number="8.3" class="anchored" data-anchor-id="the-payoff-watch-the-compile-time-vanish"><span class="header-section-number">8.3</span> The payoff: watch the compile time vanish</h2>
+<section id="the-payoff-watch-the-compile-time-drop" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="the-payoff-watch-the-compile-time-drop"><span class="header-section-number">8.3</span> The payoff: watch the compile time drop</h2>
 <p>Recall from <a href="02-gentle-intro.html" class="quarto-xref"><span>Chapter 2</span></a> that <code>verbose = TRUE</code> splits each solve into a <strong>compile time</strong> and a <strong>solver time</strong> in its summary. Parameters target the <em>compile</em> time — so let’s just watch it. We set up a lasso whose penalty weight is a <code>Parameter</code>, and solve it the first time:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">120</span>; m <span class="ot">&lt;-</span> <span class="dv">40</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(n <span class="sc">*</span> m), n, m); b <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">Variable</span>(m)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">120</span>; p <span class="ot">&lt;-</span> <span class="dv">40</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(n <span class="sc">*</span> p), n, p); b <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">Variable</span>(p)</span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>error <span class="ot">&lt;-</span> <span class="fu">sum_squares</span>(A <span class="sc">%*%</span> x <span class="sc">-</span> b)</span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>gamma <span class="ot">&lt;-</span> <span class="fu">Parameter</span>(<span class="at">nonneg =</span> <span class="cn">TRUE</span>)</span>
@@ -480,7 +480,7 @@ Is DCP? TRUE </code></pre>
 <pre><code>ℹ Compilation: "OSQP" via CVXR::Dcp2Cone -&gt; CVXR::CvxAttr2Constr -&gt; CVXR::ConeMatrixStuffing -&gt; CVXR::OSQP_QP_Solver</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Compile time: 0.412s</code></pre>
+<pre><code>ℹ Compile time: 0.394s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>─────────────────────────────── Numerical solver ───────────────────────────────</code></pre>
@@ -504,11 +504,11 @@ settings: algebra = Built-in,
           scaling: on (10 iterations), scaled_termination: off
           warm starting: on, polishing: on, 
 iter   objective    prim res   dual res   gap        rel kkt    rho         time
-   1  -1.6000e+02   8.00e+00   6.83e+02  -3.13e+03   6.83e+02   1.00e-01    7.04e-04s
-  50   8.0194e+01   6.18e-02   2.66e-03  -1.87e-01   6.18e-02   5.00e-01*   1.40e-03s
- 100   8.0454e+01   8.44e-03   7.36e-05  -6.66e-03   8.44e-03   5.57e+00*   2.27e-03s
- 200   8.0462e+01   1.33e-05   5.75e-07  -1.90e-06   1.33e-05   5.57e+00    3.81e-03s
-plsh   8.0462e+01   1.46e-15   1.28e-14  -5.68e-14   1.28e-14   --------    4.35e-03s
+   1  -1.6000e+02   8.00e+00   6.83e+02  -3.13e+03   6.83e+02   1.00e-01    6.93e-04s
+  50   8.0194e+01   6.18e-02   2.66e-03  -1.87e-01   6.18e-02   5.00e-01*   1.39e-03s
+ 100   8.0454e+01   8.44e-03   7.36e-05  -6.66e-03   8.44e-03   5.57e+00*   2.24e-03s
+ 200   8.0462e+01   1.33e-05   5.75e-07  -1.90e-06   1.33e-05   5.57e+00    3.77e-03s
+plsh   8.0462e+01   1.46e-15   1.28e-14  -5.68e-14   1.28e-14   --------    4.31e-03s
 
 status:               solved
 solution polishing:   successful
@@ -517,7 +517,7 @@ optimal objective:    80.4620
 dual objective:       80.4620
 duality gap:          -5.6843e-14
 primal-dual integral: 3.1311e+03
-run time:             4.35e-03s
+run time:             4.31e-03s
 optimal rho estimate: 2.78e+01</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
@@ -530,10 +530,10 @@ optimal rho estimate: 2.78e+01</code></pre>
 <pre><code>✔ Optimal value: 80.462</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Compile time: 0.412s</code></pre>
+<pre><code>ℹ Compile time: 0.394s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Solver time: 0.027s</code></pre>
+<pre><code>ℹ Solver time: 0.026s</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 80.46205</code></pre>
@@ -580,10 +580,10 @@ settings: algebra = Built-in,
           scaling: on (10 iterations), scaled_termination: off
           warm starting: on, polishing: on, 
 iter   objective    prim res   dual res   gap        rel kkt    rho         time
-   1  -2.2400e+02   8.00e+00   9.56e+02  -4.38e+03   9.56e+02   1.00e-01    7.77e-04s
- 150   8.1079e+01   1.52e-02   9.34e-07  -2.57e-02   1.52e-02   1.44e+01*   2.84e-03s
- 200   8.1117e+01   8.80e-07   7.04e-07  -2.81e-07   8.80e-07   1.44e+01    3.70e-03s
-plsh   8.1117e+01   1.27e-15   1.67e-14   7.96e-14   7.96e-14   --------    4.24e-03s
+   1  -2.2400e+02   8.00e+00   9.56e+02  -4.38e+03   9.56e+02   1.00e-01    7.65e-04s
+ 150   8.1079e+01   1.52e-02   9.34e-07  -2.57e-02   1.52e-02   1.44e+01*   2.83e-03s
+ 200   8.1117e+01   8.80e-07   7.04e-07  -2.81e-07   8.80e-07   1.44e+01    3.69e-03s
+plsh   8.1117e+01   1.27e-15   1.67e-14   7.96e-14   7.96e-14   --------    4.20e-03s
 
 status:               solved
 solution polishing:   successful
@@ -592,7 +592,7 @@ optimal objective:    81.1172
 dual objective:       81.1172
 duality gap:          7.9581e-14
 primal-dual integral: 4.3836e+03
-run time:             4.24e-03s
+run time:             4.20e-03s
 optimal rho estimate: 1.82e+01</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
@@ -608,13 +608,13 @@ optimal rho estimate: 1.82e+01</code></pre>
 <pre><code>ℹ Compile time: 0.038s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Solver time: 0.043s</code></pre>
+<pre><code>ℹ Solver time: 0.042s</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 81.11721</code></pre>
 </div>
 </div>
-<p>The compile time has <strong>collapsed</strong> — CVXR reused the cached parameter-to-data mapping and went straight to the solver. A freshly built problem, by contrast, pays the full compile <em>every</em> time.</p>
+<p>The compile time has <strong>dropped</strong> — CVXR reused the cached parameter-to-data mapping and went straight to the solver. A freshly built problem, by contrast, pays the full compile <em>every</em> time.</p>
 </section>
 <section id="quantifying-it" class="level2" data-number="8.4">
 <h2 data-number="8.4" class="anchored" data-anchor-id="quantifying-it"><span class="header-section-number">8.4</span> Quantifying it</h2>
@@ -630,11 +630,11 @@ optimal rho estimate: 1.82e+01</code></pre>
 <pre><code># A tibble: 2 × 4
   expression        min   median mem_alloc
   &lt;bch:expr&gt;   &lt;bch:tm&gt; &lt;bch:tm&gt; &lt;bch:byt&gt;
-1 DPP re-solve   10.6ms   11.2ms   554.7KB
-2 rebuild          29ms   30.3ms     9.7MB</code></pre>
+1 DPP re-solve   9.79ms   10.1ms   554.7KB
+2 rebuild       27.98ms   29.5ms     9.7MB</code></pre>
 </div>
 </div>
-<p>On our machine the DPP re-solve is roughly <strong>2–3× faster per solve</strong> and allocates less memory — precisely the compile time we just watched disappear. Over a sweep of <span class="math inline">\(K\)</span> values you save that difference <span class="math inline">\(K\)</span> times.</p>
+<p>On our machine the DPP re-solve is roughly <strong>2–3× faster per solve</strong> and allocates less memory — precisely the compile time we just watched drop. Over a sweep of <span class="math inline">\(K\)</span> values you save that difference <span class="math inline">\(K\)</span> times.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -655,11 +655,11 @@ optimal rho estimate: 1.82e+01</code></pre>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>lambda_vals <span class="ot">&lt;-</span> <span class="dv">10</span><span class="sc">^</span><span class="fu">seq</span>(<span class="sc">-</span><span class="dv">3</span>, <span class="dv">1</span>, <span class="at">length.out =</span> <span class="dv">30</span>)</span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>lambda <span class="ot">&lt;-</span> <span class="fu">Parameter</span>(<span class="at">nonneg =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>beta <span class="ot">&lt;-</span> <span class="fu">Variable</span>(m)</span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>path_prob <span class="ot">&lt;-</span> <span class="fu">Problem</span>(<span class="fu">Minimize</span>(error <span class="sc">+</span> lambda <span class="sc">*</span> <span class="fu">p_norm</span>(beta, <span class="dv">1</span>)))</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>beta <span class="ot">&lt;-</span> <span class="fu">Variable</span>(p)</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>path_prob <span class="ot">&lt;-</span> <span class="fu">Problem</span>(<span class="fu">Minimize</span>(<span class="fu">sum_squares</span>(A <span class="sc">%*%</span> beta <span class="sc">-</span> b) <span class="sc">+</span> lambda <span class="sc">*</span> <span class="fu">p_norm</span>(beta, <span class="dv">1</span>)))</span>
 <span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>betas <span class="ot">&lt;-</span> <span class="fu">sapply</span>(lambda_vals, <span class="cf">function</span>(l) { <span class="fu">value</span>(lambda) <span class="ot">&lt;-</span> l; <span class="fu">psolve</span>(path_prob); <span class="fu">value</span>(beta) })</span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(betas)   <span class="co"># m coefficients x number of lambda values</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(betas)   <span class="co"># p coefficients x number of lambda values</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 40 30</code></pre>
 </div>
@@ -668,8 +668,8 @@ optimal rho estimate: 1.82e+01</code></pre>
 </section>
 <section id="the-other-half-of-the-solve-warm-starts" class="level2" data-number="8.6">
 <h2 data-number="8.6" class="anchored" data-anchor-id="the-other-half-of-the-solve-warm-starts"><span class="header-section-number">8.6</span> The other half of the solve: warm starts</h2>
-<p>Recall that every solve splits into a <strong>compile time</strong> and a <strong>solver time</strong>. DPP attacks the <em>compile</em> time — it reuses the canonicalized problem structure so we never re-stuff the matrices. But the solver still starts <strong>cold</strong> each time, refining an internal guess from scratch until it converges.</p>
-<p>A <strong>warm start</strong> attacks the <em>other</em> half. A numerical solver is iterative; if you hand it a starting point already near the answer, it converges in fewer iterations. In a sweep over a fine grid the solution at one <span class="math inline">\(\lambda\)</span> is an excellent guess for the next, so the previous answer is exactly the start point we want. In CVXR that is one flag — <code>warm_start = TRUE</code> uses the current variable values as the solver’s initial point:</p>
+<p>Recall that every solve splits into a <strong>compile time</strong> and a <strong>solver time</strong>. DPP mitigates the <em>compile</em> time — it reuses the canonicalized problem structure so we never re-stuff the matrices. But the solver still starts <strong>cold</strong> each time, refining an internal guess from scratch until it converges.</p>
+<p>A <strong>warm start</strong> addresses the <em>other</em> half. A numerical solver is iterative; if you hand it a starting point already near the answer, it converges in fewer iterations. In a sweep over a fine grid the solution at one <span class="math inline">\(\lambda\)</span> is an excellent guess for the next, so the previous answer is exactly the start point we want. In CVXR that is one flag — <code>warm_start = TRUE</code> uses the current variable values as the solver’s initial point:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>betas_warm <span class="ot">&lt;-</span> <span class="fu">sapply</span>(lambda_vals, <span class="cf">function</span>(l) {</span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">value</span>(lambda) <span class="ot">&lt;-</span> l</span>
@@ -678,7 +678,7 @@ optimal rho estimate: 1.82e+01</code></pre>
 <span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>})</span>
 <span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a><span class="fu">max</span>(<span class="fu">abs</span>(betas_warm <span class="sc">-</span> betas))             <span class="co"># same path, to solver tolerance</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 4.337505e-12</code></pre>
+<pre><code>[1] 2.684117e-05</code></pre>
 </div>
 </div>
 <p>The two ideas are <strong>orthogonal and complementary</strong>, not the same trick:</p>

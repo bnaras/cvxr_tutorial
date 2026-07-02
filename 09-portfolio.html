@@ -418,9 +418,9 @@ window.Quarto = {
 </header>
 
 
-<!-- LIVE. Mean-variance (Markowitz) efficient frontier + mean-CVaR, on a real
-     12-asset price subset bundled in data/stock_prices.csv. Example and data
-     adapted from Riskfolio-Lib Tutorial 1 (Dany Cajas). Originals: Markowitz
+<!-- LIVE. Mean-variance (Markowitz) efficient frontier + mean-CVaR, on daily
+     adjusted prices for the 12 largest U.S. companies by market cap (Yahoo
+     Finance, 2022-2024), bundled in data/stock_prices.csv. Models: Markowitz
      (1952) mean-variance; Rockafellar-Uryasev (2000) CVaR. Verified vs CVXR 1.9.1. -->
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -441,11 +441,11 @@ window.Quarto = {
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Credits
+<span class="screen-reader-only">Tip</span>Data and models
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The example and the bundled price data are adapted from <a href="https://github.com/dcajasn/Riskfolio-Lib"><strong>Riskfolio-Lib</strong></a> (Dany Cajas) — “Tutorial 1: Classic Mean-Risk Optimization” <span class="citation" data-cites="riskfolio">(<a href="references.html#ref-riskfolio" role="doc-biblioref">Cajas 2026</a>)</span>, itself built on CVXPY. The underlying models are due to <span class="citation" data-cites="Markowitz:1952">Markowitz (<a href="references.html#ref-Markowitz:1952" role="doc-biblioref">1952</a>)</span> (mean-variance) and <span class="citation" data-cites="RockafellarUryasev:2000">Rockafellar and Uryasev (<a href="references.html#ref-RockafellarUryasev:2000" role="doc-biblioref">2000</a>)</span> (CVaR).</p>
+<p>The models are classics: mean-variance optimization is due to <span class="citation" data-cites="Markowitz:1952">Markowitz (<a href="references.html#ref-Markowitz:1952" role="doc-biblioref">1952</a>)</span> and the CVaR reformulation to <span class="citation" data-cites="RockafellarUryasev:2000">Rockafellar and Uryasev (<a href="references.html#ref-RockafellarUryasev:2000" role="doc-biblioref">2000</a>)</span>. The bundled price data are daily adjusted closing prices for the 12 largest U.S. companies by market capitalization (source: Yahoo Finance, 2022–2024).</p>
 </div>
 </div>
 <section id="the-mean-variance-problem" class="level2" data-number="9.1">
@@ -459,7 +459,7 @@ window.Quarto = {
 </section>
 <section id="real-data" class="level2" data-number="9.2">
 <h2 data-number="9.2" class="anchored" data-anchor-id="real-data"><span class="header-section-number">9.2</span> Real data</h2>
-<p>We use ~3 years of daily prices for 12 well-known stocks (a subset of the Riskfolio-Lib dataset), and turn prices into simple returns, a mean vector, and a covariance matrix:</p>
+<p>We use ~3 years (2022–2024) of daily adjusted prices for the <strong>12 largest U.S. companies by market capitalization</strong>, and turn prices into simple returns, a mean vector, and a covariance matrix:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>prices <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/stock_prices.csv"</span>, <span class="at">check.names =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>P <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(prices[, <span class="sc">-</span><span class="dv">1</span>])              <span class="co"># drop the Dates column</span></span>
@@ -469,8 +469,8 @@ window.Quarto = {
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>n     <span class="ot">&lt;-</span> <span class="fu">ncol</span>(R)</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(R)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> [1] "AAPL" "AMZN" "ABT"  "ADBE" "AMGN" "AEP"  "AFL"  "AIG"  "ALL"  "APD" 
-[11] "ADM"  "AKAM"</code></pre>
+<pre><code> [1] "NVDA"  "GOOGL" "AAPL"  "MSFT"  "AMZN"  "AVGO"  "META"  "TSLA"  "BRK-B"
+[10] "JPM"   "LLY"   "WMT"  </code></pre>
 </div>
 </div>
 </section>
@@ -540,7 +540,7 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<p>The left-most bar (greedy, low <span class="math inline">\(\gamma\)</span>) leans on one or two names; as <span class="math inline">\(\gamma\)</span> grows the bars fragment into the full palette. That shift <em>is</em> the efficient frontier, seen from the portfolio’s side.</p>
+<p>The left-most bar (greedy, low <span class="math inline">\(\gamma\)</span>) leans on one or two names; as <span class="math inline">\(\gamma\)</span> grows the weight spreads across a broader, more defensive set of names. That shift <em>is</em> the efficient frontier, seen from the portfolio’s side.</p>
 </section>
 <section id="a-different-risk-measure-cvar" class="level2" data-number="9.4">
 <h2 data-number="9.4" class="anchored" data-anchor-id="a-different-risk-measure-cvar"><span class="header-section-number">9.4</span> A different risk measure: CVaR</h2>
@@ -563,15 +563,15 @@ window.Quarto = {
 <span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>                     <span class="fu">list</span>(<span class="fu">sum</span>(wv) <span class="sc">==</span> <span class="dv">1</span>, wv <span class="sc">&gt;=</span> <span class="dv">0</span>, <span class="fu">t</span>(mu) <span class="sc">%*%</span> wv <span class="sc">&gt;=</span> target))</span>
 <span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="fu">psolve</span>(prob_cvar)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.01481885</code></pre>
+<pre><code>[1] 0.02056038</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">check_solver_status</span>(prob_cvar)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>w_cvar <span class="ot">&lt;-</span> <span class="fu">setNames</span>(<span class="fu">round</span>(<span class="fu">value</span>(wv), <span class="dv">3</span>), <span class="fu">names</span>(mu))</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>w_cvar[w_cvar <span class="sc">&gt;</span> <span class="fl">0.001</span>]                     <span class="co"># the minimum-CVaR allocation</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> AAPL  AMZN  ADBE   AEP   AFL   ALL   APD   ADM 
-0.090 0.046 0.066 0.390 0.222 0.074 0.046 0.065 </code></pre>
+<pre><code> AVGO BRK-B   JPM   LLY   WMT 
+0.063 0.320 0.086 0.283 0.248 </code></pre>
 </div>
 </div>
 <p>Same data, same <code>CVXR</code> machinery, a different notion of risk — and a different, typically more tail-aware, allocation. Switching risk measures is, once again, just a change to the objective.</p>
@@ -583,7 +583,7 @@ window.Quarto = {
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">list</span>(<span class="fu">sum</span>(wv_mv) <span class="sc">==</span> <span class="dv">1</span>, wv_mv <span class="sc">&gt;=</span> <span class="dv">0</span>, <span class="fu">t</span>(mu) <span class="sc">%*%</span> wv_mv <span class="sc">&gt;=</span> target))</span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">psolve</span>(prob_mv)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 4.198194e-05</code></pre>
+<pre><code>[1] 9.208972e-05</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">check_solver_status</span>(prob_mv)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -630,25 +630,23 @@ window.Quarto = {
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>capd <span class="ot">&lt;-</span> <span class="fu">Problem</span>(<span class="fu">Maximize</span>(ret <span class="sc">-</span> <span class="dv">10</span> <span class="sc">*</span> risk), <span class="fu">c</span>(cons, <span class="fu">list</span>(w <span class="sc">&lt;=</span> <span class="fl">0.25</span>)))</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">psolve</span>(base); w0 <span class="ot">&lt;-</span> <span class="fu">value</span>(w)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.0003368569</code></pre>
+<pre><code>[1] 0.0001773069</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">psolve</span>(capd); w1 <span class="ot">&lt;-</span> <span class="fu">value</span>(w)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.0003300224</code></pre>
+<pre><code>[1] 0.0001396685</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">asset =</span> <span class="fu">names</span>(mu),</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">uncapped =</span> <span class="fu">round</span>(w0, <span class="dv">3</span>),</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">capped   =</span> <span class="fu">round</span>(w1, <span class="dv">3</span>))[<span class="fu">round</span>(w0,<span class="dv">3</span>) <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">|</span> <span class="fu">round</span>(w1,<span class="dv">3</span>) <span class="sc">&gt;</span> <span class="dv">0</span>, ]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   asset uncapped capped
-1   AAPL    0.023  0.028
-2   AMZN    0.162  0.164
-3    ABT    0.105  0.122
-4   ADBE    0.114  0.114
-6    AEP    0.320  0.250
-7    AFL    0.257  0.250
-9    ALL    0.017  0.055
-11   ADM    0.002  0.018</code></pre>
+1   NVDA    0.023  0.019
+6   AVGO    0.085  0.104
+9  BRK-B    0.205  0.250
+10   JPM    0.068  0.127
+11   LLY    0.243  0.250
+12   WMT    0.377  0.250</code></pre>
 </div>
 </div>
 <p>The cap spreads weight off the assets that the unconstrained solution concentrated in — a one-line way to encode an investment policy.</p>
@@ -663,13 +661,10 @@ window.Quarto = {
 <li>Read risk and return straight off the solved expressions with <code>value()</code>.</li>
 <li>Swapping variance for <strong>CVaR</strong> is just a new objective — CVXR makes alternative risk measures, position limits, and policy constraints one-liners.</li>
 </ul>
-<p>For many more portfolio models (risk parity, Black-Litterman, worst-case, drawdown measures), see <a href="https://github.com/dcajasn/Riskfolio-Lib">Riskfolio-Lib</a> and the <a href="https://cvxr.rbind.io/examples/finance/portfolio-optimization.html">CVXR portfolio example</a>.</p>
+<p>For more portfolio models and risk measures, see the <a href="https://cvxr.rbind.io/examples/finance/portfolio-optimization.html">CVXR portfolio example</a>.</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
-<div id="ref-riskfolio" class="csl-entry" role="listitem">
-Cajas, Dany. 2026. <em><span>Riskfolio-Lib</span>: Portfolio Optimization in <span>Python</span></em>. <a href="https://github.com/dcajasn/Riskfolio-Lib">https://github.com/dcajasn/Riskfolio-Lib</a>.
-</div>
 <div id="ref-Markowitz:1952" class="csl-entry" role="listitem">
 Markowitz, H. M. 1952. <span>“Portfolio Selection.”</span> <em>Journal of Finance</em> 7 (1): 77–91.
 </div>

@@ -424,6 +424,13 @@ window.Quarto = {
 <section id="linear-program-lp" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="linear-program-lp"><span class="header-section-number">4.2</span> Linear program (LP)</h2>
 <p>Linear objective, linear constraints. The workhorse of operations research.</p>
+<p><span class="math display">\[
+\begin{array}{ll}
+\text{minimize}   &amp; c^\top x\\
+\text{subject to} &amp; Gx \preceq h,\quad Ax = b,
+\end{array}
+\]</span></p>
+<p>with variable <span class="math inline">\(x\)</span> (length <span class="math inline">\(n\)</span>); the data <span class="math inline">\(c, G, h, A, b\)</span> are constant and every expression is affine in <span class="math inline">\(x\)</span>. (<span class="math inline">\(\preceq\)</span> is the componentwise <span class="math inline">\(\le\)</span> for vectors.)</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">Variable</span>(<span class="dv">2</span>)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>lp <span class="ot">&lt;-</span> <span class="fu">Problem</span>(<span class="fu">Minimize</span>(<span class="fu">sum</span>(<span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">3</span>) <span class="sc">*</span> x)),</span>
@@ -443,6 +450,13 @@ window.Quarto = {
 <section id="quadratic-program-qp" class="level2" data-number="4.3">
 <h2 data-number="4.3" class="anchored" data-anchor-id="quadratic-program-qp"><span class="header-section-number">4.3</span> Quadratic program (QP)</h2>
 <p>A convex <strong>quadratic</strong> objective with linear constraints. Least squares (and ridge, and the Markowitz portfolio of <a href="09-portfolio.html" class="quarto-xref"><span>Chapter 9</span></a>) live here.</p>
+<p><span class="math display">\[
+\begin{array}{ll}
+\text{minimize}   &amp; \frac{1}{2}\,x^\top P x + q^\top x\\
+\text{subject to} &amp; Gx \preceq h,\quad Ax = b,
+\end{array}
+\]</span></p>
+<p>with <span class="math inline">\(P \succeq 0\)</span> (positive semidefinite) — that condition is exactly what makes the objective convex. Taking <span class="math inline">\(P = 0\)</span> recovers an LP.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(<span class="dv">20</span>), <span class="dv">10</span>, <span class="dv">2</span>); b <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">10</span>)</span>
@@ -462,7 +476,15 @@ window.Quarto = {
 </section>
 <section id="second-order-cone-program-socp" class="level2" data-number="4.4">
 <h2 data-number="4.4" class="anchored" data-anchor-id="second-order-cone-program-socp"><span class="header-section-number">4.4</span> Second-order cone program (SOCP)</h2>
-<p>Adds constraints involving the Euclidean norm — “second-order cones.” Anything with a <code>p_norm(., 2)</code>, <code>huber</code>, or robust-constraint flavor is typically an SOCP. Minimizing a norm subject to a budget is the canonical toy:</p>
+<p>Adds constraints involving the Euclidean norm — “second-order cones.” Anything with a <code>p_norm(., 2)</code>, <code>huber</code>, or robust-constraint flavor is typically an SOCP.</p>
+<p><span class="math display">\[
+\begin{array}{ll}
+\text{minimize}   &amp; f^\top x\\
+\text{subject to} &amp; \| A_i x + b_i \|_2 \le c_i^\top x + d_i,\quad i = 1,\dots,m,\\
+                  &amp; Fx = g.
+\end{array}
+\]</span></p>
+<p>Each “norm <span class="math inline">\(\le\)</span> affine” row is a <em>second-order cone</em> constraint — it forces the pair <span class="math inline">\((A_i x + b_i,\; c_i^\top x + d_i)\)</span> into the cone <span class="math inline">\(\{(y, t) : \|y\|_2 \le t\}\)</span>. Minimizing a norm subject to a budget is the canonical toy:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>xs <span class="ot">&lt;-</span> <span class="fu">Variable</span>(<span class="dv">3</span>)</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">psolve</span>(<span class="fu">Problem</span>(<span class="fu">Minimize</span>(<span class="fu">p_norm</span>(xs, <span class="dv">2</span>)), <span class="fu">list</span>(<span class="fu">sum</span>(xs) <span class="sc">==</span> <span class="dv">1</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -480,7 +502,14 @@ window.Quarto = {
 </section>
 <section id="semidefinite-program-sdp" class="level2" data-number="4.5">
 <h2 data-number="4.5" class="anchored" data-anchor-id="semidefinite-program-sdp"><span class="header-section-number">4.5</span> Semidefinite program (SDP)</h2>
-<p>The most general of the four: constraints that a <strong>matrix is positive semidefinite</strong> (<span class="math inline">\(\succeq 0\)</span>), written with <code>%&gt;&gt;%</code>. Eigenvalue optimization, covariance/correlation problems, and relaxations of hard combinatorial problems are SDPs. Here we compute the largest eigenvalue of a matrix <span class="math inline">\(M\)</span> as <span class="math inline">\(\min\{t : tI - M \succeq 0\}\)</span>:</p>
+<p>The most general of the four: constraints that a <strong>matrix is positive semidefinite</strong> (<span class="math inline">\(\succeq 0\)</span>), written with <code>%&gt;&gt;%</code>. Eigenvalue optimization, covariance/correlation problems, and relaxations of hard combinatorial problems are SDPs.</p>
+<p><span class="math display">\[
+\begin{array}{ll}
+\text{minimize}   &amp; c^\top x\\
+\text{subject to} &amp; x_1 F_1 + \cdots + x_n F_n + G \;\succeq\; 0,\quad Ax = b,
+\end{array}
+\]</span></p>
+<p>where <span class="math inline">\(F_1,\dots,F_n, G\)</span> are symmetric matrices and <span class="math inline">\(\succeq 0\)</span> means positive semidefinite; that matrix inequality is a <em>linear matrix inequality</em> (LMI). Equivalently, the variable can itself be a symmetric matrix <span class="math inline">\(X \succeq 0\)</span>. Here we compute the largest eigenvalue of a matrix <span class="math inline">\(M\)</span> as <span class="math inline">\(\min\{t : tI - M \succeq 0\}\)</span> (an LMI in the scalar <span class="math inline">\(t\)</span>):</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>M <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>), <span class="dv">2</span>, <span class="dv">2</span>)</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="fu">Variable</span>(<span class="dv">1</span>)</span>

@@ -423,7 +423,7 @@ window.Quarto = {
 <p>In <a href="02-gentle-intro.html" class="quarto-xref"><span>Chapter 2</span></a> we recovered coefficients by least squares. When predictors are many or correlated, plain least squares <strong>overfits</strong> — the estimates blow up and become unstable. The cure is a <strong>penalty</strong> that discourages large coefficients. The two classics are the squared <span class="math inline">\(\ell_2\)</span>-norm and the <span class="math inline">\(\ell_1\)</span>-norm; the <strong>elastic net</strong> combines them:</p>
 <p><span class="math display">\[
 \underset{\beta}{\mbox{minimize}}\quad
-\frac{1}{2m}\|y - X\beta\|_2^2
+\frac{1}{2n}\|y - X\beta\|_2^2
 \;+\;\lambda\Big(\tfrac{1-\alpha}{2}\|\beta\|_2^2 + \alpha\|\beta\|_1\Big).
 \]</span></p>
 <p>Here <span class="math inline">\(\lambda \ge 0\)</span> sets the strength and <span class="math inline">\(\alpha\in[0,1]\)</span> dials between the two: <span class="math inline">\(\alpha = 0\)</span> is <strong>ridge</strong> (smooth shrinkage), <span class="math inline">\(\alpha = 1\)</span> is <strong>lasso</strong> (sets coefficients exactly to zero — variable selection), and in between is the <strong>elastic net</strong>.</p>

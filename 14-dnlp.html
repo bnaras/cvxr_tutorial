@@ -557,12 +557,13 @@ abs(x)   FALSE       TRUE       FALSE
 <span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">value</span>(x) <span class="ot">&lt;-</span> <span class="dv">4</span>                                              <span class="co"># a poor starting point</span></span>
 <span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>one <span class="ot">&lt;-</span> <span class="fu">psolve</span>(prob, <span class="at">nlp =</span> <span class="cn">TRUE</span>, <span class="at">solver =</span> <span class="st">"UNO"</span>, <span class="at">logger =</span> <span class="st">"SILENT"</span>)</span>
 <span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2</span>)</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>many <span class="ot">&lt;-</span> <span class="fu">psolve</span>(prob, <span class="at">nlp =</span> <span class="cn">TRUE</span>, <span class="at">solver =</span> <span class="st">"UNO"</span>, <span class="at">logger =</span> <span class="st">"SILENT"</span>, <span class="at">best_of =</span> <span class="dv">20</span>)</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">from_x0_4 =</span> one, <span class="at">best_of_20 =</span> many)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="fu">value</span>(x) <span class="ot">&lt;-</span> <span class="cn">NULL</span>                    <span class="co"># clear the fixed start so best_of can randomize</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2</span>)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>many <span class="ot">&lt;-</span> <span class="fu">psolve</span>(prob, <span class="at">nlp =</span> <span class="cn">TRUE</span>, <span class="at">solver =</span> <span class="st">"UNO"</span>, <span class="at">logger =</span> <span class="st">"SILENT"</span>, <span class="at">best_of =</span> <span class="dv">20</span>)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">from_x0_4 =</span> one, <span class="at">best_of_20 =</span> many)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> from_x0_4 best_of_20 
- 0.8315586  0.8315586 </code></pre>
+ 0.8315586 -0.7945823 </code></pre>
 </div>
 </div>
 <p>The single solve from <code>x0 = 4</code> gets <strong>stuck in a nearby local minimum</strong> (objective <span class="math inline">\(\approx 0.83\)</span>); the random restarts escape it and find the global one (<span class="math inline">\(\approx -0.79\)</span>). This is the whole story of nonconvex optimization in one example.</p>

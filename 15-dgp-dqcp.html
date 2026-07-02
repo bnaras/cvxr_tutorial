@@ -436,7 +436,12 @@ window.Quarto = {
 <p>CVXR’s convex grammar (DCP) is not the only disciplined rule set. Two siblings extend the same idea — <em>compose from a library, get a guarantee</em> — to other problem classes. We mention them briefly here; follow the links for the full treatment.</p>
 <section id="disciplined-geometric-programming-dgp" class="level2" data-number="15.1">
 <h2 data-number="15.1" class="anchored" data-anchor-id="disciplined-geometric-programming-dgp"><span class="header-section-number">15.1</span> Disciplined Geometric Programming (DGP)</h2>
-<p>Some problems are not convex in the variables but become convex after a <strong>log-log</strong> change of variables — <em>geometric programs</em>, built from positive variables, monomials, and posynomials. They appear in engineering design, and in statistics in problems involving products and ratios of positive quantities. You write them naturally and pass <code>gp = TRUE</code>. The classic example maximizes the volume of a box subject to area limits:</p>
+<p>Some problems are not convex in the variables but become convex after a <strong>log-log</strong> change of variables (replace each positive variable <span class="math inline">\(x_i\)</span> by <span class="math inline">\(e^{u_i}\)</span>). Two building blocks matter:</p>
+<ul>
+<li>A <strong>monomial</strong> is a product <span class="math inline">\(c\,x_1^{a_1}x_2^{a_2}\cdots x_n^{a_n}\)</span> with a positive coefficient <span class="math inline">\(c\)</span>, positive variables, and <em>any</em> real exponents — so ratios like <span class="math inline">\(x/y\)</span> and roots like <span class="math inline">\(\sqrt{x}\)</span> qualify. It is log-log <em>affine</em>.</li>
+<li>A <strong>posynomial</strong> is a sum of monomials, such as <span class="math inline">\(xy + 2z\)</span>. It is log-log <em>convex</em>.</li>
+</ul>
+<p>A <strong>geometric program (GP)</strong> is built from these — a monomial or posynomial objective with monomial and posynomial constraints. GPs appear in engineering design and, in statistics, wherever products and ratios of positive quantities show up. You write the problem naturally and pass <code>gp = TRUE</code>. The classic example maximizes the volume of a box subject to area limits:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">Variable</span>(<span class="at">pos =</span> <span class="cn">TRUE</span>); y <span class="ot">&lt;-</span> <span class="fu">Variable</span>(<span class="at">pos =</span> <span class="cn">TRUE</span>); z <span class="ot">&lt;-</span> <span class="fu">Variable</span>(<span class="at">pos =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>prob <span class="ot">&lt;-</span> <span class="fu">Problem</span>(<span class="fu">Maximize</span>(x <span class="sc">*</span> y <span class="sc">*</span> z),</span>
@@ -451,7 +456,7 @@ window.Quarto = {
 2.00 2.00 1.25 </code></pre>
 </div>
 </div>
-<p>The objective <code>x * y * z</code> multiplies three variables — not DCP at all — yet DGP solves it to global optimality. See the <a href="https://cvxr.rbind.io/examples/dgp/tutorial.html">DGP Tutorial</a>.</p>
+<p>Here <code>x * y * z</code> is a monomial objective, <code>2 * (x*z + y*z)</code> a posynomial, and <code>x * y</code> a monomial — a geometric program through and through. It multiplies variables together (not DCP at all), yet DGP solves it to global optimality. See the <a href="https://cvxr.rbind.io/examples/dgp/tutorial.html">DGP Tutorial</a>.</p>
 <section id="a-worked-example-ordering-survival-curves" class="level3" data-number="15.1.1">
 <h3 data-number="15.1.1" class="anchored" data-anchor-id="a-worked-example-ordering-survival-curves"><span class="header-section-number">15.1.1</span> A worked example: ordering survival curves</h3>
 <p>DGP is not only for engineering design; it appears in statistics wherever a model is built from products and ratios of positive quantities. Here is one such problem, from <span class="citation" data-cites="LimKimWang:2009">Lim et al. (<a href="references.html#ref-LimKimWang:2009" role="doc-biblioref">2009</a>)</span>.</p>

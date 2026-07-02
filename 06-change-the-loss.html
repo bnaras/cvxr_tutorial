@@ -429,12 +429,12 @@ window.Quarto = {
 <p>To see it, we generate a one-predictor problem and <strong>flip the sign of 10% of the responses</strong> — nasty outliers by construction.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1289</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="dv">450</span>; M <span class="ot">&lt;-</span> <span class="dv">1</span>; pflip <span class="ot">&lt;-</span> <span class="fl">0.10</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">450</span>; M <span class="ot">&lt;-</span> <span class="dv">1</span>; pflip <span class="ot">&lt;-</span> <span class="fl">0.10</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>beta_true <span class="ot">&lt;-</span> <span class="dv">5</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(m), <span class="at">ncol =</span> <span class="dv">1</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(n), <span class="at">ncol =</span> <span class="dv">1</span>)</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>y_true <span class="ot">&lt;-</span> X <span class="sc">*</span> beta_true</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>flip <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fu">rbinom</span>(m, <span class="dv">1</span>, <span class="dv">1</span> <span class="sc">-</span> pflip) <span class="sc">-</span> <span class="dv">1</span>     <span class="co"># -1 flips the sign</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> flip <span class="sc">*</span> y_true <span class="sc">+</span> <span class="fu">rnorm</span>(m)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>flip <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fu">rbinom</span>(n, <span class="dv">1</span>, <span class="dv">1</span> <span class="sc">-</span> pflip) <span class="sc">-</span> <span class="dv">1</span>     <span class="co"># -1 flips the sign</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> flip <span class="sc">*</span> y_true <span class="sc">+</span> <span class="fu">rnorm</span>(n)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Now fit the <em>same</em> problem with two losses — squared and Huber:</p>
 <div class="cell">
@@ -535,7 +535,7 @@ window.Quarto = {
 </section>
 <section id="exercise" class="level2" data-number="6.4">
 <h2 data-number="6.4" class="anchored" data-anchor-id="exercise"><span class="header-section-number">6.4</span> Exercise</h2>
-<p><strong>Exercise (⭐).</strong> The Huber threshold <span class="math inline">\(M\)</span> interpolates between two losses. What does Huber regression become as <span class="math inline">\(M \to 0\)</span>? As <span class="math inline">\(M \to \infty\)</span>? Check the small-<span class="math inline">\(M\)</span> case against the LAD fit from <a href="02-gentle-intro.html" class="quarto-xref"><span>Chapter 2</span></a>.</p>
+<p><strong>Exercise (⭐).</strong> The Huber threshold <span class="math inline">\(M\)</span> interpolates between two losses. What does Huber regression become as <span class="math inline">\(M \to 0\)</span>? As <span class="math inline">\(M \to \infty\)</span>? Check the small-<span class="math inline">\(M\)</span> case against LAD — the loss you met in <a href="02-gentle-intro.html" class="quarto-xref"><span>Chapter 2</span></a>.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -576,7 +576,6 @@ window.Quarto = {
 <ul>
 <li>The <strong>loss</strong> is the estimator: squared → mean, Huber → robust, tilted-<span class="math inline">\(\ell_1\)</span> → quantiles, absolute → median.</li>
 <li>Each is a <strong>one-line change</strong> to the objective — the modeling vocabulary you are building transfers directly.</li>
-<li>A kinked loss can trip a particular solver; naming a robust solver (<code>solver = "CLARABEL"</code>) is sometimes the easiest fix.</li>
 </ul>
 <p>See <a href="https://cvxr.rbind.io/examples/regression/huber-regression.html">Huber</a> and <a href="https://cvxr.rbind.io/examples/regression/quantile-regression.html">Quantile</a>.</p>
 

@@ -505,19 +505,20 @@ Total value: 17   Total cost: 11 / 11 </code></pre>
 </div>
 </div>
 <p>That is the <strong>same integer optimum</strong> a commercial MIQP solver returns — obtained on a CRAN solver simply by writing the objective in a form SCIP accepts. SOC plus integers is SCIP’s home turf; the second-order cone is doing the work the quadratic objective could not.</p>
-<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Warning</span>Two traps worth remembering
+<span class="screen-reader-only">Note</span>Two current limitations (both may change)
 </div>
 </div>
 <div class="callout-body-container callout-body">
+<p>These reflect the state of the tooling <em>today</em>, not permanent rules — worth knowing now, but re-test rather than assume, since solvers and CVXR’s routing keep evolving.</p>
 <ul>
-<li><strong>Never send an SOC-containing mixed-integer problem to HiGHS.</strong> It does not error — it silently returns a <em>wrong</em> <code>infeasible</code>. SOC + integers needs <strong>SCIP</strong>.</li>
-<li><strong>A quadratic objective with integers (MIQP)</strong> routes through CVXR’s QP path, which only commercial solvers serve. On CRAN, <strong>reformulate the quadratic as an SOC</strong> (above) and use SCIP — same answer. (Commercial solvers can take the squared form directly, if you have one.)</li>
+<li><strong>HiGHS with an SOC inside a mixed-integer problem.</strong> As of this writing, HiGHS does not support a second-order cone in a mixed-integer model, and rather than erroring it can silently return a <em>wrong</em> <code>infeasible</code> — so for now, send SOC + integers to <strong>SCIP</strong>. HiGHS is under active development, so this is the likelier of the two to change; check before relying on it.</li>
+<li><strong>MIQP routing.</strong> A quadratic objective with integers currently travels through CVXR’s QP path, where only commercial solvers are registered. On CRAN today, <strong>reformulate the quadratic as an SOC</strong> (above) and use SCIP — same answer. (Commercial solvers take the squared form directly.) This routing is a CVXR implementation choice that could also change.</li>
 </ul>
 </div>
 </div>
@@ -650,7 +651,7 @@ x_{ij g_{ij}} = 1 &amp; \text{for each clue } g_{ij} &amp; \text{(given numbers 
 <li>Declaring a variable <code>integer = TRUE</code> or <code>boolean = TRUE</code> turns a model into a mixed-integer program — same modeling, combinatorial solving.</li>
 <li><strong>MILP</strong> (linear objective) runs on <strong>HiGHS</strong>, built in and install-free.</li>
 <li><strong>MI-SOCP</strong> (a cone plus integers) runs on <strong>SCIP</strong>. An integer problem with a <em>quadratic</em> objective (MIQP) goes to a commercial solver through CVXR’s QP path — but <strong>reformulate the quadratic as an SOC</strong> and SCIP solves it on CRAN, same answer.</li>
-<li>Match the solver to the problem — and never trust an SOC sent to a pure-MILP solver like HiGHS.</li>
+<li>Match the solver to the problem — today a pure-MILP solver like HiGHS can’t handle an SOC (and may not tell you), so send those to SCIP for now.</li>
 <li>Some integer problems have <strong>no objective at all</strong>: logical puzzles like Sudoku are pure <em>feasibility</em> programs, where every rule is an “exactly one” sum of booleans.</li>
 </ul>
 <p>See <a href="https://cvxr.rbind.io/examples/basic/miqp.html">Mixed-Integer QP</a> and <a href="https://cvxr.rbind.io/examples/misc/integer-programming.html">Integer Programming</a>.</p>

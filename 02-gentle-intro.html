@@ -544,7 +544,7 @@ window.Quarto = {
 <pre><code>ℹ Compilation: "OSQP" via CVXR::Dcp2Cone -&gt; CVXR::CvxAttr2Constr -&gt; CVXR::ConeMatrixStuffing -&gt; CVXR::OSQP_QP_Solver</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Compile time: 0.241s</code></pre>
+<pre><code>ℹ Compile time: 0.239s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>─────────────────────────────── Numerical solver ───────────────────────────────</code></pre>
@@ -568,9 +568,9 @@ settings: algebra = Built-in,
           scaling: on (10 iterations), scaled_termination: off
           warm starting: on, polishing: on, 
 iter   objective    prim res   dual res   gap        rel kkt    rho         time
-   1   0.0000e+00   1.00e+00   1.00e+02  -5.00e+01   1.00e+02   1.00e-01    3.89e-05s
-  50   2.0000e-01   4.87e-10   6.73e-10   2.79e-10   6.73e-10   1.00e-01    5.99e-05s
-plsh   2.0000e-01   1.57e-16   1.57e-16  -1.11e-16   1.57e-16   --------    8.29e-05s
+   1   0.0000e+00   1.00e+00   1.00e+02  -5.00e+01   1.00e+02   1.00e-01    3.78e-05s
+  50   2.0000e-01   4.87e-10   6.73e-10   2.79e-10   6.73e-10   1.00e-01    5.94e-05s
+plsh   2.0000e-01   1.57e-16   1.57e-16  -1.11e-16   1.57e-16   --------    8.17e-05s
 
 status:               solved
 solution polishing:   successful
@@ -579,7 +579,7 @@ optimal objective:    0.2000
 dual objective:       0.2000
 duality gap:          -1.1102e-16
 primal-dual integral: 5.0000e+01
-run time:             8.29e-05s
+run time:             8.17e-05s
 optimal rho estimate: 7.60e-02</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
@@ -592,7 +592,7 @@ optimal rho estimate: 7.60e-02</code></pre>
 <pre><code>✔ Optimal value: 0.2</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Compile time: 0.241s</code></pre>
+<pre><code>ℹ Compile time: 0.239s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>ℹ Solver time: 0.033s</code></pre>
@@ -839,7 +839,7 @@ X10  5.0186776  5.09475916</code></pre>
 </div>
 </div>
 </div>
-<p><strong>Exercise 3 (⭐).</strong> Constrain the first four coefficients to sum to at most zero, <span class="math inline">\(\sum_{i=1}^{4}\beta_i \le 0\)</span>, using a matrix row rather than writing out four terms.</p>
+<p><strong>Exercise 3 (⭐).</strong> Constrain the first four coefficients to sum to at least 4, <span class="math inline">\(\sum_{i=1}^{4}\beta_i \ge 4\)</span>, using a matrix row rather than writing out four terms.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -855,24 +855,24 @@ X10  5.0186776  5.09475916</code></pre>
 <p>Build a row vector that picks out <span class="math inline">\(\beta_1,\ldots,\beta_4\)</span>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">4</span>), <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">6</span>)), <span class="at">nrow =</span> <span class="dv">1</span>)</span>
-<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>sum_con <span class="ot">&lt;-</span> <span class="fu">Problem</span>(obj, <span class="at">constraints =</span> <span class="fu">list</span>(A <span class="sc">%*%</span> beta <span class="sc">&lt;=</span> <span class="dv">0</span>))</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>sum_con <span class="ot">&lt;-</span> <span class="fu">Problem</span>(obj, <span class="at">constraints =</span> <span class="fu">list</span>(A <span class="sc">%*%</span> beta <span class="sc">&gt;=</span> <span class="dv">4</span>))</span>
 <span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a><span class="fu">psolve</span>(sum_con)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 34.13461</code></pre>
+<pre><code>[1] 1395.592</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">value</span>(beta)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>             [,1]
- [1,] -3.90253282
- [2,] -2.96833856
- [3,] -1.82342672
- [4,] -1.15621330
- [5,]  0.07539855
- [6,]  0.92243167
- [7,]  1.87995112
- [8,]  3.11070199
- [9,]  4.10865028
-[10,]  5.09475916</code></pre>
+<pre><code>            [,1]
+ [1,] -0.2315945
+ [2,]  0.8073424
+ [3,]  1.6512047
+ [4,]  1.7730473
+ [5,]  0.9780350
+ [6,]  1.7469027
+ [7,]  1.8612004
+ [8,]  2.7562433
+ [9,]  6.2342860
+[10,]  5.1981317</code></pre>
 </div>
 </div>
 <p>Working with matrices generalizes far better than writing <code>beta[1] + beta[2] + ...</code>.</p>

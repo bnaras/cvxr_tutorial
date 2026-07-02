@@ -703,7 +703,7 @@ window.Quarto = {
 0.5 0.5 </code></pre>
 </div>
 </div>
-<p><code>-square(·)</code> is concave and the constraint is <code>affine == affine</code>, so the problem is <code>Maximize(concave)</code> subject to a legal constraint — DCP, with optimum <span class="math inline">\(x = y = 1/2\)</span>.</p>
+<p><code>square</code> is convex, so <code>-square(x)</code> and <code>-square(y)</code> are each concave, and a <strong>sum of concave expressions is concave</strong> — so the objective <code>-square(x) - square(y)</code> is concave. The constraint is <code>affine == affine</code>, so the problem is <code>Maximize(concave)</code> subject to a legal constraint — DCP, with optimum <span class="math inline">\(x = y = 1/2\)</span>.</p>
 </div>
 </div>
 </div>
