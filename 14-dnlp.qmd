@@ -148,6 +148,7 @@ prob <- Problem(Minimize(sin(x) + 0.1 * x^2))
 value(x) <- 4                                              # a poor starting point
 one <- psolve(prob, nlp = TRUE, solver = "UNO", logger = "SILENT")
 
+value(x) <- NULL                    # clear the fixed start so best_of can randomize
 set.seed(2)
 many <- psolve(prob, nlp = TRUE, solver = "UNO", logger = "SILENT", best_of = 20)
 c(from_x0_4 = one, best_of_20 = many)

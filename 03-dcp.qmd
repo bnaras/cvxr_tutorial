@@ -207,9 +207,10 @@ is_dcp(p)
 psolve(p)
 c(x = value(x), y = value(y))
 ```
-`-square(·)` is concave and the constraint is `affine == affine`, so the problem is
-`Maximize(concave)` subject to a legal constraint --- DCP, with optimum
-$x = y = 1/2$.
+`square` is convex, so `-square(x)` and `-square(y)` are each concave, and a **sum
+of concave expressions is concave** --- so the objective `-square(x) - square(y)` is
+concave. The constraint is `affine == affine`, so the problem is `Maximize(concave)`
+subject to a legal constraint --- DCP, with optimum $x = y = 1/2$.
 :::
 
 **Exercise 3 (⭐).** The expression `x^2 / y` (with `y > 0`) is convex --- the

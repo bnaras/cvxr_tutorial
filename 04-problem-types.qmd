@@ -33,6 +33,16 @@ is expressible and which solvers apply.
 
 Linear objective, linear constraints. The workhorse of operations research.
 
+$$
+\begin{array}{ll}
+\text{minimize}   & c^\top x\\
+\text{subject to} & Gx \preceq h,\quad Ax = b,
+\end{array}
+$$
+
+with variable $x$ (length $n$); the data $c, G, h, A, b$ are constant and every
+expression is affine in $x$. ($\preceq$ is the componentwise $\le$ for vectors.)
+
 ```{r}
 #| label: lp
 x <- Variable(2)
@@ -47,6 +57,16 @@ value(x)
 A convex **quadratic** objective with linear constraints. Least squares (and ridge,
 and the Markowitz portfolio of @sec-portfolio) live here.
 
+$$
+\begin{array}{ll}
+\text{minimize}   & \frac{1}{2}\,x^\top P x + q^\top x\\
+\text{subject to} & Gx \preceq h,\quad Ax = b,
+\end{array}
+$$
+
+with $P \succeq 0$ (positive semidefinite) --- that condition is exactly what makes
+the objective convex. Taking $P = 0$ recovers an LP.
+
 ```{r}
 #| label: qp
 set.seed(1)
@@ -60,8 +80,20 @@ value(z)
 ## Second-order cone program (SOCP)
 
 Adds constraints involving the Euclidean norm --- "second-order cones." Anything with
-a `p_norm(., 2)`, `huber`, or robust-constraint flavor is typically an SOCP. Minimizing
-a norm subject to a budget is the canonical toy:
+a `p_norm(., 2)`, `huber`, or robust-constraint flavor is typically an SOCP.
+
+$$
+\begin{array}{ll}
+\text{minimize}   & f^\top x\\
+\text{subject to} & \| A_i x + b_i \|_2 \le c_i^\top x + d_i,\quad i = 1,\dots,m,\\
+                  & Fx = g.
+\end{array}
+$$
+
+Each "norm $\le$ affine" row is a *second-order cone* constraint --- it forces the
+pair $(A_i x + b_i,\; c_i^\top x + d_i)$ into the cone
+$\{(y, t) : \|y\|_2 \le t\}$. Minimizing a norm subject to a budget is the canonical
+toy:
 
 ```{r}
 #| label: socp
@@ -74,8 +106,20 @@ round(value(xs), 4)             # 1/3 each -> the min-norm point on the simplex 
 
 The most general of the four: constraints that a **matrix is positive semidefinite**
 ($\succeq 0$), written with `%>>%`. Eigenvalue optimization, covariance/correlation
-problems, and relaxations of hard combinatorial problems are SDPs. Here we compute the
-largest eigenvalue of a matrix $M$ as $\min\{t : tI - M \succeq 0\}$:
+problems, and relaxations of hard combinatorial problems are SDPs.
+
+$$
+\begin{array}{ll}
+\text{minimize}   & c^\top x\\
+\text{subject to} & x_1 F_1 + \cdots + x_n F_n + G \;\succeq\; 0,\quad Ax = b,
+\end{array}
+$$
+
+where $F_1,\dots,F_n, G$ are symmetric matrices and $\succeq 0$ means positive
+semidefinite; that matrix inequality is a *linear matrix inequality* (LMI).
+Equivalently, the variable can itself be a symmetric matrix $X \succeq 0$. Here we
+compute the largest eigenvalue of a matrix $M$ as $\min\{t : tI - M \succeq 0\}$ (an
+LMI in the scalar $t$):
 
 ```{r}
 #| label: sdp

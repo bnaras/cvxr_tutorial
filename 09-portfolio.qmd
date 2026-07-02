@@ -1,8 +1,8 @@
 # Portfolio Optimization {#sec-portfolio}
 
-<!-- LIVE. Mean-variance (Markowitz) efficient frontier + mean-CVaR, on a real
-     12-asset price subset bundled in data/stock_prices.csv. Example and data
-     adapted from Riskfolio-Lib Tutorial 1 (Dany Cajas). Originals: Markowitz
+<!-- LIVE. Mean-variance (Markowitz) efficient frontier + mean-CVaR, on daily
+     adjusted prices for the 12 largest U.S. companies by market cap (Yahoo
+     Finance, 2022-2024), bundled in data/stock_prices.csv. Models: Markowitz
      (1952) mean-variance; Rockafellar-Uryasev (2000) CVaR. Verified vs CVXR 1.9.1. -->
 
 ::: callout-note
@@ -13,12 +13,11 @@ Value-at-Risk (CVaR)** --- all from real return data.
 :::
 
 ::: callout-tip
-## Credits
-The example and the bundled price data are adapted from
-[**Riskfolio-Lib**](https://github.com/dcajasn/Riskfolio-Lib) (Dany Cajas) ---
-"Tutorial 1: Classic Mean-Risk Optimization" [@riskfolio], itself built on CVXPY. The
-underlying models are due to @Markowitz:1952 (mean-variance) and
-@RockafellarUryasev:2000 (CVaR).
+## Data and models
+The models are classics: mean-variance optimization is due to @Markowitz:1952 and the
+CVaR reformulation to @RockafellarUryasev:2000. The bundled price data are daily
+adjusted closing prices for the 12 largest U.S. companies by market capitalization
+(source: Yahoo Finance, 2022--2024).
 :::
 
 ```{r}
@@ -47,8 +46,9 @@ return; large $\gamma$ avoids risk.
 
 ## Real data
 
-We use ~3 years of daily prices for 12 well-known stocks (a subset of the Riskfolio-Lib
-dataset), and turn prices into simple returns, a mean vector, and a covariance matrix:
+We use ~3 years (2022--2024) of daily adjusted prices for the **12 largest U.S.
+companies by market capitalization**, and turn prices into simple returns, a mean
+vector, and a covariance matrix:
 
 ```{r}
 #| label: data
@@ -133,8 +133,8 @@ ggplot(comp, aes(gamma, weight, fill = asset)) +
 ```
 
 The left-most bar (greedy, low $\gamma$) leans on one or two names; as $\gamma$ grows the
-bars fragment into the full palette. That shift *is* the efficient frontier, seen from
-the portfolio's side.
+weight spreads across a broader, more defensive set of names. That shift *is* the
+efficient frontier, seen from the portfolio's side.
 
 ## A different risk measure: CVaR
 
@@ -238,6 +238,5 @@ The cap spreads weight off the assets that the unconstrained solution concentrat
 - Swapping variance for **CVaR** is just a new objective --- CVXR makes alternative risk
   measures, position limits, and policy constraints one-liners.
 
-For many more portfolio models (risk parity, Black-Litterman, worst-case, drawdown
-measures), see [Riskfolio-Lib](https://github.com/dcajasn/Riskfolio-Lib) and the
+For more portfolio models and risk measures, see the
 [CVXR portfolio example](https://cvxr.rbind.io/examples/finance/portfolio-optimization.html).

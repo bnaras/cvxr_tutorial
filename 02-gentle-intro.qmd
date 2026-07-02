@@ -314,8 +314,8 @@ value(beta)
 ```
 :::
 
-**Exercise 3 (⭐).** Constrain the first four coefficients to sum to at most zero,
-$\sum_{i=1}^{4}\beta_i \le 0$, using a matrix row rather than writing out four terms.
+**Exercise 3 (⭐).** Constrain the first four coefficients to sum to at least 4,
+$\sum_{i=1}^{4}\beta_i \ge 4$, using a matrix row rather than writing out four terms.
 
 ::: {.callout-tip collapse="true"}
 ## Solution
@@ -323,7 +323,7 @@ Build a row vector that picks out $\beta_1,\ldots,\beta_4$:
 ```{r}
 #| label: ex-sum
 A <- matrix(c(rep(1, 4), rep(0, 6)), nrow = 1)
-sum_con <- Problem(obj, constraints = list(A %*% beta <= 0))
+sum_con <- Problem(obj, constraints = list(A %*% beta >= 4))
 psolve(sum_con)
 value(beta)
 ```

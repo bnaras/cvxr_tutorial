@@ -68,7 +68,7 @@ good <- Problem(Minimize(g * w), list(w == g * z, z >= 1))
 cat("Is DPP?", is_dpp(good), "\n")
 ```
 
-## The payoff: watch the compile time vanish
+## The payoff: watch the compile time drop
 
 Recall from @sec-gentle-intro that `verbose = TRUE` splits each solve into a
 **compile time** and a **solver time** in its summary. Parameters target the
@@ -79,9 +79,9 @@ a `Parameter`, and solve it the first time:
 #| label: verbose-first
 #| message: true
 set.seed(1)
-n <- 120; m <- 40
-A <- matrix(rnorm(n * m), n, m); b <- rnorm(n)
-x <- Variable(m)
+n <- 120; p <- 40
+A <- matrix(rnorm(n * p), n, p); b <- rnorm(n)
+x <- Variable(p)
 error <- sum_squares(A %*% x - b)
 
 gamma <- Parameter(nonneg = TRUE)
@@ -101,7 +101,7 @@ value(gamma) <- 0.7
 psolve(param_prob, verbose = TRUE)        # re-solve: compilation is cached
 ```
 
-The compile time has **collapsed** --- CVXR reused the cached parameter-to-data
+The compile time has **dropped** --- CVXR reused the cached parameter-to-data
 mapping and went straight to the solver. A freshly built problem, by contrast, pays
 the full compile *every* time.
 
@@ -122,7 +122,7 @@ bench::mark(
 ```
 
 On our machine the DPP re-solve is roughly **2–3× faster per solve** and allocates
-less memory --- precisely the compile time we just watched disappear. Over a sweep of
+less memory --- precisely the compile time we just watched drop. Over a sweep of
 $K$ values you save that difference $K$ times.
 
 ::: callout-note
@@ -144,11 +144,11 @@ re-solve --- the path looks identical, but only one compilation happens:
 #| label: dpp-path
 lambda_vals <- 10^seq(-3, 1, length.out = 30)
 lambda <- Parameter(nonneg = TRUE)
-beta <- Variable(m)
-path_prob <- Problem(Minimize(error + lambda * p_norm(beta, 1)))
+beta <- Variable(p)
+path_prob <- Problem(Minimize(sum_squares(A %*% beta - b) + lambda * p_norm(beta, 1)))
 
 betas <- sapply(lambda_vals, function(l) { value(lambda) <- l; psolve(path_prob); value(beta) })
-dim(betas)   # m coefficients x number of lambda values
+dim(betas)   # p coefficients x number of lambda values
 ```
 
 Whenever you plan to solve the *same shape* of problem many times --- a path, a
@@ -157,11 +157,11 @@ grid search, a simulation, a bootstrap --- reach for a `Parameter`.
 ## The other half of the solve: warm starts
 
 Recall that every solve splits into a **compile time** and a **solver time**. DPP
-attacks the *compile* time --- it reuses the canonicalized problem structure so we
+mitigates the *compile* time --- it reuses the canonicalized problem structure so we
 never re-stuff the matrices. But the solver still starts **cold** each time, refining
 an internal guess from scratch until it converges.
 
-A **warm start** attacks the *other* half. A numerical solver is iterative; if you
+A **warm start** addresses the *other* half. A numerical solver is iterative; if you
 hand it a starting point already near the answer, it converges in fewer iterations.
 In a sweep over a fine grid the solution at one $\lambda$ is an excellent guess for
 the next, so the previous answer is exactly the start point we want. In CVXR that is

@@ -27,7 +27,7 @@ log-likelihood
 
 $$
 \underset{\beta}{\mbox{maximize}}\quad
-\sum_{i=1}^m \Big[\, y_i\, x_i^\top\beta - \log\big(1 + e^{x_i^\top\beta}\big) \Big].
+\sum_{i=1}^n \Big[\, y_i\, x_i^\top\beta - \log\big(1 + e^{x_i^\top\beta}\big) \Big].
 $$
 
 The first term is linear; the second is a sum of $\log(1 + e^{z})$ terms.
@@ -58,12 +58,12 @@ $\sum_i \log(1+e^{x_i^\top\beta})$ as `sum(logistic(X %*% beta))`:
 ```{r}
 #| label: fit
 set.seed(42)
-m <- 500; n <- 8
-beta_true <- rnorm(n)
-X <- matrix(rnorm(m * n), m, n)
-y <- as.numeric(1 / (1 + exp(-X %*% beta_true)) > runif(m))   # 0/1 labels
+n <- 500; p <- 8
+beta_true <- rnorm(p)
+X <- matrix(rnorm(n * p), n, p)
+y <- as.numeric(1 / (1 + exp(-X %*% beta_true)) > runif(n))   # 0/1 labels
 
-beta <- Variable(n)
+beta <- Variable(p)
 loglik <- sum(y * (X %*% beta)) - sum(logistic(X %*% beta))
 prob <- Problem(Maximize(loglik))
 psolve(prob)

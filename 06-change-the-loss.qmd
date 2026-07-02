@@ -45,12 +45,12 @@ responses** --- nasty outliers by construction.
 ```{r}
 #| label: huber-data
 set.seed(1289)
-m <- 450; M <- 1; pflip <- 0.10
+n <- 450; M <- 1; pflip <- 0.10
 beta_true <- 5
-X <- matrix(rnorm(m), ncol = 1)
+X <- matrix(rnorm(n), ncol = 1)
 y_true <- X * beta_true
-flip <- 2 * rbinom(m, 1, 1 - pflip) - 1     # -1 flips the sign
-y <- flip * y_true + rnorm(m)
+flip <- 2 * rbinom(n, 1, 1 - pflip) - 1     # -1 flips the sign
+y <- flip * y_true + rnorm(n)
 ```
 
 Now fit the *same* problem with two losses --- squared and Huber:
@@ -151,7 +151,7 @@ regression is for.
 
 **Exercise (⭐).** The Huber threshold $M$ interpolates between two losses. What does
 Huber regression become as $M \to 0$? As $M \to \infty$? Check the small-$M$ case
-against the LAD fit from @sec-gentle-intro.
+against LAD --- the loss you met in @sec-gentle-intro.
 
 ::: {.callout-tip collapse="true"}
 ## Solution
@@ -175,8 +175,6 @@ The two nearly coincide.
   quantiles, absolute → median.
 - Each is a **one-line change** to the objective --- the modeling vocabulary you are
   building transfers directly.
-- A kinked loss can trip a particular solver; naming a robust solver
-  (`solver = "CLARABEL"`) is sometimes the easiest fix.
 
 See [Huber](https://cvxr.rbind.io/examples/regression/huber-regression.html) and
 [Quantile](https://cvxr.rbind.io/examples/regression/quantile-regression.html).

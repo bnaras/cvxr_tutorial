@@ -32,7 +32,7 @@ combines them:
 
 $$
 \underset{\beta}{\mbox{minimize}}\quad
-\frac{1}{2m}\|y - X\beta\|_2^2
+\frac{1}{2n}\|y - X\beta\|_2^2
 \;+\;\lambda\Big(\tfrac{1-\alpha}{2}\|\beta\|_2^2 + \alpha\|\beta\|_1\Big).
 $$
 

@@ -15,12 +15,20 @@ classes. We mention them briefly here; follow the links for the full treatment.
 
 ## Disciplined Geometric Programming (DGP)
 
-Some problems are not convex in the variables but become convex after a
-**log-log** change of variables --- *geometric programs*, built from positive
-variables, monomials, and posynomials. They appear in engineering design, and in
-statistics in problems involving products and ratios of positive quantities. You
-write them naturally and pass `gp = TRUE`. The classic example maximizes the volume
-of a box subject to area limits:
+Some problems are not convex in the variables but become convex after a **log-log**
+change of variables (replace each positive variable $x_i$ by $e^{u_i}$). Two building
+blocks matter:
+
+- A **monomial** is a product $c\,x_1^{a_1}x_2^{a_2}\cdots x_n^{a_n}$ with a positive
+  coefficient $c$, positive variables, and *any* real exponents --- so ratios like
+  $x/y$ and roots like $\sqrt{x}$ qualify. It is log-log *affine*.
+- A **posynomial** is a sum of monomials, such as $xy + 2z$. It is log-log *convex*.
+
+A **geometric program (GP)** is built from these --- a monomial or posynomial
+objective with monomial and posynomial constraints. GPs appear in engineering design
+and, in statistics, wherever products and ratios of positive quantities show up. You
+write the problem naturally and pass `gp = TRUE`. The classic example maximizes the
+volume of a box subject to area limits:
 
 ```{r}
 #| label: setup
@@ -41,8 +49,9 @@ psolve(prob, gp = TRUE)
 round(c(x = value(x), y = value(y), z = value(z)), 3)
 ```
 
-The objective `x * y * z` multiplies three variables --- not DCP at all --- yet DGP
-solves it to global optimality. See the
+Here `x * y * z` is a monomial objective, `2 * (x*z + y*z)` a posynomial, and `x * y`
+a monomial --- a geometric program through and through. It multiplies variables
+together (not DCP at all), yet DGP solves it to global optimality. See the
 [DGP Tutorial](https://cvxr.rbind.io/examples/dgp/tutorial.html).
 
 ### A worked example: ordering survival curves

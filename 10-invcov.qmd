@@ -55,14 +55,14 @@ invert it to get the covariance $R$, and sample from $N(0, R)$:
 ```{r}
 #| label: data
 set.seed(1)
-n <- 10        # number of variables
-m <- 1000      # number of samples
+p <- 10        # number of variables
+n <- 1000      # number of samples
 
-A      <- rsparsematrix(n, n, 0.15, rand.x = rnorm)
-Strue  <- as.matrix(A %*% t(A) + 0.05 * diag(n))   # sparse, symmetric, positive definite
+A      <- rsparsematrix(p, p, 0.15, rand.x = rnorm)
+Strue  <- as.matrix(A %*% t(A) + 0.05 * diag(p))   # sparse, symmetric, positive definite
 R      <- solve(Strue)                              # the covariance to sample from
 
-x <- matrix(rnorm(m * n), m, n) %*% chol(R)         # rows are i.i.d. N(0, R)
+x <- matrix(rnorm(n * p), n, p) %*% chol(R)         # rows are i.i.d. N(0, R)
 Q <- cov(x)                                          # sample covariance
 
 sum(abs(Strue) > 1e-4)                               # how many true nonzeros (of 100)
@@ -76,7 +76,7 @@ each solve, zero out numerically negligible entries to read off the recovered pa
 ```{r}
 #| label: fit
 alphas <- c(10, 6, 4, 1)
-S      <- Variable(c(n, n), PSD = TRUE)
+S      <- Variable(c(p, p), PSD = TRUE)
 obj    <- Maximize(log_det(S) - matrix_trace(S %*% Q))
 
 S_est <- lapply(alphas, function(a) {
@@ -106,7 +106,7 @@ mask of the truth alongside each fit:
 #| fig-height: 2.4
 #| fig-cap: "Nonzero pattern (dark = nonzero) of the true precision matrix and the estimates. Smaller alpha -> sparser. Around alpha = 4 the estimate matches the truth's sparsity."
 mask_df <- function(M, lab) {
-  data.frame(i = rep(seq_len(n), n), j = rep(seq_len(n), each = n),
+  data.frame(i = rep(seq_len(p), p), j = rep(seq_len(p), each = p),
              nz = factor(as.integer(as.vector(M) != 0)), panel = lab)
 }
 panels <- rbind(

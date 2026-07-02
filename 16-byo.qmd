@@ -1,17 +1,17 @@
 # Bring Your Own Problem {#sec-byo}
 
-<!-- Open problem-solving session. Problems collected ~mid-June and curated
-     before the tutorial; a few graded challenge problems with collapsible
-     solutions, plus roaming instructor help. -->
+<!-- Open, hands-on problem-solving session: participants bring a problem of their
+     own and the instructors help formulate and solve it. Best-effort, no guarantees. -->
 
 ::: callout-note
 ## Goal
-Formulate and solve a problem of your own --- or one of our curated challenges ---
-with instructor guidance.
+Take a problem of your own --- from your research, your work, or plain curiosity ---
+and try to express and solve it with CVXR, with the instructors on hand to help.
 :::
 
-::: callout-important
-## Session material (Phase 4)
-Populated the week before the tutorial from problems submitted by participants,
-plus a curated challenge set with click-to-reveal solutions.
-:::
+This is an open, hands-on session. Bring a problem you care about: a model you are
+stuck on, an optimization buried somewhere in your own field, or just an idea you want
+to see whether CVXR can express. We will work through it together using the modeling
+vocabulary from the earlier chapters --- variables, objective, constraints, and the
+DCP rules --- and try to get to a solve.
+

@@ -78,9 +78,11 @@ Two small things before you start. When you open a chapter such as `01-intro.qmd
 it in **Source** mode, not **Visual** mode: the visual editor can silently rewrite a
 file's options (for instance, adding a word-wrap setting to the header), which you don't
 want in the shared materials. And we recommend rendering the book **once, ahead of the
-session**, with `quarto render` (or, in RStudio, the **Render** button): this caches
+session**, with `quarto render` (or, in RStudio, the **Render**
+button, available any time a `.qmd` file is open): this caches
 every chunk's results via Quarto's *freeze*, so nothing has to recompute live during the
-tutorial, and it confirms your whole setup --- packages and solvers --- in one shot.
+tutorial, and it confirms your whole setup --- packages and solvers
+--- in one shot.
 
 ## Installation
 

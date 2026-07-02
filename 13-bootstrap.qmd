@@ -42,7 +42,7 @@ Our estimator is a **nearly-isotonic** fit: least squares plus a penalty on *dow
 steps, so it prefers a mostly-increasing curve without forcing strict monotonicity:
 
 $$\underset{\beta}{\mbox{minimize}}\quad \tfrac12\sum_i (y_i-\beta_i)^2
-   + \lambda \sum_i (\beta_{i+1}-\beta_i)_+ .$$
+   + \lambda \sum_i (\beta_i-\beta_{i+1})_+ .$$
 
 We apply it to global-mean temperature anomalies (`cdiac`, shipped with CVXR). The fit
 is a one-liner; crucially, it is also a plain R function of a data vector --- exactly
@@ -53,7 +53,7 @@ the shape the bootstrap needs:
 data(cdiac)
 neariso_fit <- function(y, lambda) {
   beta <- Variable(length(y))
-  prob <- Problem(Minimize(0.5 * sum((y - beta)^2) + lambda * sum(pos(diff(beta)))))
+  prob <- Problem(Minimize(0.5 * sum((y - beta)^2) + lambda * sum(pos(-diff(beta)))))
   psolve(prob)
   value(beta)
 }
