@@ -5,6 +5,7 @@ project:
 book:
   title: "Convex Optimization in R Using CVXR"
   subtitle: "A Hands-On Tutorial"
+  favicon: images/logo.png
   author:
     - "Anqi Fu"
     - "Balasubramanian Narasimhan"

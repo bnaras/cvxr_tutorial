@@ -49,6 +49,22 @@ h1 code, h2 code, h3 code, h4 code,
   color: #333;
 }
 
+/* CVXR logo above the sidebar title, shown on every page. Path is relative to
+   the compiled theme CSS (site_libs/bootstrap/) -> _book/images/logo.png. */
+.sidebar-title::before {
+  content: "";
+  display: block;
+  width: 92px;
+  height: 92px;
+  margin: 0.25rem auto 0.6rem;
+  background: url("images/logo.png") center / contain no-repeat;
+}
+
+/* The sidebar GitHub icon duplicates the right-side "Report an issue" link. */
+.sidebar-title .sidebar-tools-main {
+  display: none;
+}
+
 /* Code blocks */
 pre {
   background-color: #f8f8f8;
