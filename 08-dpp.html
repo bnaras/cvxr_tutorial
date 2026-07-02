@@ -71,6 +71,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta name="quarto:offset" content="./">
 <link href="./09-portfolio.html" rel="next">
 <link href="./07-logistic.html" rel="prev">
+<link href="./images/logo.png" rel="icon" type="image/png">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -80,7 +81,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-218bf51cdc365e200b8da9544fc0b29b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-0bdd41928763501411ac26fc613adb1f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-05bd5a5ff4861ecb10a78e263b3427a3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -480,7 +481,7 @@ Is DCP? TRUE </code></pre>
 <pre><code>ℹ Compilation: "OSQP" via CVXR::Dcp2Cone -&gt; CVXR::CvxAttr2Constr -&gt; CVXR::ConeMatrixStuffing -&gt; CVXR::OSQP_QP_Solver</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Compile time: 0.394s</code></pre>
+<pre><code>ℹ Compile time: 0.389s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>─────────────────────────────── Numerical solver ───────────────────────────────</code></pre>
@@ -504,11 +505,11 @@ settings: algebra = Built-in,
           scaling: on (10 iterations), scaled_termination: off
           warm starting: on, polishing: on, 
 iter   objective    prim res   dual res   gap        rel kkt    rho         time
-   1  -1.6000e+02   8.00e+00   6.83e+02  -3.13e+03   6.83e+02   1.00e-01    6.93e-04s
-  50   8.0194e+01   6.18e-02   2.66e-03  -1.87e-01   6.18e-02   5.00e-01*   1.39e-03s
- 100   8.0454e+01   8.44e-03   7.36e-05  -6.66e-03   8.44e-03   5.57e+00*   2.24e-03s
- 200   8.0462e+01   1.33e-05   5.75e-07  -1.90e-06   1.33e-05   5.57e+00    3.77e-03s
-plsh   8.0462e+01   1.46e-15   1.28e-14  -5.68e-14   1.28e-14   --------    4.31e-03s
+   1  -1.6000e+02   8.00e+00   6.83e+02  -3.13e+03   6.83e+02   1.00e-01    6.99e-04s
+  50   8.0194e+01   6.18e-02   2.66e-03  -1.87e-01   6.18e-02   5.00e-01*   1.40e-03s
+ 100   8.0454e+01   8.44e-03   7.36e-05  -6.66e-03   8.44e-03   5.57e+00*   2.28e-03s
+ 200   8.0462e+01   1.33e-05   5.75e-07  -1.90e-06   1.33e-05   5.57e+00    3.83e-03s
+plsh   8.0462e+01   1.46e-15   1.28e-14  -5.68e-14   1.28e-14   --------    4.36e-03s
 
 status:               solved
 solution polishing:   successful
@@ -517,7 +518,7 @@ optimal objective:    80.4620
 dual objective:       80.4620
 duality gap:          -5.6843e-14
 primal-dual integral: 3.1311e+03
-run time:             4.31e-03s
+run time:             4.36e-03s
 optimal rho estimate: 2.78e+01</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
@@ -530,7 +531,7 @@ optimal rho estimate: 2.78e+01</code></pre>
 <pre><code>✔ Optimal value: 80.462</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Compile time: 0.394s</code></pre>
+<pre><code>ℹ Compile time: 0.389s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>ℹ Solver time: 0.026s</code></pre>
@@ -580,10 +581,10 @@ settings: algebra = Built-in,
           scaling: on (10 iterations), scaled_termination: off
           warm starting: on, polishing: on, 
 iter   objective    prim res   dual res   gap        rel kkt    rho         time
-   1  -2.2400e+02   8.00e+00   9.56e+02  -4.38e+03   9.56e+02   1.00e-01    7.65e-04s
- 150   8.1079e+01   1.52e-02   9.34e-07  -2.57e-02   1.52e-02   1.44e+01*   2.83e-03s
+   1  -2.2400e+02   8.00e+00   9.56e+02  -4.38e+03   9.56e+02   1.00e-01    7.68e-04s
+ 150   8.1079e+01   1.52e-02   9.34e-07  -2.57e-02   1.52e-02   1.44e+01*   2.84e-03s
  200   8.1117e+01   8.80e-07   7.04e-07  -2.81e-07   8.80e-07   1.44e+01    3.69e-03s
-plsh   8.1117e+01   1.27e-15   1.67e-14   7.96e-14   7.96e-14   --------    4.20e-03s
+plsh   8.1117e+01   1.27e-15   1.67e-14   7.96e-14   7.96e-14   --------    4.21e-03s
 
 status:               solved
 solution polishing:   successful
@@ -592,7 +593,7 @@ optimal objective:    81.1172
 dual objective:       81.1172
 duality gap:          7.9581e-14
 primal-dual integral: 4.3836e+03
-run time:             4.20e-03s
+run time:             4.21e-03s
 optimal rho estimate: 1.82e+01</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
@@ -630,8 +631,8 @@ optimal rho estimate: 1.82e+01</code></pre>
 <pre><code># A tibble: 2 × 4
   expression        min   median mem_alloc
   &lt;bch:expr&gt;   &lt;bch:tm&gt; &lt;bch:tm&gt; &lt;bch:byt&gt;
-1 DPP re-solve   9.79ms   10.1ms   554.7KB
-2 rebuild       27.98ms   29.5ms     9.7MB</code></pre>
+1 DPP re-solve   9.35ms   9.54ms   554.7KB
+2 rebuild       25.39ms  26.06ms     9.7MB</code></pre>
 </div>
 </div>
 <p>On our machine the DPP re-solve is roughly <strong>2–3× faster per solve</strong> and allocates less memory — precisely the compile time we just watched drop. Over a sweep of <span class="math inline">\(K\)</span> values you save that difference <span class="math inline">\(K\)</span> times.</p>

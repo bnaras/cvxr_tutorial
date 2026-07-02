@@ -90,6 +90,7 @@ div.csl-indent {
 <meta name="quarto:offset" content="./">
 <link href="./03-dcp.html" rel="next">
 <link href="./01-intro.html" rel="prev">
+<link href="./images/logo.png" rel="icon" type="image/png">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -99,7 +100,7 @@ div.csl-indent {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-218bf51cdc365e200b8da9544fc0b29b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-0bdd41928763501411ac26fc613adb1f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-05bd5a5ff4861ecb10a78e263b3427a3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -544,7 +545,7 @@ window.Quarto = {
 <pre><code>ℹ Compilation: "OSQP" via CVXR::Dcp2Cone -&gt; CVXR::CvxAttr2Constr -&gt; CVXR::ConeMatrixStuffing -&gt; CVXR::OSQP_QP_Solver</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Compile time: 0.239s</code></pre>
+<pre><code>ℹ Compile time: 0.233s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>─────────────────────────────── Numerical solver ───────────────────────────────</code></pre>
@@ -568,9 +569,9 @@ settings: algebra = Built-in,
           scaling: on (10 iterations), scaled_termination: off
           warm starting: on, polishing: on, 
 iter   objective    prim res   dual res   gap        rel kkt    rho         time
-   1   0.0000e+00   1.00e+00   1.00e+02  -5.00e+01   1.00e+02   1.00e-01    3.78e-05s
-  50   2.0000e-01   4.87e-10   6.73e-10   2.79e-10   6.73e-10   1.00e-01    5.94e-05s
-plsh   2.0000e-01   1.57e-16   1.57e-16  -1.11e-16   1.57e-16   --------    8.17e-05s
+   1   0.0000e+00   1.00e+00   1.00e+02  -5.00e+01   1.00e+02   1.00e-01    3.42e-05s
+  50   2.0000e-01   4.87e-10   6.73e-10   2.79e-10   6.73e-10   1.00e-01    5.49e-05s
+plsh   2.0000e-01   1.57e-16   1.57e-16  -1.11e-16   1.57e-16   --------    7.49e-05s
 
 status:               solved
 solution polishing:   successful
@@ -579,7 +580,7 @@ optimal objective:    0.2000
 dual objective:       0.2000
 duality gap:          -1.1102e-16
 primal-dual integral: 5.0000e+01
-run time:             8.17e-05s
+run time:             7.49e-05s
 optimal rho estimate: 7.60e-02</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
@@ -592,10 +593,10 @@ optimal rho estimate: 7.60e-02</code></pre>
 <pre><code>✔ Optimal value: 0.2</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Compile time: 0.239s</code></pre>
+<pre><code>ℹ Compile time: 0.233s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Solver time: 0.033s</code></pre>
+<pre><code>ℹ Solver time: 0.032s</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.2</code></pre>
