@@ -98,9 +98,11 @@ oropharynx <- readRDS("data/oropharynx.rds")
 grp_counts <- function(T, N) {                          # discrete-hazard counts
   s  <- subset(oropharynx, tstage == T & nstage == N)
   dt <- sort(unique(s$days[s$status == 1]))             # distinct failure times
-  data.frame(t = dt,
+  out <- data.frame(t = dt,
              d = sapply(dt, function(x) sum(s$days == x & s$status == 1)),  # failures
              n = sapply(dt, function(x) sum(s$days >= x)))                  # at risk
+  attr(out, "tmax") <- max(s$days)   # last observation, for the flat Kaplan-Meier tail
+  out
 }
 ```
 
@@ -165,8 +167,10 @@ rc_order <- fit_rc(g1, list(c(3, 2), c(2, 1)))          # S3 <= S2 <= S1
 
 step_rc <- function(fit, groups, panel)
   do.call(rbind, lapply(seq_along(groups), function(i) {
-    g <- groups[[i]]; S <- fit$S[[i]]
-    data.frame(t = c(0, g$t), S = c(1, S),
+    g <- groups[[i]]; S <- fit$S[[i]]; tmax <- attr(g, "tmax")
+    t <- c(0, g$t); s <- c(1, S)
+    if (tmax > max(g$t)) { t <- c(t, tmax); s <- c(s, tail(S, 1)) }  # flat KM tail to last obs
+    data.frame(t = t, S = s,
                grp = paste0("(T,N)=", names(groups)[i]), panel = panel)
   }))
 
