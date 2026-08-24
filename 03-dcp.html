@@ -583,47 +583,61 @@ window.Quarto = {
 <section id="finding-the-violation-with-visualize" class="level2" data-number="3.6">
 <h2 data-number="3.6" class="anchored" data-anchor-id="finding-the-violation-with-visualize"><span class="header-section-number">3.6</span> Finding the violation with <code>visualize()</code></h2>
 <p>For anything bigger than a toy, <code>visualize()</code> draws the expression tree with each node’s curvature, flagging the offending node so you know <em>where</em> to reformulate:</p>
+<!-- STATIC until CVXR >= 1.9.3 is on CRAN: 1.9.2 has a display bug that makes
+     this exact call error (rational power exponents crash the visualizer's
+     formatter; fixed for 1.9.3). Output below pre-rendered 2026-08-24 with the
+     fixed build. To restore live rendering: delete eval: false, this comment,
+     the callout, and the static block. -->
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">visualize</span>(<span class="fu">Problem</span>(<span class="fu">Minimize</span>(<span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> <span class="fu">square</span>(x)))))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>t_3 = Power(...)  [unknown, \mathbb{R}_+, 1x1]
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Pre-rendered output
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>On CVXR 1.9.2 this call errors (<code>values must be length 1 ...</code>) — a display bug introduced with 1.9.2’s exact rational power exponents, fixed in CVXR 1.9.3. The output below is pre-rendered with the fixed version; run the chunk yourself once 1.9.3 is on CRAN.</p>
+</div>
+</div>
+<pre><code>── Expression Tree (MINIMIZE) ──────────────────────────────────────────
+t_3 = PowerApprox(...)  [unknown, \mathbb{R}_+, 1x1]
 \-- t_2 = AddExpression(...)  [convex, \mathbb{R}_+, 1x1]
     |-- 1  [constant, 1x1]
-    \-- t_1 = Power(...)  [convex, \mathbb{R}_+, 1x1]
-        \-- var1  [affine, 1x1]</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  ✗ Problem is NOT DCP compliant.
+    \-- t_1 = PowerApprox(...)  [convex, \mathbb{R}_+, 1x1]
+        \-- var1  [affine, 1x1]
+── DCP ANALYSIS ────────────────────────────────────────────────────────
+  ✗ Problem is NOT DCP compliant.
   Objective (Minimize): requires convex expression
-    ✗ Power: unknown  [1x1]
+    ✗ PowerApprox: unknown  [1x1]
       arg 1: convex, increasing  (cvx-rule ✓, ccv-rule ✗)
-      =&gt; Power is concave, but DCP concave composition fails at arg 1.
-      Hint: var1 must be nonneg (&gt;= 0)</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  t_{1} = phi^{(.)^2}({var1})
+      =&gt; PowerApprox is concave, but DCP concave composition fails at arg 1.
+      Hint: var1 must be nonneg (&gt;= 0)
+── SMITH FORM ──────────────────────────────────────────────────────────
+  t_{1} = phi^{(.)^2}({var1})
   t_{2} = {1} + {t_{1}}
-  t_{3} = phi^{(.)^{0.5}}({t_{2}})</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  t_{1} &gt;= phi^{(.)^2}({var1})
+  t_{3} = phi^{(.)^{1/2}}({t_{2}})
+── RELAXED SMITH FORM ───────────────────────────────────────────────────
+  t_{1} &gt;= phi^{(.)^2}({var1})
   t_{2} = {1} + {t_{1}}
-  t_{3} = phi^{(.)^{0.5}}({t_{2}})</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  (\frac{1+t_{1}}{2},  \frac{1-t_{1}}{2},  {var1}) in Q^3
+  t_{3} = phi^{(.)^{1/2}}({t_{2}})
+── CONIC FORM ───────────────────────────────────────────────────────────
+  (\frac{1+t_{1}}{2},  \frac{1-t_{1}}{2},  {var1}) in Q^3
   t_{2} = {1} + {t_{1}}
-  t_{3} = phi^{(.)^{0.5}}({t_{2}})    [conic form: see canonicalizer]</code></pre>
-</div>
-</div>
+  t_{3} = phi^{(.)^{1/2}}({t_{2}})    [conic form: see canonicalizer]</code></pre>
+<p>The tree reads bottom-up: <code>square(x)</code> is convex (<code>t_1</code>), adding 1 keeps it convex (<code>t_2</code>), but the outermost <code>sqrt</code> — concave and increasing — cannot take a convex argument, and the analysis flags exactly that node with a hint.</p>
 <p>See the <a href="https://cvxr.rbind.io/reference/visualization.html">Visualization page</a> for the full feature set (curvature coloring, fix hints, HTML trees).</p>
 </section>
 <section id="bonus-bounds-propagation" class="level2" data-number="3.7">
 <h2 data-number="3.7" class="anchored" data-anchor-id="bonus-bounds-propagation"><span class="header-section-number">3.7</span> Bonus: bounds propagation</h2>
 <p>Since CVXR 1.9.1, <code>get_bounds()</code> propagates interval bounds through any expression — useful for sanity-checking a model:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>xb <span class="ot">&lt;-</span> <span class="fu">Variable</span>(<span class="dv">3</span>, <span class="at">bounds =</span> <span class="fu">list</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">get_bounds</span>(<span class="dv">2</span> <span class="sc">*</span> xb <span class="sc">+</span> <span class="dv">1</span>)   <span class="co"># affine map of [-1, 2]  -&gt;  [-1, 5]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>xb <span class="ot">&lt;-</span> <span class="fu">Variable</span>(<span class="dv">3</span>, <span class="at">bounds =</span> <span class="fu">list</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">get_bounds</span>(<span class="dv">2</span> <span class="sc">*</span> xb <span class="sc">+</span> <span class="dv">1</span>)   <span class="co"># affine map of [-1, 2]  -&gt;  [-1, 5]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
      [,1]
@@ -637,7 +651,7 @@ window.Quarto = {
 [2,]    5
 [3,]    5</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_bounds</span>(<span class="fu">abs</span>(xb))      <span class="co"># through an atom        -&gt;  [0, 2]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_bounds</span>(<span class="fu">abs</span>(xb))      <span class="co"># through an atom        -&gt;  [0, 2]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
      [,1]
@@ -657,29 +671,6 @@ window.Quarto = {
 <h2 data-number="3.8" class="anchored" data-anchor-id="exercises"><span class="header-section-number">3.8</span> Exercises</h2>
 <p><strong>Exercise 1.</strong> Without running it, predict the curvature of <code>square(sqrt(x))</code> for <code>x &gt;= 0</code>, then check with <code>curvature()</code>. Why does DCP report what it does?</p>
 <div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Solution
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-2" class="callout-2-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">curvature</span>(<span class="fu">square</span>(<span class="fu">sqrt</span>(x)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "UNKNOWN"</code></pre>
-</div>
-</div>
-<p><code>sqrt(x)</code> is concave; <code>square</code> is convex and (for nonnegative arguments) increasing, so it wants a <em>convex</em> argument. A concave argument breaks the rule, so DCP returns <strong>unknown</strong> — even though the composition equals <code>x</code>, which is affine. Reformulating (here, just writing <code>x</code>) would fix it.</p>
-</div>
-</div>
-</div>
-<p><strong>Exercise 2.</strong> Is <code>Problem(Maximize(-square(x) - square(y)), list(x + y == 1))</code> DCP? Predict, then check, then solve it.</p>
-<div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
@@ -692,26 +683,16 @@ window.Quarto = {
 <div id="callout-3" class="callout-3-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">Problem</span>(<span class="fu">Maximize</span>(<span class="sc">-</span><span class="fu">square</span>(x) <span class="sc">-</span> <span class="fu">square</span>(y)), <span class="fu">list</span>(x <span class="sc">+</span> y <span class="sc">==</span> <span class="dv">1</span>))</span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">is_dcp</span>(p)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">curvature</span>(<span class="fu">square</span>(<span class="fu">sqrt</span>(x)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] TRUE</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">psolve</span>(p)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] -0.5</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">x =</span> <span class="fu">value</span>(x), <span class="at">y =</span> <span class="fu">value</span>(y))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  x   y 
-0.5 0.5 </code></pre>
+<pre><code>[1] "UNKNOWN"</code></pre>
 </div>
 </div>
-<p><code>square</code> is convex, so <code>-square(x)</code> and <code>-square(y)</code> are each concave, and a <strong>sum of concave expressions is concave</strong> — so the objective <code>-square(x) - square(y)</code> is concave. The constraint is <code>affine == affine</code>, so the problem is <code>Maximize(concave)</code> subject to a legal constraint — DCP, with optimum <span class="math inline">\(x = y = 1/2\)</span>.</p>
+<p><code>sqrt(x)</code> is concave; <code>square</code> is convex and (for nonnegative arguments) increasing, so it wants a <em>convex</em> argument. A concave argument breaks the rule, so DCP returns <strong>unknown</strong> — even though the composition equals <code>x</code>, which is affine. Reformulating (here, just writing <code>x</code>) would fix it.</p>
 </div>
 </div>
 </div>
-<p><strong>Exercise 3 (⭐).</strong> The expression <code>x^2 / y</code> (with <code>y &gt; 0</code>) is convex — the quadratic-over-linear function. DCP cannot see it from <code>x^2 / y</code> (division by a non-constant is rejected). Find a CVXR atom that expresses it. <em>Hint:</em> search the function reference for “quad over lin”.</p>
+<p><strong>Exercise 2.</strong> Is <code>Problem(Maximize(-square(x) - square(y)), list(x + y == 1))</code> DCP? Predict, then check, then solve it.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -724,10 +705,43 @@ window.Quarto = {
 </div>
 <div id="callout-4" class="callout-4-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">Problem</span>(<span class="fu">Maximize</span>(<span class="sc">-</span><span class="fu">square</span>(x) <span class="sc">-</span> <span class="fu">square</span>(y)), <span class="fu">list</span>(x <span class="sc">+</span> y <span class="sc">==</span> <span class="dv">1</span>))</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">is_dcp</span>(p)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">psolve</span>(p)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -0.5</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">x =</span> <span class="fu">value</span>(x), <span class="at">y =</span> <span class="fu">value</span>(y))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  x   y 
+0.5 0.5 </code></pre>
+</div>
+</div>
+<p><code>square</code> is convex, so <code>-square(x)</code> and <code>-square(y)</code> are each concave, and a <strong>sum of concave expressions is concave</strong> — so the objective <code>-square(x) - square(y)</code> is concave. The constraint is <code>affine == affine</code>, so the problem is <code>Maximize(concave)</code> subject to a legal constraint — DCP, with optimum <span class="math inline">\(x = y = 1/2\)</span>.</p>
+</div>
+</div>
+</div>
+<p><strong>Exercise 3 (⭐).</strong> The expression <code>x^2 / y</code> (with <code>y &gt; 0</code>) is convex — the quadratic-over-linear function. DCP cannot see it from <code>x^2 / y</code> (division by a non-constant is rejected). Find a CVXR atom that expresses it. <em>Hint:</em> search the function reference for “quad over lin”.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
 <p>The atom is <code>quad_over_lin(x, y)</code> <span class="math inline">\(= x^2/y\)</span>, certified convex:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>yp <span class="ot">&lt;-</span> <span class="fu">Variable</span>(<span class="at">pos =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">curvature</span>(<span class="fu">quad_over_lin</span>(x, yp))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>yp <span class="ot">&lt;-</span> <span class="fu">Variable</span>(<span class="at">pos =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">curvature</span>(<span class="fu">quad_over_lin</span>(x, yp))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "CONVEX"</code></pre>
 </div>
