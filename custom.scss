@@ -74,6 +74,24 @@ pre {
   font-size: 0.82rem;
 }
 
+/* cli emits one R message per line, so knitr produces one stderr block per
+   line; merge adjacent stderr blocks into a single visual box */
+.cell-output-stderr + .cell-output-stderr pre {
+  border-top: none;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.cell-output-stderr:has(+ .cell-output-stderr) pre {
+  border-bottom: none;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
 code {
   font-size: 0.82rem;
 }
