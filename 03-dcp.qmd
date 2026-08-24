@@ -158,10 +158,57 @@ psolve(Problem(Minimize(sqrt(x))))
 For anything bigger than a toy, `visualize()` draws the expression tree with each
 node's curvature, flagging the offending node so you know *where* to reformulate:
 
+<!-- STATIC until CVXR >= 1.9.3 is on CRAN: 1.9.2 has a display bug that makes
+     this exact call error (rational power exponents crash the visualizer's
+     formatter; fixed for 1.9.3). Output below pre-rendered 2026-08-24 with the
+     fixed build. To restore live rendering: delete eval: false, this comment,
+     the callout, and the static block. -->
+
 ```{r}
 #| label: visualize
+#| eval: false
 visualize(Problem(Minimize(sqrt(1 + square(x)))))
 ```
+
+::: callout-note
+## Pre-rendered output
+On CVXR 1.9.2 this call errors (`values must be length 1 ...`) — a display bug
+introduced with 1.9.2's exact rational power exponents, fixed in CVXR 1.9.3.
+The output below is pre-rendered with the fixed version; run the chunk yourself
+once 1.9.3 is on CRAN.
+:::
+
+```
+── Expression Tree (MINIMIZE) ──────────────────────────────────────────
+t_3 = PowerApprox(...)  [unknown, \mathbb{R}_+, 1x1]
+\-- t_2 = AddExpression(...)  [convex, \mathbb{R}_+, 1x1]
+    |-- 1  [constant, 1x1]
+    \-- t_1 = PowerApprox(...)  [convex, \mathbb{R}_+, 1x1]
+        \-- var1  [affine, 1x1]
+── DCP ANALYSIS ────────────────────────────────────────────────────────
+  ✗ Problem is NOT DCP compliant.
+  Objective (Minimize): requires convex expression
+    ✗ PowerApprox: unknown  [1x1]
+      arg 1: convex, increasing  (cvx-rule ✓, ccv-rule ✗)
+      => PowerApprox is concave, but DCP concave composition fails at arg 1.
+      Hint: var1 must be nonneg (>= 0)
+── SMITH FORM ──────────────────────────────────────────────────────────
+  t_{1} = phi^{(.)^2}({var1})
+  t_{2} = {1} + {t_{1}}
+  t_{3} = phi^{(.)^{1/2}}({t_{2}})
+── RELAXED SMITH FORM ───────────────────────────────────────────────────
+  t_{1} >= phi^{(.)^2}({var1})
+  t_{2} = {1} + {t_{1}}
+  t_{3} = phi^{(.)^{1/2}}({t_{2}})
+── CONIC FORM ───────────────────────────────────────────────────────────
+  (\frac{1+t_{1}}{2},  \frac{1-t_{1}}{2},  {var1}) in Q^3
+  t_{2} = {1} + {t_{1}}
+  t_{3} = phi^{(.)^{1/2}}({t_{2}})    [conic form: see canonicalizer]
+```
+
+The tree reads bottom-up: `square(x)` is convex (`t_1`), adding 1 keeps it convex
+(`t_2`), but the outermost `sqrt` — concave and increasing — cannot take a convex
+argument, and the analysis flags exactly that node with a hint.
 
 See the [Visualization page](https://cvxr.rbind.io/reference/visualization.html)
 for the full feature set (curvature coloring, fix hints, HTML trees).
