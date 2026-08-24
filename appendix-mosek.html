@@ -406,10 +406,11 @@ window.Quarto = {
      this short chapter shows how to plug in MOSEK (free for academics) for the cases
      where a commercial conic solver helps. The solve chunk is `eval: false` on purpose
      so the chapter renders without MOSEK installed. The captured output is genuine:
-     a 5x5 nearest-PSD SDP solved with MOSEK 11.1.2 on 2026-06-10. The CVXR summary is
-     real psolve(verbose=TRUE) output; MOSEK's native log is real Rmosek verbose=10
-     output (CVXR will stream it inline under verbose in a future release --- see
-     new_design/features/TODO.md). -->
+     a 5x5 nearest-PSD SDP solved with CVXR 1.9.2 + MOSEK 11.1.2 on 2026-08-24. The
+     CVXR summary is real psolve(verbose=TRUE) output; MOSEK's native log is real
+     Rmosek verbose=10 output (CVXR will stream it inline under verbose in a future
+     release --- see new_design/features/TODO.md). To regenerate: flip eval to true,
+     render locally with MOSEK installed, paste the output back, flip eval off. -->
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -488,17 +489,18 @@ window.Quarto = {
 </div>
 </div>
 <p>With <code>verbose = TRUE</code>, CVXR reports the compilation and the solve summary — note that the chosen solver is <code>MOSEK</code>, and that compile time and solver time are tracked separately (<a href="08-dpp.html" class="quarto-xref"><span>Chapter 8</span></a>):</p>
-<pre><code>────────────────────────────── CVXR v1.9.1 ──────────────────────────────
+<pre><code>────────────────────────────── CVXR v1.9.2 ──────────────────────────────
 ℹ Problem: 1 variable, 0 constraints (DCP)
 ℹ Compilation: "MOSEK" via CVXR::Dcp2Cone -&gt; CVXR::CvxAttr2Constr -&gt;
-               CVXR::ConeMatrixStuffing -&gt; CVXR::Mosek_Solver
-ℹ Compile time: 0.21s
+               CVXR::ExactCone2Cone -&gt; CVXR::ConeMatrixStuffing -&gt;
+               CVXR::Mosek_Solver
+ℹ Compile time: 0.091s
 ─────────────────────────── Numerical solver ────────────────────────────
 ──────────────────────────────── Summary ────────────────────────────────
 ✔ Status: optimal
 ✔ Optimal value: 3.6305
-ℹ Compile time: 0.21s
-ℹ Solver time: 0.019s</code></pre>
+ℹ Compile time: 0.091s
+ℹ Solver time: 0.024s</code></pre>
 <p>MOSEK also keeps its <strong>own</strong> detailed log of the solve — the problem type, the interior-point iteration table, and a final optimizer summary. A future CVXR release will stream this log inline whenever you pass <code>verbose = TRUE</code> (as CVXPY does); here is what MOSEK reports for this SDP:</p>
 <pre><code>Problem
   Name                   :
@@ -506,6 +508,8 @@ window.Quarto = {
   Type                   : CONIC (conic optimization problem)
   Constraints            : 0
   Affine conic cons.     : 2 (42 rows)
+  Disjunctive cons.      : 0
+  Cones                  : 0
   Scalar variables       : 16
   Matrix variables       : 1 (scalarized: 1)
   Integer variables      : 0
@@ -528,16 +532,16 @@ ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU
 6   4.0e-06  2.5e-06  1.1e-08  1.00e+00   3.630469253e+00   3.630462235e+00   2.5e-06  0.00
 7   4.0e-07  2.5e-07  3.7e-10  1.00e+00   3.630493170e+00   3.630492590e+00   2.5e-07  0.00
 8   1.2e-08  7.5e-09  2.0e-12  1.00e+00   3.630495992e+00   3.630495975e+00   7.5e-09  0.00
-Optimizer terminated. Time: 0.00
+Optimizer terminated. Time: 0.01
 
 Interior-point solution summary
   Problem status  : PRIMAL_AND_DUAL_FEASIBLE
   Solution status : OPTIMAL
-  Primal.  obj: 3.6304959921e+00    nrm: 4e+00    Viol.  var: 0e+00   barvar: 0e+00
-  Dual.    obj: 3.6304959749e+00    nrm: 2e+00    Viol.  var: 2e-11   barvar: 1e-24
+  Primal.  obj: 3.6304959921e+00    nrm: 4e+00    Viol.  var: 0e+00   barvar: 0e+00   acc: 3e-08
+  Dual.    obj: 3.6304959749e+00    nrm: 2e+00    Viol.  var: 2e-11   barvar: 1e-24   acc: 7e-09
 Optimizer summary
-  Optimizer              -                    time: 0.00
-    Interior-point       - iterations : 8     time: 0.00
+  Optimizer              -                    time: 0.01
+    Interior-point       - iterations : 8     time: 0.01
     Simplex              - iterations : 0     time: 0.00
     Mixed integer        - relaxations: 0     time: 0.00</code></pre>
 <p>Read the iteration table top to bottom: MOSEK drives the primal/dual feasibility residuals (<code>PFEAS</code>, <code>DFEAS</code>) and the duality gap (<code>MU</code>) down toward zero, the primal and dual objectives (<code>POBJ</code>, <code>DOBJ</code>) squeeze together, and after eight interior-point iterations they meet at the optimal value <strong>3.6305</strong> — exactly the number in CVXR’s summary. The solution <span class="math inline">\(X^\star\)</span> is the original matrix with its negative eigenvalues clipped to zero, which is the classic closed form for this problem; CVXR and MOSEK recover it numerically without you having to know that.</p>

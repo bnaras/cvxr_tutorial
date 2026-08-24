@@ -548,7 +548,7 @@ window.Quarto = {
 <pre><code>ℹ Compilation: "OSQP" via CVXR::Dcp2Cone -&gt; CVXR::CvxAttr2Constr -&gt; CVXR::ConeMatrixStuffing -&gt; CVXR::OSQP_QP_Solver</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Compile time: 0.211s</code></pre>
+<pre><code>ℹ Compile time: 0.236s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>─────────────────────────────── Numerical solver ───────────────────────────────</code></pre>
@@ -572,9 +572,9 @@ settings: algebra = Built-in,
           scaling: on (10 iterations), scaled_termination: off
           warm starting: on, polishing: on, 
 iter   objective    prim res   dual res   gap        rel kkt    rho         time
-   1   0.0000e+00   1.00e+00   1.00e+02  -5.00e+01   1.00e+02   1.00e-01    3.96e-05s
-  50   2.0000e-01   4.87e-10   6.73e-10   2.79e-10   6.73e-10   1.00e-01    5.42e-05s
-plsh   2.0000e-01   1.57e-16   1.57e-16  -1.11e-16   1.57e-16   --------    7.29e-05s
+   1   0.0000e+00   1.00e+00   1.00e+02  -5.00e+01   1.00e+02   1.00e-01    5.34e-05s
+  50   2.0000e-01   4.87e-10   6.73e-10   2.79e-10   6.73e-10   1.00e-01    7.80e-05s
+plsh   2.0000e-01   1.57e-16   1.57e-16  -1.11e-16   1.57e-16   --------    1.07e-04s
 
 status:               solved
 solution polishing:   successful
@@ -583,7 +583,7 @@ optimal objective:    0.2000
 dual objective:       0.2000
 duality gap:          -1.1102e-16
 primal-dual integral: 5.0000e+01
-run time:             7.29e-05s
+run time:             1.07e-04s
 optimal rho estimate: 7.60e-02</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
@@ -596,10 +596,10 @@ optimal rho estimate: 7.60e-02</code></pre>
 <pre><code>✔ Optimal value: 0.2</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Compile time: 0.211s</code></pre>
+<pre><code>ℹ Compile time: 0.236s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Solver time: 0.046s</code></pre>
+<pre><code>ℹ Solver time: 0.054s</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.2</code></pre>
@@ -730,10 +730,10 @@ X10  5.09475916  5.09475916</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">value</span>(beta)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>               [,1]
- [1,] -3.673960e-18
- [2,] -2.797969e-18
- [3,]  2.131154e-18
- [4,]  4.339122e-19
+ [1,] -3.663280e-18
+ [2,] -2.775389e-18
+ [3,]  2.116383e-18
+ [4,]  4.424205e-19
  [5,]  1.190672e+00
  [6,]  1.460162e+00
  [7,]  1.817840e+00
@@ -747,10 +747,10 @@ X10  5.09475916  5.09475916</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(<span class="at">CVXR =</span> <span class="fu">value</span>(beta), <span class="at">nnls =</span> nnls<span class="sc">::</span><span class="fu">nnls</span>(X, Y)<span class="sc">$</span>x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                        nnls
- [1,] -3.673960e-18 0.000000
- [2,] -2.797969e-18 0.000000
- [3,]  2.131154e-18 0.000000
- [4,]  4.339122e-19 0.000000
+ [1,] -3.663280e-18 0.000000
+ [2,] -2.775389e-18 0.000000
+ [3,]  2.116383e-18 0.000000
+ [4,]  4.424205e-19 0.000000
  [5,]  1.190672e+00 1.190672
  [6,]  1.460162e+00 1.460162
  [7,]  1.817840e+00 1.817840
