@@ -1,0 +1,61 @@
+---
+title: "Penalized Regression: Ridge, Lasso, Elastic Net"
+subtitle: "useR! 2026 · Warsaw · Chapter 5"
+format:
+  revealjs:
+    theme: [default, slides.scss]
+    slide-number: c/t
+    width: 1280
+    height: 720
+    link-external-newwindow: true
+    footer: "[cvxr.rbind.io](https://cvxr.rbind.io)"
+execute:
+  echo: true
+  eval: false        # stub deck: code is shown, not run
+  warning: false
+  message: false
+---
+
+# Penalized Regression: Ridge, Lasso, Elastic Net
+
+<!-- STUB deck — flesh out on rehearsal. Signposts + visuals only;
+     do NOT re-teach the book. Many chapters need only this slide. -->
+
+## Roadmap {.smaller}
+
+::: incremental
+- What you'll be able to do
+- Why regularize?
+- One modular penalty
+- A structured, sparse signal
+- Recovering the signal with the lasso
+- The regularization path
+- Exercise
+- Takeaways
+:::
+
+## Your turn {.smaller}
+
+**Exercise.** Refit the same data with **ridge** ($\alpha = 0$) at `lambda = 0.15` and
+compare with the lasso fit. How many coefficients does each set exactly to zero --- and
+which one *selects* variables?
+
+::: {.notes}
+**Solution (presenter notes).**
+
+```r
+fit_at <- function(a) {
+  psolve(Problem(Minimize(loss + elastic_reg(beta, 0.15, a))))
+  value(beta)
+}
+ridge_b <- fit_at(0)
+lasso_b <- fit_at(1)
+c(ridge_zeros = sum(abs(ridge_b) < 1e-4),
+  lasso_zeros = sum(abs(lasso_b) < 1e-4))
+```
+Ridge shrinks every coefficient but zeroes essentially none; the lasso zeroes the
+large majority. That is the defining difference --- only the $\ell_1$ penalty performs
+**variable selection**. The elastic net ($0 < \alpha < 1$) blends the two, which helps
+when correlated predictors should enter or leave together.
+:::
+

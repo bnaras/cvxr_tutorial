@@ -1,0 +1,59 @@
+---
+title: "Parameters and Efficient Sweeps (DPP)"
+subtitle: "useR! 2026 · Warsaw · Chapter 8"
+format:
+  revealjs:
+    theme: [default, slides.scss]
+    slide-number: c/t
+    width: 1280
+    height: 720
+    link-external-newwindow: true
+    footer: "[cvxr.rbind.io](https://cvxr.rbind.io)"
+execute:
+  echo: true
+  eval: false        # stub deck: code is shown, not run
+  warning: false
+  message: false
+---
+
+# Parameters and Efficient Sweeps (DPP)
+
+<!-- STUB deck — flesh out on rehearsal. Signposts + visuals only;
+     do NOT re-teach the book. Many chapters need only this slide. -->
+
+## Roadmap {.smaller}
+
+::: incremental
+- What you'll be able to do
+- A hidden cost in Chapter 3
+- Parameters and the DPP rule
+- The payoff: watch the compile time drop
+- Quantifying it
+- How big is the win, really?
+- Back to the regularization path
+- The other half of the solve: warm starts
+- Exercise
+- Takeaways
+:::
+
+## Your turn {.smaller}
+
+**Exercise (⭐).** The expression `gamma * p_norm(x, 1)` is DPP, but
+`(gamma * gamma) * p_norm(x, 1)` is not. Suppose you really want the penalty weight
+to be $\gamma^2$. How can you keep the problem DPP *and* sweep over $\gamma$?
+
+::: {.notes}
+**Solution (presenter notes).**
+
+Do the nonlinear part **in R**, outside the DSL: keep a single parameter that holds
+the value $\gamma^2$, and set it from your $\gamma$ grid.
+```r
+w <- Parameter(nonneg = TRUE)            # will hold gamma^2
+prob <- Problem(Minimize(error + w * p_norm(x, 1)))
+is_dpp(prob)
+for (g in lambda_vals) { value(w) <- g^2; psolve(prob) }   # sweep, still DPP
+```
+The rule of thumb: parameters may enter *affinely*; any nonlinear transform of a
+parameter should be computed in R and stored in another parameter.
+:::
+

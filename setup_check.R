@@ -34,11 +34,11 @@ if (!rv_ok) core_ok <- FALSE
 ## mismatch is usually harmless; it is shown so that if something misbehaves
 ## during the session you can see at a glance whether your versions differ
 ## from the author's and factor that in.
-REF <- c(CVXR = "1.9.1", clarabel = "0.11.2", osqp = "1.0.0", scs = "3.2.7",
+REF <- c(CVXR = "1.9.3", clarabel = "0.11.3", osqp = "1.0.0", scs = "3.2.7",
          highs = "1.14.0.2", ggplot2 = "4.0.3", RColorBrewer = "1.1.3",
-         tidyr = "1.3.2", nnls = "1.6", glmnet = "5.0", png = "0.1.9",
-         bench = "1.1.4", scip = "1.10.0.3", Uno = "2.7.4",
-         sparsediff = "0.4.0")
+         tidyr = "1.3.2", nnls = "1.6", glmnet = "5.1", png = "0.1.9",
+         bench = "1.1.4", scip = "1.10.1.1", Uno = "2.7.4.1",
+         sparsediff = "0.6.1")
 
 hdr("Packages  (installed = you have | needed = minimum | used = built with)")
 cat(sprintf("  %-6s %-12s %-14s %-11s %s\n", "", "package", "installed", "needed", "used"))
@@ -55,7 +55,7 @@ check_pkg <- function(pkg, min = NULL) {
   ok
 }
 ## CVXR + the four solvers it imports (auto-installed with CVXR)
-core_ok <- check_pkg("CVXR",  "1.9.1") && core_ok
+core_ok <- check_pkg("CVXR",  "1.9.3") && core_ok   # ch.3 visualize(), ch.11 MIQP on SCIP
 core_ok <- check_pkg("clarabel")       && core_ok
 core_ok <- check_pkg("osqp")           && core_ok
 core_ok <- check_pkg("scs")            && core_ok

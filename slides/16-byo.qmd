@@ -1,0 +1,29 @@
+---
+title: "Bring Your Own Problem"
+subtitle: "useR! 2026 · Warsaw · Chapter 16"
+format:
+  revealjs:
+    theme: [default, slides.scss]
+    slide-number: c/t
+    width: 1280
+    height: 720
+    link-external-newwindow: true
+    footer: "[cvxr.rbind.io](https://cvxr.rbind.io)"
+execute:
+  echo: true
+  eval: false        # stub deck: code is shown, not run
+  warning: false
+  message: false
+---
+
+# Bring Your Own Problem
+
+<!-- STUB deck — flesh out on rehearsal. Signposts + visuals only;
+     do NOT re-teach the book. Many chapters need only this slide. -->
+
+## Roadmap {.smaller}
+
+::: incremental
+- Goal
+:::
+

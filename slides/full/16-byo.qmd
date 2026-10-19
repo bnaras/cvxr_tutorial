@@ -1,0 +1,41 @@
+---
+title: "Bring Your Own Problem"
+subtitle: "useR! 2026 · Warsaw · Chapter 16"
+format:
+  revealjs:
+    theme: [default, ../slides.scss]
+    slide-number: c/t
+    width: 1280
+    height: 720
+    scrollable: true
+    code-line-numbers: false
+    link-external-newwindow: true
+    footer: "[cvxr.rbind.io](https://cvxr.rbind.io)"
+execute:
+  echo: true
+  eval: true
+  warning: false
+  message: false
+  freeze: false
+bibliography: [../../references.bib, ../../cvxr.bib]
+knitr:
+  opts_knit:
+    root.dir: "/Users/naras/GitHub/cvxr_tutorial"
+---
+
+
+<!-- Open, hands-on problem-solving session: participants bring a problem of their
+     own and the instructors help formulate and solve it. Best-effort, no guarantees. -->
+
+::: callout-note
+## Goal
+Take a problem of your own --- from your research, your work, or plain curiosity ---
+and try to express and solve it with CVXR, with the instructors on hand to help.
+:::
+
+This is an open, hands-on session. Bring a problem you care about: a model you are
+stuck on, an optimization buried somewhere in your own field, or just an idea you want
+to see whether CVXR can express. We will work through it together using the modeling
+vocabulary from the earlier chapters --- variables, objective, constraints, and the
+DCP rules --- and try to get to a solve.
+

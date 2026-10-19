@@ -1,0 +1,178 @@
+---
+title: "Logistic Regression"
+subtitle: "useR! 2026 · Warsaw · Chapter 7"
+format:
+  revealjs:
+    theme: [default, ../slides.scss]
+    slide-number: c/t
+    width: 1280
+    height: 720
+    scrollable: true
+    code-line-numbers: false
+    link-external-newwindow: true
+    footer: "[cvxr.rbind.io](https://cvxr.rbind.io)"
+execute:
+  echo: true
+  eval: true
+  warning: false
+  message: false
+  freeze: false
+bibliography: [../../references.bib, ../../cvxr.bib]
+knitr:
+  opts_knit:
+    root.dir: "/Users/naras/GitHub/cvxr_tutorial"
+---
+
+
+<!-- LIVE. Source: cvxr_docs/examples/regression/logistic-regression.qmd.
+     Reinforces the Ch3 DCP/reformulation lesson (logistic atom vs the rejected
+     log(1+exp(.))). Matches stats::glm. Verified vs CVXR 1.9.1. -->
+
+::: callout-note
+## What you'll be able to do
+Fit a binary classifier by maximum likelihood in CVXR, recognize why the natural
+expression is *not* DCP and which atom fixes it, match `stats::glm`, and read off
+predicted probabilities --- then add a penalty for regularized logistic regression.
+:::
+
+```{r}
+#| label: setup
+#| include: false
+library(CVXR)
+source("_check_status.R")
+```
+
+## From regression to classification
+
+So far our responses were continuous. Now $y_i \in \{0, 1\}$ is a **class label**.
+Logistic regression models the probability of class 1 as
+$g_\beta(x) = 1/(1 + e^{-x^\top\beta})$ and fits $\beta$ by maximizing the
+log-likelihood
+
+$$
+\underset{\beta}{\mbox{maximize}}\quad
+\sum_{i=1}^n \Big[\, y_i\, x_i^\top\beta - \log\big(1 + e^{x_i^\top\beta}\big) \Big].
+$$
+
+The first term is linear; the second is a sum of $\log(1 + e^{z})$ terms.
+
+## A DCP snag --- and the atom that fixes it
+
+You might write that second term directly as `log(1 + exp(X %*% beta))`. CVXR will
+**reject it** --- recall *Disciplined Convex Programming*: `exp` is convex, so `1 + exp(...)` is convex, but
+`log` is concave-increasing and needs a *concave* argument. The composition is not
+verifiable:
+
+```{r}
+#| label: nondcp
+beta <- Variable(2)
+X0 <- matrix(rnorm(20), 10, 2)
+is_dcp(Problem(Minimize(sum(log(1 + exp(X0 %*% beta))))))   # FALSE
+```
+
+The function *is* convex; DCP just can't see it through that expression. The fix is
+the dedicated **`logistic`** atom, $\texttt{logistic}(z) = \log(1 + e^{z})$, which DCP
+knows is convex. This is the reformulation habit again --- reach for the atom.
+
+## Fit it
+
+We generate data from a known logistic model and maximize the log-likelihood, writing
+$\sum_i \log(1+e^{x_i^\top\beta})$ as `sum(logistic(X %*% beta))`:
+
+```{r}
+#| label: fit
+set.seed(42)
+n <- 500; p <- 8
+beta_true <- rnorm(p)
+X <- matrix(rnorm(n * p), n, p)
+y <- as.numeric(1 / (1 + exp(-X %*% beta_true)) > runif(n))   # 0/1 labels
+
+beta <- Variable(p)
+loglik <- sum(y * (X %*% beta)) - sum(logistic(X %*% beta))
+prob <- Problem(Maximize(loglik))
+psolve(prob)
+check_solver_status(prob)
+```
+
+It matches `stats::glm` to solver tolerance:
+
+```{r}
+#| label: glm
+g <- glm(y ~ 0 + X, family = "binomial")
+cbind(CVXR = round(value(beta), 4), glm = round(coef(g), 4))
+```
+
+Just as we read off fitted values for OLS in *A Gentle Introduction*, every quantity here is
+`value()` of an expression: the log-odds are `value(X %*% beta)`, and the fitted
+**probabilities** follow from them. You'll compute these in the exercises.
+
+## Regularized logistic regression
+
+Because the objective is just an expression, the regularization idea from
+*Penalized Regression: Ridge, Lasso, Elastic Net* drops straight in. Add an $\ell_1$ penalty for a **sparse** logistic
+fit --- one line:
+
+```{r}
+#| label: penalized
+lambda <- 25
+pen_obj <- loglik - lambda * p_norm(beta, 1)   # penalized log-likelihood
+psolve(Problem(Maximize(pen_obj)))
+round(value(beta), 3)
+```
+
+Larger `lambda` drives more coefficients to zero, just as the lasso did for linear
+regression --- logistic regression and penalized regression are the *same modeling
+vocabulary* applied to a different loss.
+
+## Exercises
+
+**Exercise 1.** In *A Gentle Introduction* you read off OLS fitted values as
+`value(X %*% beta)`. Do the classification analogue here: from the (unpenalized) fitted
+model, compute the in-sample **predicted probabilities**, turn them into class
+predictions at a 0.5 threshold, and report the classification accuracy and a confusion
+matrix.
+
+::: {.callout-tip collapse="true"}
+## Solution
+Re-solve the maximum-likelihood fit (the penalized sections above changed `beta`), then
+everything is just `value()` of an expression:
+```{r}
+#| label: ex-fitted
+psolve(prob)                                  # the unpenalized MLE fit
+p_hat <- 1 / (1 + exp(-value(X %*% beta)))    # fitted probabilities
+y_hat <- as.numeric(p_hat >= 0.5)             # predicted classes
+c(accuracy = mean(y_hat == y))
+table(predicted = y_hat, actual = y)
+```
+The log-odds `X %*% beta` is an *expression*; `value()` evaluates it at the solution,
+and the rest is ordinary R. The very same pattern would score *new* data --- just
+substitute a new design matrix.
+:::
+
+**Exercise 2.** Fit a ridge-penalized ($\ell_2$) logistic regression at the same
+`lambda = 25` and compare its coefficients with the $\ell_1$ fit above. Which zeroes
+coefficients?
+
+::: {.callout-tip collapse="true"}
+## Solution
+```{r}
+#| label: ex-ridge
+l1_fit <- { psolve(Problem(Maximize(loglik - 25 * p_norm(beta, 1))));  value(beta) }
+l2_fit <- { psolve(Problem(Maximize(loglik - 25 * sum_squares(beta)))); value(beta) }
+data.frame(l1 = round(l1_fit, 3), l2 = round(l2_fit, 3))
+```
+The $\ell_2$ penalty *shrinks* every coefficient smoothly but zeroes none; the
+$\ell_1$ penalty sets several exactly to zero. Same trade-off as ridge vs. lasso in
+*Penalized Regression: Ridge, Lasso, Elastic Net* --- the loss changed, the regularization logic did not.
+:::
+
+## Takeaways
+
+- Logistic regression is **maximum likelihood**, a convex problem CVXR solves directly,
+  matching `stats::glm`.
+- The natural `log(1 + exp(...))` is **non-DCP**; the **`logistic`** atom is the
+  DCP-compliant tool --- reformulation, again.
+- Predicted probabilities and any other quantity are just `value()` of an expression,
+  and penalties from *Penalized Regression: Ridge, Lasso, Elastic Net* add in one line.
+
+See [Logistic Regression](https://cvxr.rbind.io/examples/regression/logistic-regression.html).

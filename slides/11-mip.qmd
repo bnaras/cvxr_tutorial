@@ -1,0 +1,56 @@
+---
+title: "Mixed-Integer Programming"
+subtitle: "useR! 2026 · Warsaw · Chapter 11"
+format:
+  revealjs:
+    theme: [default, slides.scss]
+    slide-number: c/t
+    width: 1280
+    height: 720
+    link-external-newwindow: true
+    footer: "[cvxr.rbind.io](https://cvxr.rbind.io)"
+execute:
+  echo: true
+  eval: false        # stub deck: code is shown, not run
+  warning: false
+  message: false
+---
+
+# Mixed-Integer Programming
+
+<!-- STUB deck — flesh out on rehearsal. Signposts + visuals only;
+     do NOT re-teach the book. Many chapters need only this slide. -->
+
+## Roadmap {.smaller}
+
+::: incremental
+- What you'll be able to do
+- Discrete decisions
+- Hands-on: a 0/1 knapsack (MILP)
+- Integer least squares, by reformulation (SCIP)
+- Two current limitations (both may change)
+- Exercise
+- Bonus: solving Sudoku
+- Takeaways
+:::
+
+## Your turn {.smaller}
+
+**Exercise.** Add a rule to the knapsack: projects `P1` and `P2` are mutually
+exclusive (at most one may be chosen). Re-solve and see what changes.
+
+::: {.notes}
+**Solution (presenter notes).**
+
+A "select at most one" rule is the linear constraint `pick[1] + pick[2] <= 1`:
+```r
+prob2 <- Problem(Maximize(sum(values * pick)),
+                 list(sum(costs * pick) <= budget,
+                      pick[1] + pick[2] <= 1))
+psolve(prob2, solver = "HIGHS")
+projects[value(pick) > 0.5]
+```
+Logical rules like mutual exclusion, prerequisites (`pick[a] <= pick[b]`), or "pick
+exactly k" are all just linear constraints on 0/1 variables.
+:::
+

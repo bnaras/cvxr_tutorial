@@ -1,0 +1,94 @@
+---
+title: "A Gentle Introduction"
+subtitle: "useR! 2026 · Warsaw · Chapter 2"
+format:
+  revealjs:
+    theme: [default, slides.scss]
+    slide-number: c/t
+    width: 1280
+    height: 720
+    link-external-newwindow: true
+    footer: "[cvxr.rbind.io](https://cvxr.rbind.io)"
+execute:
+  echo: true
+  eval: false        # stub deck: code is shown, not run
+  warning: false
+  message: false
+---
+
+# A Gentle Introduction
+
+<!-- STUB deck — flesh out on rehearsal. Signposts + visuals only;
+     do NOT re-teach the book. Many chapters need only this slide. -->
+
+## Roadmap {.smaller}
+
+::: incremental
+- What you'll be able to do
+- Convex optimization in one picture
+- 'Hello World'
+- Watching the solver work
+- Modifying and re-solving
+- An *invalid* problem
+- A familiar example: least squares
+- Exercises
+- Takeaways
+:::
+
+## Your turn — Exercise 1 {.smaller}
+
+**Exercise 1.** Change the least-squares objective to **least absolute deviation**
+(minimize the sum of absolute residuals) and solve. Which objective gives a smaller
+*sum of absolute* residuals?
+
+::: {.notes}
+**Solution (presenter notes).**
+
+```r
+lad_obj  <- Minimize(sum(abs(Y - X %*% beta)))
+lad_prob <- Problem(lad_obj)
+psolve(lad_prob)
+cbind(LAD = value(beta), lm = coef(ls_fit))
+```
+LAD minimizes absolute residuals, so by that yardstick it wins; `lm` minimizes
+*squared* residuals and would win on sum of squares. Note we reused `beta` --- its
+value reflects whichever problem was last solved.
+:::
+
+## Your turn — Exercise 2 {.smaller}
+
+**Exercise 2.** Add the constraint that the coefficients are **nondecreasing**:
+$\beta_1 \le \beta_2 \le \cdots \le \beta_p$.
+
+*Hint:* what base-R function takes lagged differences?
+
+::: {.notes}
+**Solution (presenter notes).**
+
+`base::diff()` has a CVXR method, so the monotonicity constraint is just
+`diff(beta) >= 0`:
+```r
+mono <- Problem(obj, constraints = list(diff(beta) >= 0))
+psolve(mono)
+value(beta)
+```
+:::
+
+## Your turn — Exercise 3 {.smaller}
+
+**Exercise 3 (⭐).** Constrain the first four coefficients to sum to at least 4,
+$\sum_{i=1}^{4}\beta_i \ge 4$, using a matrix row rather than writing out four terms.
+
+::: {.notes}
+**Solution (presenter notes).**
+
+Build a row vector that picks out $\beta_1,\ldots,\beta_4$:
+```r
+A <- matrix(c(rep(1, 4), rep(0, 6)), nrow = 1)
+sum_con <- Problem(obj, constraints = list(A %*% beta >= 4))
+psolve(sum_con)
+value(beta)
+```
+Working with matrices generalizes far better than writing `beta[1] + beta[2] + ...`.
+:::
+

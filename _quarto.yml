@@ -68,7 +68,7 @@ format:
     keep-tex: false
 
 # Re-use rendered chunk results across renders; every chunk must still execute
-# cleanly against CRAN CVXR 1.9.1 in CI.
+# cleanly against CRAN CVXR 1.9.3 in CI.
 execute:
   freeze: auto
   warning: false

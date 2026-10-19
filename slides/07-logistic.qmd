@@ -1,0 +1,79 @@
+---
+title: "Logistic Regression"
+subtitle: "useR! 2026 · Warsaw · Chapter 7"
+format:
+  revealjs:
+    theme: [default, slides.scss]
+    slide-number: c/t
+    width: 1280
+    height: 720
+    link-external-newwindow: true
+    footer: "[cvxr.rbind.io](https://cvxr.rbind.io)"
+execute:
+  echo: true
+  eval: false        # stub deck: code is shown, not run
+  warning: false
+  message: false
+---
+
+# Logistic Regression
+
+<!-- STUB deck — flesh out on rehearsal. Signposts + visuals only;
+     do NOT re-teach the book. Many chapters need only this slide. -->
+
+## Roadmap {.smaller}
+
+::: incremental
+- What you'll be able to do
+- From regression to classification
+- A DCP snag --- and the atom that fixes it
+- Fit it
+- Regularized logistic regression
+- Exercises
+- Takeaways
+:::
+
+## Your turn — Exercise 1 {.smaller}
+
+**Exercise 1.** In @sec-gentle-intro you read off OLS fitted values as
+`value(X %*% beta)`. Do the classification analogue here: from the (unpenalized) fitted
+model, compute the in-sample **predicted probabilities**, turn them into class
+predictions at a 0.5 threshold, and report the classification accuracy and a confusion
+matrix.
+
+::: {.notes}
+**Solution (presenter notes).**
+
+Re-solve the maximum-likelihood fit (the penalized sections above changed `beta`), then
+everything is just `value()` of an expression:
+```r
+psolve(prob)                                  # the unpenalized MLE fit
+p_hat <- 1 / (1 + exp(-value(X %*% beta)))    # fitted probabilities
+y_hat <- as.numeric(p_hat >= 0.5)             # predicted classes
+c(accuracy = mean(y_hat == y))
+table(predicted = y_hat, actual = y)
+```
+The log-odds `X %*% beta` is an *expression*; `value()` evaluates it at the solution,
+and the rest is ordinary R. The very same pattern would score *new* data --- just
+substitute a new design matrix.
+:::
+
+## Your turn — Exercise 2 {.smaller}
+
+**Exercise 2.** Fit a ridge-penalized ($\ell_2$) logistic regression at the same
+`lambda = 25` and compare its coefficients with the $\ell_1$ fit above. Which zeroes
+coefficients?
+
+::: {.notes}
+**Solution (presenter notes).**
+
+```r
+l1_fit <- { psolve(Problem(Maximize(loglik - 25 * p_norm(beta, 1))));  value(beta) }
+l2_fit <- { psolve(Problem(Maximize(loglik - 25 * sum_squares(beta)))); value(beta) }
+data.frame(l1 = round(l1_fit, 3), l2 = round(l2_fit, 3))
+```
+The $\ell_2$ penalty *shrinks* every coefficient smoothly but zeroes none; the
+$\ell_1$ penalty sets several exactly to zero. Same trade-off as ridge vs. lasso in
+@sec-elastic-net --- the loss changed, the regularization logic did not.
+:::
+

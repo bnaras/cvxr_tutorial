@@ -1,0 +1,94 @@
+---
+title: "Disciplined Convex Programming"
+subtitle: "useR! 2026 · Warsaw · Chapter 3"
+format:
+  revealjs:
+    theme: [default, slides.scss]
+    slide-number: c/t
+    width: 1280
+    height: 720
+    link-external-newwindow: true
+    footer: "[cvxr.rbind.io](https://cvxr.rbind.io)"
+execute:
+  echo: true
+  eval: false        # stub deck: code is shown, not run
+  warning: false
+  message: false
+---
+
+# Disciplined Convex Programming
+
+<!-- STUB deck — flesh out on rehearsal. Signposts + visuals only;
+     do NOT re-teach the book. Many chapters need only this slide. -->
+
+## Roadmap {.smaller}
+
+::: incremental
+- What you'll be able to do
+- Why was that problem rejected?
+- Expressions carry a sign and a curvature
+- The one rule: composition
+- When DCP says no but the function is fine: reformulate
+- DCP problems
+- Finding the violation with `visualize()`
+- Bonus: bounds propagation
+- Exercises
+- Takeaways
+:::
+
+## Your turn — Exercise 1 {.smaller}
+
+**Exercise 1.** Without running it, predict the curvature of `square(sqrt(x))` for
+`x >= 0`, then check with `curvature()`. Why does DCP report what it does?
+
+::: {.notes}
+**Solution (presenter notes).**
+
+```r
+curvature(square(sqrt(x)))
+```
+`sqrt(x)` is concave; `square` is convex and (for nonnegative arguments)
+increasing, so it wants a *convex* argument. A concave argument breaks the rule, so
+DCP returns **unknown** --- even though the composition equals `x`, which is affine.
+Reformulating (here, just writing `x`) would fix it.
+:::
+
+## Your turn — Exercise 2 {.smaller}
+
+**Exercise 2.** Is `Problem(Maximize(-square(x) - square(y)), list(x + y == 1))`
+DCP? Predict, then check, then solve it.
+
+::: {.notes}
+**Solution (presenter notes).**
+
+```r
+p <- Problem(Maximize(-square(x) - square(y)), list(x + y == 1))
+is_dcp(p)
+psolve(p)
+c(x = value(x), y = value(y))
+```
+`square` is convex, so `-square(x)` and `-square(y)` are each concave, and a **sum
+of concave expressions is concave** --- so the objective `-square(x) - square(y)` is
+concave. The constraint is `affine == affine`, so the problem is `Maximize(concave)`
+subject to a legal constraint --- DCP, with optimum $x = y = 1/2$.
+:::
+
+## Your turn — Exercise 3 {.smaller}
+
+**Exercise 3 (⭐).** The expression `x^2 / y` (with `y > 0`) is convex --- the
+quadratic-over-linear function. DCP cannot see it from `x^2 / y` (division by a
+non-constant is rejected). Find a CVXR atom that expresses it. *Hint:* search the
+function reference for "quad over lin".
+
+::: {.notes}
+**Solution (presenter notes).**
+
+The atom is `quad_over_lin(x, y)` $= x^2/y$, certified convex:
+```r
+yp <- Variable(pos = TRUE)
+curvature(quad_over_lin(x, yp))
+```
+This is the reformulation skill again: the *function* is convex; you just need the
+formulation DCP recognizes.
+:::
+

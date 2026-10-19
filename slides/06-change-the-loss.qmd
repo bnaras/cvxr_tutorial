@@ -1,0 +1,56 @@
+---
+title: "Changing the Loss: Huber, Quantile, LAD"
+subtitle: "useR! 2026 · Warsaw · Chapter 6"
+format:
+  revealjs:
+    theme: [default, slides.scss]
+    slide-number: c/t
+    width: 1280
+    height: 720
+    link-external-newwindow: true
+    footer: "[cvxr.rbind.io](https://cvxr.rbind.io)"
+execute:
+  echo: true
+  eval: false        # stub deck: code is shown, not run
+  warning: false
+  message: false
+---
+
+# Changing the Loss: Huber, Quantile, LAD
+
+<!-- STUB deck — flesh out on rehearsal. Signposts + visuals only;
+     do NOT re-teach the book. Many chapters need only this slide. -->
+
+## Roadmap {.smaller}
+
+::: incremental
+- What you'll be able to do
+- The loss is a knob
+- Huber: robust to outliers
+- Quantile: an asymmetric loss
+- Exercise
+- Takeaways
+:::
+
+## Your turn {.smaller}
+
+**Exercise (⭐).** The Huber threshold $M$ interpolates between two losses. What does
+Huber regression become as $M \to 0$? As $M \to \infty$? Check the small-$M$ case
+against LAD --- the loss you met in @sec-gentle-intro.
+
+::: {.notes}
+**Solution (presenter notes).**
+
+As $M \to 0$ the quadratic region vanishes and Huber $\to$ (a scaled) **absolute
+loss** --- LAD regression. As $M \to \infty$ everything is "small," so Huber $\to$
+**squared loss** --- OLS.
+```r
+small_M <- Problem(Minimize(sum(huber(y - X %*% beta, 0.01))))
+psolve(small_M); val_small <- value(beta)
+lad <- Problem(Minimize(sum(abs(y - X %*% beta))))
+psolve(lad); val_lad <- value(beta)
+c(huber_smallM = val_small, LAD = val_lad)
+```
+The two nearly coincide.
+:::
+

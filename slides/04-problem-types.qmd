@@ -1,0 +1,36 @@
+---
+title: "Types of Convex Optimization Problems"
+subtitle: "useR! 2026 · Warsaw · Chapter 4"
+format:
+  revealjs:
+    theme: [default, slides.scss]
+    slide-number: c/t
+    width: 1280
+    height: 720
+    link-external-newwindow: true
+    footer: "[cvxr.rbind.io](https://cvxr.rbind.io)"
+execute:
+  echo: true
+  eval: false        # stub deck: code is shown, not run
+  warning: false
+  message: false
+---
+
+# Types of Convex Optimization Problems
+
+<!-- STUB deck — flesh out on rehearsal. Signposts + visuals only;
+     do NOT re-teach the book. Many chapters need only this slide. -->
+
+## Roadmap {.smaller}
+
+::: incremental
+- What you'll be able to do
+- A hierarchy of problem classes
+- Linear program (LP)
+- Quadratic program (QP)
+- Second-order cone program (SOCP)
+- Semidefinite program (SDP)
+- And their integer cousins
+- Takeaways
+:::
+

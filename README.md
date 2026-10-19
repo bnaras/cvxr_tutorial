@@ -5,7 +5,7 @@ A hands-on tutorial on disciplined convex optimization in R with
 
 Authors: **Anqi Fu, Balasubramanian Narasimhan, Stephen Boyd.**
 
-This is a [Quarto book](https://quarto.org/docs/books/). It targets **CVXR 1.9.1**
+This is a [Quarto book](https://quarto.org/docs/books/). It targets **CVXR 1.9.3**
 and uses **CRAN solvers only**.
 
 > The earlier (2019, CVXR 1.x, bookdown) tutorial is preserved on the

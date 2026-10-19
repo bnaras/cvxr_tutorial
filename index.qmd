@@ -11,7 +11,7 @@ lets you write these problems in R in *natural mathematical notation* and have
 them solved to global optimality, without hand-deriving a solver or matching your
 problem to a canned routine.
 
-This tutorial accompanies CVXR **1.9.1**, a ground-up rewrite built on R's S7
+This tutorial accompanies CVXR **1.9.3**, a ground-up rewrite built on R's S7
 object system that brings R to parity with Python's [CVXPY](https://www.cvxpy.org).
 
 ## Who this is for

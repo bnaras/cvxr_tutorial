@@ -1,0 +1,79 @@
+---
+title: "Beyond Convex: Nonlinear Programming"
+subtitle: "useR! 2026 · Warsaw · Chapter 14"
+format:
+  revealjs:
+    theme: [default, slides.scss]
+    slide-number: c/t
+    width: 1280
+    height: 720
+    link-external-newwindow: true
+    footer: "[cvxr.rbind.io](https://cvxr.rbind.io)"
+execute:
+  echo: true
+  eval: false        # stub deck: code is shown, not run
+  warning: false
+  message: false
+---
+
+# Beyond Convex: Nonlinear Programming
+
+<!-- STUB deck — flesh out on rehearsal. Signposts + visuals only;
+     do NOT re-teach the book. Many chapters need only this slide. -->
+
+## Roadmap {.smaller}
+
+::: incremental
+- What you'll be able to do
+- You already have what you need
+- From convex to merely smooth
+- A genuinely nonconvex problem
+- The catch: only a *local* guarantee
+- Smooth atoms DCP doesn't have
+- Exercises
+- Takeaways
+:::
+
+## Your turn — Exercise 1 {.smaller}
+
+**Exercise 1.** See the local-optimum trap for yourself. Solve
+$\sin(x) + \tfrac{1}{10}x^2$ from a *single* starting point at `x0 = 4`, then
+compare with `best_of = 20`. Do they agree?
+
+::: {.notes}
+**Solution (presenter notes).**
+
+```r
+x <- Variable(bounds = list(-10, 10))
+prob <- Problem(Minimize(sin(x) + 0.1 * x^2))
+
+value(x) <- 4                                              # a poor starting point
+one <- psolve(prob, nlp = TRUE, solver = "UNO", logger = "SILENT")
+
+value(x) <- NULL                    # clear the fixed start so best_of can randomize
+set.seed(2)
+many <- psolve(prob, nlp = TRUE, solver = "UNO", logger = "SILENT", best_of = 20)
+c(from_x0_4 = one, best_of_20 = many)
+```
+The single solve from `x0 = 4` gets **stuck in a nearby local minimum** (objective
+$\approx 0.83$); the random restarts escape it and find the global one
+($\approx -0.79$). This is the whole story of nonconvex optimization in one example.
+:::
+
+## Your turn — Exercise 2 {.smaller}
+
+**Exercise 2 (⭐).** Turn on `verbose = TRUE` for one of the solves above and read
+UNO's log. How is it different from the convex-solver output you saw in
+@sec-gentle-intro?
+
+::: {.notes}
+**Solution (presenter notes).**
+
+```r
+psolve(prob, nlp = TRUE, solver = "UNO", verbose = TRUE)
+```
+You will see UNO *reformulate* the model and run a nonlinear iteration (a Newton or
+SQP method), rather than the cone solver's interior-point iterations. Same
+`verbose = TRUE` switch, a different engine underneath.
+:::
+

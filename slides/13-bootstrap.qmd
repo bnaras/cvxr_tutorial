@@ -1,0 +1,55 @@
+---
+title: "The Bootstrap: Inference for Optimization-Based Estimators"
+subtitle: "useR! 2026 · Warsaw · Chapter 13"
+format:
+  revealjs:
+    theme: [default, slides.scss]
+    slide-number: c/t
+    width: 1280
+    height: 720
+    link-external-newwindow: true
+    footer: "[cvxr.rbind.io](https://cvxr.rbind.io)"
+execute:
+  echo: true
+  eval: false        # stub deck: code is shown, not run
+  warning: false
+  message: false
+---
+
+# The Bootstrap: Inference for Optimization-Based Estimators
+
+<!-- STUB deck — flesh out on rehearsal. Signposts + visuals only;
+     do NOT re-teach the book. Many chapters need only this slide. -->
+
+## Roadmap {.smaller}
+
+::: incremental
+- What you'll be able to do
+- Why this matters
+- A fit with no standard-error formula
+- The bootstrap recipe
+- Bootstrapping is a parameter sweep
+- Exercise
+- Takeaways
+:::
+
+## Your turn {.smaller}
+
+**Exercise (⭐).** The penalty weight $\lambda = 0.44$ controls smoothness. Refit the
+temperature series at $\lambda = 0$ and a large $\lambda = 10$. What do the two
+extremes correspond to?
+
+::: {.notes}
+**Solution (presenter notes).**
+
+```r
+fit0  <- neariso_fit(cdiac$annual, 0)
+fit10 <- neariso_fit(cdiac$annual, 10)
+c(lambda0_matches_data = max(abs(fit0 - cdiac$annual)) < 1e-4,
+  lambda10_is_monotone = all(diff(fit10) >= -1e-4))
+```
+At $\lambda = 0$ there is no penalty, so the fit just reproduces the data. As
+$\lambda \to \infty$ the penalty forces the downward steps to zero --- a fully
+**isotonic** (monotone non-decreasing) fit.
+:::
+

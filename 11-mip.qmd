@@ -1,19 +1,20 @@
 # Mixed-Integer Programming {#sec-mip}
 
 <!-- LIVE hands-on throughout: MILP on HiGHS (install-free); integer least squares
-     via SOC reformulation on scip (scip is in the setup install line).
-     AUDIT (2026-06-09, verified vs Gurobi): MILP runs on HiGHS & SCIP. A quad
-     objective + integers (MIQP) routes through CVXR's QP path -> only commercial
-     QP solvers; BUT reformulating the quadratic as an SOC epigraph makes it
-     MI-SOCP, which SCIP solves on CRAN to the SAME integer optimum as Gurobi.
+     on scip (scip is in the setup install line).
+     AUDIT (2026-06-09, verified vs Gurobi): MILP runs on HiGHS & SCIP. Through
+     CVXR 1.9.2 a quad objective + integers (MIQP) went to the QP path -> only
+     commercial solvers, so the SOC epigraph was a required workaround. From CVXR
+     1.9.3 (2026-10-19) Dcp2Cone turns the quadratic into an SOC itself and SCIP
+     is auto-selected; same integer optimum as the hand-written epigraph.
      HiGHS silently returns wrong 'infeasible' for SOC-in-MIP -> never send it. -->
 
 ::: callout-note
 ## What you'll be able to do
 Add **integer** or **boolean** decision variables to a model and solve the
-resulting mixed-integer *linear* program with HiGHS --- no extra install. See a
-mixed-integer *second-order-cone* problem solved with SCIP, and learn which
-mixed-integer problems still need a commercial solver.
+resulting mixed-integer *linear* program with HiGHS --- no extra install. Solve a
+mixed-integer *quadratic* problem with SCIP, and see the second-order cone CVXR
+uses to get it there.
 :::
 
 ```{r}
@@ -77,27 +78,29 @@ round(value(pick_lp), 3)
 That gap between the relaxation and the integer optimum is exactly what
 branch-and-bound has to close.
 
-## Integer least squares, by reformulation (SCIP)
+## Integer least squares (SCIP)
 
 Here is a mixed-integer problem straight out of our regression chapters: **integer
-least squares** --- find *integer* coefficients $x$ minimizing $\|Ax - b\|_2^2$. The
-obvious transcription stops us cold:
+least squares** --- find *integer* coefficients $x$ minimizing $\|Ax - b\|_2^2$. A
+quadratic objective with integer variables is a mixed-integer *quadratic* program
+(MIQP), and the obvious transcription just works:
 
 ```{r}
 #| label: ils-naive
-#| error: true
+#| eval: !expr requireNamespace("scip", quietly = TRUE)
 set.seed(0)
 A <- matrix(runif(12 * 5), 12, 5); b <- rnorm(12)
 x <- Variable(5, integer = TRUE)
 psolve(Problem(Minimize(sum_squares(A %*% x - b))), solver = "SCIP")
+xhat <- value(x)
+cat("integer x:", round(xhat), "\n")
 ```
 
-The message points to commercial solvers --- but that is a **routing** quirk, not a
-real limit. A quadratic objective with integers travels through CVXR's *QP path*,
-where only GUROBI/CPLEX/XPRESS are registered. The cure is the skill from @sec-dcp:
-**reformulate**. Minimizing $\|Ax-b\|_2^2$ has the same minimizer as minimizing the
-*norm* $\|Ax-b\|_2$, and a norm is a second-order cone --- which makes this an
-**MI-SOCP**, exactly what SCIP handles:
+SCIP has no quadratic objective of its own, so how did that work? CVXR used the
+skill from @sec-dcp: it **reformulated** the problem. Minimizing $\|Ax-b\|_2^2$ is
+the same as minimizing $t$ subject to $\|Ax-b\|_2^2 \le t$, and that constraint is a
+second-order cone --- which makes the problem an **MI-SOCP**, exactly what SCIP
+handles. You can write the cone yourself and get the same integer optimum:
 
 ```{r}
 #| label: ils-reform
@@ -105,30 +108,24 @@ where only GUROBI/CPLEX/XPRESS are registered. The cure is the skill from @sec-d
 t <- Variable()
 prob <- Problem(Minimize(t), list(p_norm(A %*% x - b, 2) <= t))  # SOC epigraph
 psolve(prob, solver = "SCIP")
-xhat <- value(x)
-cat("integer x:", xhat, "  sum of squares:", round(sum((A %*% xhat - b)^2), 4), "\n")
+cat("integer x:", round(value(x)), "  sum of squares:",
+    round(sum((A %*% value(x) - b)^2), 4), "\n")
 ```
 
-That is the **same integer optimum** a commercial MIQP solver returns --- obtained on
-a CRAN solver simply by writing the objective in a form SCIP accepts. SOC plus
-integers is SCIP's home turf; the second-order cone is doing the work the quadratic
-objective could not.
+Here $t$ is the norm, not its square, so the optimal value is the square root of the
+first one; the minimizer is the same. SOC plus integers is SCIP's home turf. (With
+CVXR 1.9.2 and earlier, the squared form was routed to commercial solvers only, and
+writing the cone by hand, as above, was how to solve it on CRAN.)
 
 ::: callout-note
-## Two current limitations (both may change)
-These reflect the state of the tooling *today*, not permanent rules --- worth knowing
-now, but re-test rather than assume, since solvers and CVXR's routing keep evolving.
+## A current limitation (it may change)
+This reflects the state of the tooling *today*, not a permanent rule --- worth knowing
+now, but re-test rather than assume, since solvers keep evolving.
 
 - **HiGHS with an SOC inside a mixed-integer problem.** As of this writing, HiGHS does
   not support a second-order cone in a mixed-integer model, and rather than erroring it
   can silently return a *wrong* `infeasible` --- so for now, send SOC + integers to
-  **SCIP**. HiGHS is under active development, so this is the likelier of the two to
-  change; check before relying on it.
-- **MIQP routing.** A quadratic objective with integers currently travels through
-  CVXR's QP path, where only commercial solvers are registered. On CRAN today,
-  **reformulate the quadratic as an SOC** (above) and use SCIP --- same answer.
-  (Commercial solvers take the squared form directly.) This routing is a CVXR
-  implementation choice that could also change.
+  **SCIP**. HiGHS is under active development, so check before relying on it.
 :::
 
 ## Exercise
@@ -249,9 +246,9 @@ rules written as constraints. (Swap in any puzzle by editing the `0`-padded matr
 - Declaring a variable `integer = TRUE` or `boolean = TRUE` turns a model into a
   mixed-integer program --- same modeling, combinatorial solving.
 - **MILP** (linear objective) runs on **HiGHS**, built in and install-free.
-- **MI-SOCP** (a cone plus integers) runs on **SCIP**. An integer problem with a
-  *quadratic* objective (MIQP) goes to a commercial solver through CVXR's QP path ---
-  but **reformulate the quadratic as an SOC** and SCIP solves it on CRAN, same answer.
+- **MI-SOCP** (a cone plus integers) runs on **SCIP**. So does an integer problem
+  with a *quadratic* objective (MIQP): CVXR rewrites the quadratic as a second-order
+  cone for you.
 - Match the solver to the problem --- today a pure-MILP solver like HiGHS can't handle
   an SOC (and may not tell you), so send those to SCIP for now.
 - Some integer problems have **no objective at all**: logical puzzles like Sudoku are

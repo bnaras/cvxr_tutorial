@@ -3,8 +3,12 @@
 /.quarto/
 /_freeze/
 *_files/
-# Rendered standalone reveal.js deck (source is slides/intro.qmd)
+# Rendered standalone reveal.js decks (sources are the slides/*.qmd stubs +
+# the full follow-along decks in slides/full/); *_files/ already covered above.
 /slides/*.html
+/slides/full/*.html
+# Presenter answer key: track the generator + final HTML, not the intermediate md
+/presenter/answer-key.md
 
 # History / session files
 .Rhistory
