@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.10.18">
+<meta name="generator" content="quarto-1.10.19">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -100,10 +100,10 @@ div.csl-indent {
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-682c9f2a48d7bc9838ab31e35edc1f00.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-78220cbda6789c2f88048431d804adf5.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-0ed6e0bca4b9b26cfc87c35fd0c41936.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-24caa0e46af9c2b1895265aefe1e1c6f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -581,8 +581,8 @@ S_b\)</span>). The unconstrained nonparametric estimates — the Kaplan–Meier 
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>prob <span class="ot">&lt;-</span> <span class="fu">Problem</span>(<span class="fu">Minimize</span>((a <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">/</span> <span class="fu">sqrt</span>(a)))</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">is_dqcp =</span> <span class="fu">is_dqcp</span>(prob), <span class="at">optimum =</span> <span class="fu">psolve</span>(prob, <span class="at">qcp =</span> <span class="cn">TRUE</span>), <span class="at">a =</span> <span class="fu">value</span>(a))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> is_dqcp  optimum        a 
-1.000000 2.000000 1.000118 </code></pre>
+<pre><code>  is_dqcp   optimum         a 
+1.0000000 2.0000000 0.9999228 </code></pre>
 </div>
 </div>
 <p>The minimum is <span class="math inline">\(2\)</span> at <span class="math inline">\(a = 1\)</span>, found without you having to know the function was quasiconvex. See the <a href="https://cvxr.rbind.io/examples/dqcp/tutorial.html">DQCP Tutorial</a>.</p>

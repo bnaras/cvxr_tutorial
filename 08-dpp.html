@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.10.18">
+<meta name="generator" content="quarto-1.10.19">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -81,10 +81,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-682c9f2a48d7bc9838ab31e35edc1f00.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-78220cbda6789c2f88048431d804adf5.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-0ed6e0bca4b9b26cfc87c35fd0c41936.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-24caa0e46af9c2b1895265aefe1e1c6f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -475,7 +475,7 @@ Is DCP? TRUE </code></pre>
 <span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="fu">value</span>(gamma) <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
 <span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="fu">psolve</span>(param_prob, <span class="at">verbose =</span> <span class="cn">TRUE</span>)        <span class="co"># first solve: pays compilation</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>────────────────────────────────── CVXR v1.9.1 ─────────────────────────────────</code></pre>
+<pre><code>────────────────────────────────── CVXR v1.9.3 ─────────────────────────────────</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>ℹ Problem: 1 variable, 0 constraints (QP)</code></pre>
@@ -484,7 +484,7 @@ Is DCP? TRUE </code></pre>
 <pre><code>ℹ Compilation: "OSQP" via CVXR::Dcp2Cone -&gt; CVXR::CvxAttr2Constr -&gt; CVXR::ConeMatrixStuffing -&gt; CVXR::OSQP_QP_Solver</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Compile time: 0.376s</code></pre>
+<pre><code>ℹ Compile time: 0.677s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>─────────────────────────────── Numerical solver ───────────────────────────────</code></pre>
@@ -508,11 +508,11 @@ settings: algebra = Built-in,
           scaling: on (10 iterations), scaled_termination: off
           warm starting: on, polishing: on, 
 iter   objective    prim res   dual res   gap        rel kkt    rho         time
-   1  -1.6000e+02   8.00e+00   6.83e+02  -3.13e+03   6.83e+02   1.00e-01    7.59e-04s
-  50   8.0194e+01   6.18e-02   2.66e-03  -1.87e-01   6.18e-02   5.00e-01*   1.35e-03s
- 100   8.0454e+01   8.44e-03   7.36e-05  -6.66e-03   8.44e-03   5.57e+00*   2.06e-03s
- 200   8.0462e+01   1.33e-05   5.75e-07  -1.90e-06   1.33e-05   5.57e+00    3.28e-03s
-plsh   8.0462e+01   1.46e-15   1.28e-14  -5.68e-14   1.28e-14   --------    3.71e-03s
+   1  -1.6000e+02   8.00e+00   6.83e+02  -3.13e+03   6.83e+02   1.00e-01    8.30e-04s
+  50   8.0194e+01   6.18e-02   2.66e-03  -1.87e-01   6.18e-02   5.00e-01*   1.53e-03s
+ 100   8.0454e+01   8.44e-03   7.36e-05  -6.66e-03   8.44e-03   5.57e+00*   2.40e-03s
+ 200   8.0462e+01   1.33e-05   5.75e-07  -1.90e-06   1.33e-05   5.57e+00    3.94e-03s
+plsh   8.0462e+01   1.46e-15   1.28e-14  -5.68e-14   1.28e-14   --------    4.46e-03s
 
 status:               solved
 solution polishing:   successful
@@ -521,7 +521,7 @@ optimal objective:    80.4620
 dual objective:       80.4620
 duality gap:          -5.6843e-14
 primal-dual integral: 3.1311e+03
-run time:             3.71e-03s
+run time:             4.46e-03s
 optimal rho estimate: 2.78e+01</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
@@ -534,10 +534,10 @@ optimal rho estimate: 2.78e+01</code></pre>
 <pre><code>✔ Optimal value: 80.462</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Compile time: 0.376s</code></pre>
+<pre><code>ℹ Compile time: 0.677s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Solver time: 0.024s</code></pre>
+<pre><code>ℹ Solver time: 0.032s</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 80.46205</code></pre>
@@ -548,7 +548,7 @@ optimal rho estimate: 2.78e+01</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">value</span>(gamma) <span class="ot">&lt;-</span> <span class="fl">0.7</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">psolve</span>(param_prob, <span class="at">verbose =</span> <span class="cn">TRUE</span>)        <span class="co"># re-solve: compilation is cached</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>────────────────────────────────── CVXR v1.9.1 ─────────────────────────────────</code></pre>
+<pre><code>────────────────────────────────── CVXR v1.9.3 ─────────────────────────────────</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>ℹ Problem: 1 variable, 0 constraints (QP)</code></pre>
@@ -560,7 +560,7 @@ optimal rho estimate: 2.78e+01</code></pre>
 <pre><code>ℹ Compilation: "OSQP" via CVXR::Dcp2Cone -&gt; CVXR::CvxAttr2Constr -&gt; CVXR::ConeMatrixStuffing -&gt; CVXR::OSQP_QP_Solver</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Compile time: 0.032s</code></pre>
+<pre><code>ℹ Compile time: 0.043s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>─────────────────────────────── Numerical solver ───────────────────────────────</code></pre>
@@ -584,10 +584,10 @@ settings: algebra = Built-in,
           scaling: on (10 iterations), scaled_termination: off
           warm starting: on, polishing: on, 
 iter   objective    prim res   dual res   gap        rel kkt    rho         time
-   1  -2.2400e+02   8.00e+00   9.56e+02  -4.38e+03   9.56e+02   1.00e-01    8.17e-04s
- 150   8.1079e+01   1.52e-02   9.34e-07  -2.57e-02   1.52e-02   1.44e+01*   2.44e-03s
- 200   8.1117e+01   8.80e-07   7.04e-07  -2.81e-07   8.80e-07   1.44e+01    3.18e-03s
-plsh   8.1117e+01   1.27e-15   1.67e-14   7.96e-14   7.96e-14   --------    3.59e-03s
+   1  -2.2400e+02   8.00e+00   9.56e+02  -4.38e+03   9.56e+02   1.00e-01    6.74e-04s
+ 150   8.1079e+01   1.52e-02   9.34e-07  -2.57e-02   1.52e-02   1.44e+01*   2.82e-03s
+ 200   8.1117e+01   8.80e-07   7.04e-07  -2.81e-07   8.80e-07   1.44e+01    3.69e-03s
+plsh   8.1117e+01   1.27e-15   1.67e-14   7.96e-14   7.96e-14   --------    4.12e-03s
 
 status:               solved
 solution polishing:   successful
@@ -596,7 +596,7 @@ optimal objective:    81.1172
 dual objective:       81.1172
 duality gap:          7.9581e-14
 primal-dual integral: 4.3836e+03
-run time:             3.59e-03s
+run time:             4.12e-03s
 optimal rho estimate: 1.82e+01</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
@@ -609,10 +609,10 @@ optimal rho estimate: 1.82e+01</code></pre>
 <pre><code>✔ Optimal value: 81.1172</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Compile time: 0.032s</code></pre>
+<pre><code>ℹ Compile time: 0.043s</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>ℹ Solver time: 0.032s</code></pre>
+<pre><code>ℹ Solver time: 0.067s</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 81.11721</code></pre>
@@ -634,8 +634,8 @@ optimal rho estimate: 1.82e+01</code></pre>
 <pre><code># A tibble: 2 × 4
   expression        min   median mem_alloc
   &lt;bch:expr&gt;   &lt;bch:tm&gt; &lt;bch:tm&gt; &lt;bch:byt&gt;
-1 DPP re-solve   8.15ms   8.64ms   554.7KB
-2 rebuild       22.18ms  24.03ms     9.7MB</code></pre>
+1 DPP re-solve   9.06ms   9.45ms     603KB
+2 rebuild       22.05ms  23.01ms    10.3MB</code></pre>
 </div>
 </div>
 <p>On our machine the DPP re-solve is roughly <strong>2–3× faster per solve</strong> and allocates less memory — precisely the compile time we just watched drop. Over a sweep of <span class="math inline">\(K\)</span> values you save that difference <span class="math inline">\(K\)</span> times.</p>
